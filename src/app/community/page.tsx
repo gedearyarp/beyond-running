@@ -23,7 +23,6 @@ export type Event = {
   membersOnly?: boolean
 }
 
-
 const events: Event[] = [
   {
     id: 1,

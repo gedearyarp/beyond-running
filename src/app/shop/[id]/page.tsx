@@ -50,7 +50,11 @@ const galleryImages = [
   "/placeholder.svg?key=gallery4",
 ]
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
+interface DetailProps {
+  params: { id: string }
+}
+
+export default function ProductDetailPage({ params }: DetailProps) {
   const [selectedSize, setSelectedSize] = useState<number>(3)
   const [selectedColor, setSelectedColor] = useState<string>("black")
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({

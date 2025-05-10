@@ -2,7 +2,11 @@ import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 
-export default function PeripheralsDetailPage({ params }: { params: { slug: string } }) {
+interface PeripheralsProps {
+  params: { slug: string }
+}
+
+export default function PeripheralsDetailPage({ params }: PeripheralsProps) {
   const peripheral = {
     title: "BEYOND SOLSTICE",
     date: "January 29, 2024",
