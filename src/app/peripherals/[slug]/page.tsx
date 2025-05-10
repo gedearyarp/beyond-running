@@ -2,11 +2,7 @@ import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 
-interface PeripheralsProps {
-  params: { slug: string }
-}
-
-export default function PeripheralsDetailPage({ params }: PeripheralsProps) {
+export default function PeripheralsDetailPage() {
   const peripheral = {
     title: "BEYOND SOLSTICE",
     date: "January 29, 2024",
@@ -43,8 +39,6 @@ export default function PeripheralsDetailPage({ params }: PeripheralsProps) {
       },
     ],
   }
-
-  console.log(params)
 
   return (
     <div className="flex flex-col min-h-screen">

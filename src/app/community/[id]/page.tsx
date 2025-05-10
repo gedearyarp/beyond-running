@@ -5,11 +5,8 @@ import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 
-interface CommunityDetailParams {
-  params: { id: string }
-}
 
-export default function CommunityDetailPage({ params }: CommunityDetailParams) {
+export default function CommunityDetailPage() {
   const event = {
     id: 1,
     title: "EQUATOR STRIDE: THE BALI MARATHON",
@@ -39,8 +36,6 @@ export default function CommunityDetailPage({ params }: CommunityDetailParams) {
       "The prize is non-transferable and no cash alternatives will be offered.",
     ],
   }
-
-  console.log(params)
 
   const [activeTab, setActiveTab] = useState<"rundown" | "documentation">("rundown")
 
