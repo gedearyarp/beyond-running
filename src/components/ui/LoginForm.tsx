@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react"
 
 export default function LoginForm() {
   return (
-    <div className="max-w-md mx-auto py-16">
+    <div className="min-w-sm mx-auto">
       <h1 className="text-4xl font-bold text-center mb-12">LOGIN</h1>
 
       <form className="space-y-8">

@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600&display=swap');
+
+
+.hide-scrollbar::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+.hide-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Transparent track */
+}
+
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: #000000;
+  border-radius: 2px;
+}
+
+.hide-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #333333;
+}
+
+/* Hide scrollbar buttons */
+.hide-scrollbar::-webkit-scrollbar-button {
+  display: none; /* Hide the arrow buttons */
+}
+
+/* For Firefox */
+.hide-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #000000 transparent; /* Black thumb, transparent track */
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}

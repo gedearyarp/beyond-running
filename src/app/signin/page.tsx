@@ -6,7 +6,7 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-1">
+      <main className="flex mt-30 justify-center h-screen">
         <LoginForm />
       </main>
       <Footer />

@@ -86,7 +86,7 @@ export default function SignupForm() {
 
       <div className="mt-6 text-sm">
         <span>Already a Member?</span>{" "}
-        <Link href="/login" className="underline font-medium">
+        <Link href="/signin" className="underline font-medium">
           Login
         </Link>
       </div>

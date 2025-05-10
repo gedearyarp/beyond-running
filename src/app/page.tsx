@@ -1,10 +1,30 @@
-import Image from "next/image";
-import Button from "@/components/ui/button";
+import Header from "@/components/ui/Header"
+import Footer from "@/components/ui/Footer"
+import HeroSlider from "@/components/home/hero-slider"
+import PromoCards from "@/components/home/promo-cards"
+import FeaturedProducts from "@/components/home/featured-products"
+import BottomBanner from "@/components/home/bottom-banner"
+import IntroSection from "@/components/intro-section"
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <Button />
+    <div className="flex flex-col min-h-screen">
+      {/* Intro Section with GIF that can be scrolled past */}
+      <IntroSection />
+
+      {/* Main Content */}
+      <div className="relative">
+        <Header />
+        <main>
+          <HeroSlider />
+          <div className="container mx-auto px-4">
+            <PromoCards />
+            <FeaturedProducts />
+            <BottomBanner />
+          </div>
+        </main>
+        <Footer />
+      </div>
     </div>
-  );
+  )
 }
