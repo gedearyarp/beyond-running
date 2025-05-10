@@ -5,11 +5,11 @@ import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 
-interface PageProps {
+interface CommunityDetailParams {
   params: { id: string }
 }
 
-export default function CommunityDetailPage({ params }: PageProps) {
+export default function CommunityDetailPage({ params }: CommunityDetailParams) {
   const event = {
     id: 1,
     title: "EQUATOR STRIDE: THE BALI MARATHON",
