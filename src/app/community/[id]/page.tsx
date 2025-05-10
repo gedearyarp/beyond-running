@@ -2,8 +2,6 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 
@@ -37,6 +35,8 @@ export default function CommunityDetailPage({ params }: { params: { id: string }
       "The prize is non-transferable and no cash alternatives will be offered.",
     ],
   }
+
+  console.log(params)
 
   const [activeTab, setActiveTab] = useState<"rundown" | "documentation">("rundown")
 
@@ -74,7 +74,7 @@ export default function CommunityDetailPage({ params }: { params: { id: string }
               <p className="text-sm font-avant-garde mb-8 leading-relaxed">{event.description}</p>
 
               <div className="mb-8">
-                <h2 className="text-lg font-bold font-avant-garde mb-4">Event's Key Details:</h2>
+                <h2 className="text-lg font-bold font-avant-garde mb-4">Events Key Details:</h2>
                 <ul className="space-y-2">
                   {event.keyDetails.map((detail, index) => (
                     <li key={index} className="flex items-start">

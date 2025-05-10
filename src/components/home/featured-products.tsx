@@ -92,7 +92,7 @@ export default function FeaturedProducts() {
             className={`text-sm mr-6 font-avant-garde ${activeTab === "favorite" ? "font-bold" : "text-gray-500"}`}
             onClick={() => setActiveTab("favorite")}
           >
-            Runner's Favorite
+            Runners Favorite
           </button>
           <button
             className={`text-sm font-avant-garde ${activeTab === "sale" ? "font-bold" : "text-gray-500"}`}
@@ -111,10 +111,6 @@ export default function FeaturedProducts() {
       <div className="relative">
         <div
           className="flex overflow-x-auto pb-4 gap-4 hide-scrollbar"
-          style={{
-            scrollbarWidth: "thin",
-            scrollbarColor: "#000000 transparent",
-          }}
         >
           {products.map((product) => (
             <div key={product.id} className="flex-shrink-0 w-[calc(25%-12px)] min-w-[250px]">

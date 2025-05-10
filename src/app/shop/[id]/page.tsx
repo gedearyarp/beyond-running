@@ -64,6 +64,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       ...prev,
       [section]: !prev[section],
     }))
+    console.log(params)
   }
 
   return (
@@ -93,7 +94,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         </Link>
                     </div>
                     <h1 className="text-3xl font-bold font-avant-garde mb-1">BEYOND QUARTER-ZIP TOP</h1>
-                    <h2 className="text-2xl font-bold font-avant-garde mb-6">MEN'S</h2>
+                    <h2 className="text-2xl font-bold font-avant-garde mb-6">MENS</h2>
                     <p className="text-xl font-avant-garde mb-8">Rp600.000</p>
 
                     <p className="text-sm font-avant-garde mb-10">
@@ -250,7 +251,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           </div>
 
           <div className="mt-16 overflow-x-auto hide-scrollbar">
-            <div className="flex space-x-4" style={{ minWidth: "min-content" }}>
+            <div className="flex space-x-4">
               {galleryImages.map((image, index) => (
                 <div key={index} className="flex-shrink-0 w-[500px] h-[375px] relative">
                   <Image

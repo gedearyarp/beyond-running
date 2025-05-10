@@ -40,6 +40,8 @@ export default function PeripheralsDetailPage({ params }: { params: { slug: stri
     ],
   }
 
+  console.log(params)
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />

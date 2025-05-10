@@ -127,7 +127,7 @@ export default function Header() {
                   </li>
                   <li>
                     <Link href="/shop/runners-favorite" className="text-sm hover:underline">
-                      Runner's Favorite
+                      Runners Favorite
                     </Link>
                   </li>
                   <li>
@@ -181,7 +181,7 @@ export default function Header() {
                   </li>
                   <li>
                     <Link href="/shop/past-seasons" className="text-sm hover:underline">
-                      More Past Season's Collections
+                      More Past Seasons Collections
                     </Link>
                   </li>
                 </ul>

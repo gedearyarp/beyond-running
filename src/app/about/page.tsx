@@ -1,8 +1,6 @@
 import Image from "next/image"
-import Link from "next/link"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
-import { Instagram, Twitter, ArrowRight } from "lucide-react"
 
 export default function AboutPage() {
   return (
@@ -57,7 +55,7 @@ export default function AboutPage() {
                 Beyond Running is a running apparel brand based in Jakarta. Initiated by four like-minded people who see
                 running in a wider range. Through this brand, they want to capture moments, feelings, and experiences
                 when it comes to running. Each collection is built from a collective response of the community under the
-                brand, designed to seamlessly fit in a runner's wardrobe and tested to suit all running purposes.
+                brand, designed to seamlessly fit in a runners wardrobe and tested to suit all running purposes.
               </p>
             </div>
           </div>

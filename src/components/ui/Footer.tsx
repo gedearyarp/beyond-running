@@ -31,7 +31,7 @@ export default function Footer() {
                   placeholder="Enter Email"
                   className="w-full border-b border-[#000000] pb-2 focus:outline-none focus:border-black"
                 />
-                <button className="absolute right-0 bottom-2">
+                <button className="absolute right-0 bottom-2" title="button">
                   <ArrowRight className="h-5 w-5" />
                 </button>
               </div>
@@ -54,7 +54,7 @@ export default function Footer() {
               <h3 className="text-lg font-bold mb-4">FOLLOW US ON SOCIAL MEDIA</h3>
               <p className="text-sm mb-6">
                 Beyond running is a running apparel brand based in Jakarta. Each collection is built from a collective
-                response of the running community, designed to seamlessly fit in a runner's wardrobe and tested to suit
+                response of the running community, designed to seamlessly fit in a runners wardrobe and tested to suit
                 all running purposes.
               </p>
             </div>

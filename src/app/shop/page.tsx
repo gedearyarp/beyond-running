@@ -80,7 +80,7 @@ export default function ShopPage() {
             <p className="text-sm font-avant-garde">
               Explore our performance-driven essentials merge cutting-edge innovation with the demands of real-world
               running. Designed for the tropics, each piece balances breathability, durability, and adaptive comfort.
-              Every piece is crafted to support the runner's journey, from training to race day and beyond.
+              Every piece is crafted to support the runners journey, from training to race day and beyond.
             </p>
           </div>
 

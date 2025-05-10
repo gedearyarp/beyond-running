@@ -14,6 +14,7 @@ export default function IntroSection() {
       } else {
         setScrolled(false)
       }
+      console.log(scrolled)
     }
 
     // Add scroll event listener
@@ -23,7 +24,7 @@ export default function IntroSection() {
     return () => {
       window.removeEventListener("scroll", handleScroll)
     }
-  }, [])
+  }, [scrolled])
 
   return (
     <>
