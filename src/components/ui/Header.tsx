@@ -1,11 +1,27 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Search, User, ShoppingBag } from "lucide-react"
 
 export default function Header() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setIsScrolled(true)
+      } else {
+        setIsScrolled(false)
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
 
   const handleMouseEnter = (dropdown: string) => {
     setActiveDropdown(dropdown)
@@ -16,7 +32,7 @@ export default function Header() {
   }
 
   return (
-    <header className="w-full relative z-50">
+    <header className={`w-full fixed top-0 left-0 right-0 z-50 transition-shadow ${isScrolled ? "shadow-md" : ""}`}>
       {/* Announcement Bar */}
       <div className="w-full bg-black text-white text-center py-2 text-xs">
         Free Shipping On All Orders Above Rp 599,999

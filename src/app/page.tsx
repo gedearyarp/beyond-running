@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 import HeroSlider from "@/components/home/hero-slider"
@@ -8,7 +9,6 @@ import FeaturedProducts from "@/components/home/featured-products"
 import BottomBanner from "@/components/home/bottom-banner"
 import IntroSection from "@/components/intro-section"
 import useMobile from "@/hooks/use-mobile"
-import { useState } from "react"
 import MobileHeader from "@/components/mobile-header"
 import MobileMenu from "@/components/mobile-menu"
 
@@ -45,6 +45,13 @@ export default function HomePage() {
         </main>
         <Footer />
       </div>
+
+      <style jsx global>{`
+        body {
+          overflow-x: hidden;
+          scroll-behavior: smooth;
+        }
+      `}</style>
     </div>
   )
 }

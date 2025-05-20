@@ -15,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-avant-garde">{children}</body>
+      <body className="font-avant-garde pt-[88px]">{children}</body>
     </html>
   )
 }
