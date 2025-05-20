@@ -10,7 +10,7 @@ export default function Footer() {
     <footer className="border-t border-black h-full md:h-[333px] w-full pt-12 md:pb-0">
       <div className="w-full px-4 md:px-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-24 md:gap-12 md:h-[333px] pb-26 md:pb-12">
-          <div className={`flex md:flex-col h-full gap-18 w-sm ${!isMobile && "justify-between"}`}>
+          <div className={`flex md:flex-col h-full gap-18 md:w-sm ${!isMobile && "justify-between"}`}>
             <Image 
               src="/icons/logoB.gif" 
               alt="Beyond Running Animation" 
