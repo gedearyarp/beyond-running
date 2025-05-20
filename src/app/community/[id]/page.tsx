@@ -4,6 +4,9 @@ import { useState } from "react"
 import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
+import useMobile from "@/hooks/use-mobile"
+import MobileHeader from "@/components/mobile-header"
+import MobileMenu from "@/components/mobile-menu"
 
 
 export default function CommunityDetailPage() {
@@ -38,30 +41,48 @@ export default function CommunityDetailPage() {
   }
 
   const [activeTab, setActiveTab] = useState<"rundown" | "documentation">("rundown")
+  const isMobile = useMobile()
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  
+    const toggleMobileMenu = () => {
+      setMobileMenuOpen(!mobileMenuOpen)
+    }
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      {isMobile ? (
+        <>
+          <MobileHeader onMenuClick={toggleMobileMenu} />
+          {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
+        </>
+      ) : (
+        <Header />
+      )}
       <main className="flex-1">
         {/* Hero Banner */}
-        <div className="relative w-full h-[608px]">
+        <div className="relative w-full h-[477px] md:h-[608px]">
           <Image src={event.heroImage || "/placeholder.svg"} alt={event.title} fill className="object-cover" priority />
         </div>
 
         <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-40">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-40">
             {/* Left Column - Event Image */}
             <div>
-              <div className="relative h-[900px] w-full">
+              {isMobile && (
+                <h1 className="text-2xl md:text-4xl font-bold font-avant-garde mb-8">{event.title}</h1>
+              )}
+              <div className="relative h-[481px] md:h-[900px] w-full">
                 <Image src={event.image || "/placeholder.svg"} alt={event.title} fill className="object-cover" />
               </div>
             </div>
 
-            {/* Right Column - Event Details */}
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold font-avant-garde mb-8">{event.title}</h1>
 
-              <div className="mb-8 py-12">
+            <div>
+              {!isMobile && (
+                <h1 className="text-3xl md:text-4xl font-bold font-avant-garde mb-8">{event.title}</h1>
+              )}
+
+              <div className="mb-8 py-12 text-center md:text-left ">
                 <p className="text-sm font-avant-garde mb-1">
                   <strong>Time :</strong> {event.date}
                 </p>
@@ -83,7 +104,7 @@ export default function CommunityDetailPage() {
                 </ul>
               </div>
 
-              <div className="mb-24">
+              <div className="mb-12 md:mb-24">
                 <h2 className="text-lg font-bold font-avant-garde mb-4">{event.giveaway.title}</h2>
                 <p className="text-sm font-avant-garde">{event.giveaway.description}</p>
               </div>

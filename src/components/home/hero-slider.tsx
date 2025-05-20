@@ -51,7 +51,7 @@ export default function HeroSlider() {
   }, [])
 
   return (
-    <div className="relative w-full h-[900px] overflow-hidden">
+    <div className="relative w-full h-[764px] md:h-[900px] overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
@@ -97,7 +97,7 @@ export default function HeroSlider() {
         {/* Left Arrow */}
         <button
           onClick={prevSlide}
-          className="mx-4  p-2 rounded-full text-white hover:bg-black/50 transition-colors"
+          className="hidden md:block mx-4 p-2 rounded-full text-white hover:bg-black/50 transition-colors"
           aria-label="Previous slide"
         >
           <ChevronLeft className="h-5 w-5" />
@@ -118,7 +118,7 @@ export default function HeroSlider() {
         {/* Right Arrow */}
         <button
           onClick={nextSlide}
-          className="mx-4 p-2 rounded-full text-white hover:bg-black/50 transition-colors"
+          className="hidden md:block mx-4 p-2 rounded-full text-white hover:bg-black/50 transition-colors"
           aria-label="Next slide"
         >
           <ChevronRight className="h-5 w-5" />

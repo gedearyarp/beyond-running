@@ -79,9 +79,9 @@ export default function FeaturedProducts() {
     <div className="my-12">
       <div className="mb-6">
         <h2 className="text-xl font-bold mb-4 font-avant-garde">FEATURED ARTICLES</h2>
-        <div className="flex pb-2">
+        <div className="flex pb-2 gap-3 md:gap-6">
           <button
-            className={`text-sm font-medium mr-6 font-avant-garde ${
+            className={`text-xs md:text-sm font-medium md:mr-6 font-avant-garde ${
               activeTab === "new" ? "font-bold" : "text-gray-500"
             }`}
             onClick={() => setActiveTab("new")}
@@ -89,19 +89,19 @@ export default function FeaturedProducts() {
             New Arrivals
           </button>
           <button
-            className={`text-sm mr-6 font-avant-garde ${activeTab === "favorite" ? "font-bold" : "text-gray-500"}`}
+            className={`text-xs md:text-sm md:mr-6 font-avant-garde ${activeTab === "favorite" ? "font-bold" : "text-gray-500"}`}
             onClick={() => setActiveTab("favorite")}
           >
             Runners Favorite
           </button>
           <button
-            className={`text-sm font-avant-garde ${activeTab === "sale" ? "font-bold" : "text-gray-500"}`}
+            className={`text-xs md:text-sm font-avant-garde ${activeTab === "sale" ? "font-bold" : "text-gray-500"}`}
             onClick={() => setActiveTab("sale")}
           >
             Past Season Sale
           </button>
-          <div className="ml-auto">
-            <Link href="/shop" className="text-xs font-avant-garde underline">
+          <div className="md:text-sm text-xs ml-auto">
+            <Link href="/shop" className="text-xs md:text-sm font-avant-garde underline">
               SHOP NOW
             </Link>
           </div>
@@ -113,7 +113,7 @@ export default function FeaturedProducts() {
           className="flex overflow-x-auto pb-4 gap-4 hide-scrollbar"
         >
           {products.map((product) => (
-            <div key={product.id} className="flex-shrink-0 w-[calc(25%-12px)] min-w-[250px]">
+            <div key={product.id} className="flex-shrink-0">
               <ProductCard product={product} />
             </div>
           ))}

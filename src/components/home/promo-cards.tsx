@@ -35,13 +35,13 @@ export default function PromoCards() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
       {promoCards.map((card) => (
-        <div key={card.id} className="relative h-[638px] group overflow-hidden">
+        <div key={card.id} className="relative h-[477px] md:h-[638px] group overflow-hidden">
           <div className="absolute inset-0 group-hover:bg-black/60 transition-colors z-10" />
           <Image
             src={card.bgImage || "/placeholder.svg"}
             alt={card.title}
             fill
-            className="object-fill group-hover:scale-105 transition-transform duration-500"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute inset-0 gap-30 flex flex-col items-center justify-center text-white z-20 p-6 text-center">
             <div className="w-[110px] h-[110px] flex items-center justify-center">

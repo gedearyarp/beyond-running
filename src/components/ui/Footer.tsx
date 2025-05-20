@@ -1,28 +1,44 @@
 import Link from "next/link"
 import { ArrowRight, Instagram, Twitter } from "lucide-react"
 import Image from "next/image"
+import useMobile from "@/hooks/use-mobile"
 
 export default function Footer() {
+  const isMobile = useMobile();
+
   return (
-    <footer className="border-t border-black h-[333px] w-full pt-12">
-      <div className="w-full px-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 h-[333px] pb-12">
-          <div className="flex flex-col h-full justify-between w-sm">
+    <footer className="border-t border-black h-full md:h-[333px] w-full pt-12 md:pb-0">
+      <div className="w-full px-4 md:px-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-24 md:gap-12 md:h-[333px] pb-26 md:pb-12">
+          <div className={`flex md:flex-col h-full gap-18 w-sm ${!isMobile && "justify-between"}`}>
             <Image 
               src="/icons/logoB.gif" 
               alt="Beyond Running Animation" 
-              height={178}
-              width={178}
-              className="bg-black object-cover"
+              height={125}
+              width={125}
+              className="object-cover"
               unoptimized = {true} // Important for GIFs to animate properly
             />
-            <div>BEYOND RUNNING © 2025. All Rights Reserved</div>
+            <>
+              {isMobile ? (
+                <div className="flex md:flex-row flex-col justify-center">
+                  <p>BEYOND RUNNING</p>
+                  <p>© 2025.</p>
+                  <p className="mt-6">All Rights Reserved</p>
+                </div>
+              ):(
+                <div className="flex md:flex-row flex-col">
+                  <p>BEYOND RUNNING © 2025.</p>
+                  <p>All Rights Reserved</p>
+                </div>
+              )}
+            </>
           </div>
 
-          <div className="h-full w-xs ml-24 flex flex-col justify-between">
+          <div className="h-full md:w-xs w-full md:ml-24 flex flex-col justify-between">
             <div>
               <h3 className="text-lg font-bold bg-background mb-4">JOIN THE MOTION</h3>
-              <p className="text-sm mb-6">Keep up with the new drops, insights, runners stories and more.</p>
+              <p className="text-sm mb-12 md:mb-6">Keep up with the new drops, insights, runners stories and more.</p>
             </div>
             <div>
               <div className="relative">
@@ -35,7 +51,7 @@ export default function Footer() {
                   <ArrowRight className="h-5 w-5" />
                 </button>
               </div>
-              <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-200 text-sm">
+              <div className="flex flex-col md:flex-row justify-between md:items-center pt-8 border-t border-gray-200 text-sm">
                 <div className="flex space-x-6 mt-4 md:mt-0">
                   <Link href="/contact" className="hover:underline">
                     Contact Us
@@ -49,7 +65,7 @@ export default function Footer() {
             
           </div>
 
-          <div className="flex flex-col justify-between">
+          <div className="flex flex-col md:justify-between md:gap-0 gap-4">
             <div>
               <h3 className="text-lg font-bold mb-4">FOLLOW US ON SOCIAL MEDIA</h3>
               <p className="text-sm mb-6">

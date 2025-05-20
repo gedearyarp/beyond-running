@@ -1,6 +1,12 @@
+"use client"
+
 import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
+import useMobile from "@/hooks/use-mobile"
+import { useState } from "react"
+import MobileHeader from "@/components/mobile-header"
+import MobileMenu from "@/components/mobile-menu"
 
 export default function PeripheralsDetailPage() {
   const peripheral = {
@@ -40,37 +46,51 @@ export default function PeripheralsDetailPage() {
     ],
   }
 
+  const isMobile = useMobile()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen)
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      {isMobile ? (
+        <>
+          <MobileHeader onMenuClick={toggleMobileMenu} />
+          {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
+        </>
+      ) : (
+        <Header />
+      )}
       <main className="flex-1 text-white bg-black pb-42">
-        <div className="relative w-full h-[705px]">
+        <div className="relative w-full h-[477px] md:h-[705px]">
           <Image src="/images/per_detail_1.png" alt={peripheral.title} fill className="object-cover" priority />
         </div>
 
-        <div className="container mx-auto px-4 py-16 flex flex-col gap-36">
+        <div className="container mx-auto px-4 py-16 md:py-16 flex flex-col gap-0 md:gap-36">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold font-avant-garde mb-6">{peripheral.title}</h1>
-              <p className="text-sm font-avant-garde mb-6">{peripheral.date}</p>
-              <p className="text-sm font-avant-garde">Words: {peripheral.author}</p>
-              <p className="text-sm font-avant-garde">Photos: {peripheral.photographer}</p>
+              <h1 className="text-[21px] md:text-5xl font-bold font-avant-garde mb-6">{peripheral.title}</h1>
+              <p className="text-xs md:text-sm font-avant-garde mb-6">{peripheral.date}</p>
+              <p className="font-bold text-sm font-avant-garde">Words: {peripheral.author}</p>
+              <p className="font-bold text-sm font-avant-garde">Photos: {peripheral.photographer}</p>
             </div>
             <div>
-              <div className="text-base font-avant-garde leading-relaxed space-y-6">
+              <div className="text-[12px] md:text-base font-avant-garde leading-relaxed space-y-6">
                 <p>{peripheral.content[0]}</p>
                 <p>{peripheral.content[1]}</p>
               </div>
             </div>
           </div>
-          <div className="my-36 max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold font-avant-garde leading-tight">{peripheral.quote}</h2>
+          <div className="my-28 md:my-36 max-w-4xl mx-auto text-center">
+            <h2 className="text-[20px] md:text-4xl font-bold font-avant-garde leading-tight">{peripheral.quote}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-24">
-            <div className="text-base font-avant-garde leading-relaxed">
+            <div className="text-[12px] md:text-base font-avant-garde leading-relaxed">
               <p>{peripheral.content[2]}</p>
             </div>
-            <div className="text-base font-avant-garde leading-relaxed">
+            <div className="text-[12px] md:text-base font-avant-garde leading-relaxed">
               <p>{peripheral.content[3]}</p>
             </div>
           </div>
@@ -109,7 +129,7 @@ export default function PeripheralsDetailPage() {
 											width={0}
 											height={0}
 											sizes="500px"
-											className="min-w-[880px] min-h-[900px] object-contain"
+											className="min-w-[380px] min-h-[450px] md:min-w-[880px] md:min-h-[900px] object-contain"
 										/>
 									</div>
 								))}
@@ -117,8 +137,8 @@ export default function PeripheralsDetailPage() {
 						</div>
 
           )}
-          <div className="max-w-3xl ml-34 mb-24">
-            <p className="text-base font-avant-garde leading-relaxed">{peripheral.content[4]}</p>
+          <div className="max-w-3xl px-4 md:px-0 md:ml-34 md:mb-24">
+            <p className="text-[12px] md:text-base font-avant-garde leading-relaxed">{peripheral.content[4]}</p>
           </div>
       </main>
       <Footer />

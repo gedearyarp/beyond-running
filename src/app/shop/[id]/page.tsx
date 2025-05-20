@@ -7,6 +7,9 @@ import { ChevronRight, ChevronDown, ArrowLeft } from "lucide-react"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 import ProductCard, { type Product } from "@/components/ui/ProductCard"
+import useMobile from "@/hooks/use-mobile"
+import MobileHeader from "@/components/mobile-header"
+import MobileMenu from "@/components/mobile-menu"
 
 const relatedProducts: Product[] = [
   {
@@ -41,6 +44,7 @@ const relatedProducts: Product[] = [
     image: "/placeholder.svg?key=ih1wv",
     colors: ["#000000", "#FFFFFF"],
   },
+  
 ]
 
 const galleryImages = [
@@ -66,17 +70,30 @@ export default function ProductDetailPage() {
     }))
   }
 
+  const isMobile = useMobile()
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  
+    const toggleMobileMenu = () => {
+      setMobileMenuOpen(!mobileMenuOpen)
+    }
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      {isMobile ? (
+        <>
+          <MobileHeader onMenuClick={toggleMobileMenu} />
+          {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
+        </>
+      ) : (
+        <Header />
+      )}
       <main className="flex-1">
-        <div className="container mx-auto px-4 py-8">
-
+        <div className="container mx-auto md:px-4 md:py-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
               <div className="bg-gray-100 mt-16 aspect-square relative">
                 <Image
-                  src="/black-quarter-zip-jacket.png"
+                  src="/images/product.jpg"
                   alt="BEYOND QUARTER-ZIP TOP MEN'S"
                   fill
                   className="object-cover"
@@ -85,8 +102,8 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            <div className="flex justify-end">
-                <div className="w-2/3">
+            <div className="w-full flex md:justify-end">
+                <div className="md:w-2/3 md:px-0 px-4">
                     <div className="flex mb-6">
                         <Link href="/shop" className="flex items-center underline text-xs font-avant-garde">
                             <ArrowLeft className="h-3 w-3 mr-1" /> BACK TO COLLECTIONS
@@ -234,7 +251,7 @@ export default function ProductDetailPage() {
                         ADD TO CART
                     </button>
 
-                    <div className="flex gap-8 mt-6 text-xs font-avant-garde">
+                    <div className="flex gap-8 mt-6 text-xs w-full items-center justify-center font-avant-garde">
                         <Link href="#" className="underline">
                         Delivery
                         </Link>
@@ -266,14 +283,26 @@ export default function ProductDetailPage() {
 
           <div className="mt-20">
             <h2 className="text-xl font-bold mb-8 font-avant-garde">YOU MAY ALSO LIKE</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {relatedProducts.map((product) => (
-                <div key={product.id}>
-                  <ProductCard product={product} />
-                  <button className="mt-2 text-xs underline font-avant-garde">ADD TO BAG</button>
-                </div>
-              ))}
-            </div>
+            {isMobile ? (
+              <div
+                className="flex overflow-x-auto pb-4 gap-4 hide-scrollbar"
+              >
+                {relatedProducts.map((product) => (
+                  <div key={product.id}>
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </div>              
+            ):(
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {relatedProducts.map((product) => (
+                  <div key={product.id}>
+                    <ProductCard product={product} />
+                    <button className="mt-2 text-xs underline font-avant-garde">ADD TO BAG</button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </main>

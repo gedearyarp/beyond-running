@@ -1,13 +1,17 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 import ProductCard, { type Product } from "@/components/ui/ProductCard"
 import CustomDropdown from "@/components/ui/dropdown"
+import useMobile from "@/hooks/use-mobile"
+import MobileHeader from "@/components/mobile-header"
+import MobileMenu from "@/components/mobile-menu"
+import FilterModal , { type FilterSelections } from "@/components/shop/filter-modal"
+import SortModal from "@/components/shop/sort-modal"
 
-// Sample product data
 const products: Product[] = Array(16)
   .fill(null)
   .map((_, index) => ({
@@ -54,11 +58,63 @@ export default function ShopPage() {
   const [gender, setGender] = useState("")
   const [sortBy, setSortBy] = useState("featured")
 
+  const isMobile = useMobile()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const [showFilter, setShowFilter] = useState(false)
+  const [showSort, setShowSort] = useState(false)
+
+  const [appliedFilters, setAppliedFilters] = useState<FilterSelections>({
+    size: [],
+    category: [],
+    gender: [],
+  })
+
+  const [appliedSort, setAppliedSort] = useState<string>("Featured")
+
+  const filterButtonLabel = useMemo(() => {
+    const allFilters = [...appliedFilters.size, ...appliedFilters.category, ...appliedFilters.gender]
+
+    if (allFilters.length === 0) {
+      return "+ Filter"
+    }
+
+    if (allFilters.length <= 2) {
+      return `+ ${allFilters.join(", ")}`
+    }
+
+    return `+ ${allFilters[0]}, ${allFilters[1]} +${allFilters.length - 2}`
+  }, [appliedFilters])
+
+  // Format sort button label
+  const sortButtonLabel = useMemo(() => {
+    return `Sort by: ${appliedSort}`
+  }, [appliedSort])
+
+  const handleApplyFilters = (filters: FilterSelections) => {
+    setAppliedFilters(filters)
+  }
+
+  const handleApplySort = (sort: string) => {
+    setAppliedSort(sort)
+  }
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen)
+  }
+  
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      {isMobile ? (
+        <>
+          <MobileHeader onMenuClick={toggleMobileMenu} />
+          {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
+        </>
+      ) : (
+        <Header />
+      )}
       <main className="flex-1">
-        <div className="relative w-full h-[300px] md:h-[608px]">
+        <div className="relative w-full h-[477px] md:h-[608px]">
           <Image
             src="/images/shop.png"
             alt="Collections End of Summer"
@@ -67,47 +123,84 @@ export default function ShopPage() {
             priority
           />
           <div className="absolute inset-0 bg-black/20" />
-          <div className="absolute inset-y-0 right-0 flex items-center pr-12">
-            <h1 className="text-3xl md:text-4xl font-bold font-avant-garde tracking-wide text-white">
-              COLLECTIONS END OF <span className="italic">SUMMER</span>
-            </h1>
-          </div>
+          {isMobile ? (
+            <div className="absolute w-full flex justify-center bottom-14 text-center items-center">
+              <h1 className="flex flex-col gap-2 text-4xl font-bold font-avant-garde tracking-wide text-white">
+                <p>
+                  COLLECTIONS: 
+                </p>
+                <p>
+                  END OF <span className="italic">SUMMER</span>
+                </p>
+              </h1>
+            </div>
+          ):(
+            <div className="absolute inset-y-0 right-0 flex items-center pr-12">
+              <h1 className="text-4xl font-bold font-avant-garde tracking-wide text-white">
+                COLLECTIONS END OF <span className="italic">SUMMER</span>
+              </h1>
+            </div>
+          )}
         </div>
 
         <div className="container mx-auto px-4 py-12">
           {/* Description */}
           <div className="max-w-3xl mb-12">
-            <p className="text-sm font-avant-garde">
+            <p className="text-xs md:text-sm font-avant-garde">
               Explore our performance-driven essentials merge cutting-edge innovation with the demands of real-world
               running. Designed for the tropics, each piece balances breathability, durability, and adaptive comfort.
               Every piece is crafted to support the runners journey, from training to race day and beyond.
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-between items-center mb-8 border-b border-gray-200 pb-4">
-            <div className="flex space-x-20 mb-4 md:mb-0">
-              <CustomDropdown options={sizeOptions} value={size} onChange={setSize} placeholder="Size" />
-              <CustomDropdown
-                options={categoryOptions}
-                value={category}
-                onChange={setCategory}
-                placeholder="Category"
-              />
-              <CustomDropdown options={genderOptions} value={gender} onChange={setGender} placeholder="Men" />
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-avant-garde text-gray-500">80 ITEMS</span>
-              <span>|</span>
-              <div className="flex items-center">
-                <span className="text-sm font-avant-garde mr-2">Sort By:</span>
-                <CustomDropdown isSort={true} options={sortOptions} value={sortBy} onChange={setSortBy} placeholder="Featured" />
-              </div>
-            </div>
+          <div className={`flex flex-wrap justify-between items-center ${isMobile ? "mb-2" : "border-b border-gray-200 mb-8"} pb-4`}>
+            {isMobile ? (
+              <>
+                <div className="flex w-full justify-between">
+                  <div>
+                    <button onClick={() => setShowFilter(true)} className="text-sm font-avant-garde">
+                      {filterButtonLabel}
+                    </button>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="flex items-center">
+                      <button onClick={() => setShowSort(true)} className="text-sm font-avant-garde">
+                        {sortButtonLabel}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-8">
+                  <span className="text-sm font-avant-garde text-gray-500">80 ITEMS</span>
+                </div>
+              </>
+            ): (
+              <>
+                <div className="flex space-x-20 mb-4 md:mb-0">
+                  <CustomDropdown options={sizeOptions} value={size} onChange={setSize} placeholder="Size" />
+                  <CustomDropdown
+                    options={categoryOptions}
+                    value={category}
+                    onChange={setCategory}
+                    placeholder="Category"
+                  />
+                  <CustomDropdown options={genderOptions} value={gender} onChange={setGender} placeholder="Men" />
+                </div>
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm font-avant-garde text-gray-500">80 ITEMS</span>
+                  <span>|</span>
+                  <div className="flex items-center">
+                    <span className="text-sm font-avant-garde mr-2">Sort By:</span>
+                    <CustomDropdown isSort={true} options={sortOptions} value={sortBy} onChange={setSortBy} placeholder="Featured" />
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-[15px] md:gap-6">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} isShop={true}/>
             ))}
           </div>
 
@@ -119,6 +212,17 @@ export default function ShopPage() {
         </div>
       </main>
       <Footer />
+      {showFilter && (
+        <FilterModal
+          onClose={() => setShowFilter(false)}
+          onApplyFilters={handleApplyFilters}
+          initialFilters={appliedFilters}
+        />
+      )}
+
+      {showSort && (
+        <SortModal onClose={() => setShowSort(false)} onApplySort={handleApplySort} initialSort={appliedSort} />
+      )}
     </div>
   )
 }

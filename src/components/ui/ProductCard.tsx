@@ -9,18 +9,20 @@ export interface Product {
   price: string
   image: string
   colors?: string[]
+  className?: string
 }
 
 interface ProductCardProps {
   product: Product
+  isShop?: boolean
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, isShop }: ProductCardProps) {
   return (
-    <Link href={`/shop/${product.id}`} className="group block">
-      <div className="bg-gray-100 aspect-square relative mb-3 overflow-hidden">
+    <Link href={`/shop/${product.id}`} className="group block w-full">
+      <div className={`bg-gray-100 ${isShop ? "w-full" : "w-[174px]"} md:w-[331px] h-[247px] md:h-[445px] relative mb-3 overflow-hidden mb-8`}>
         <Image
-          src={product.image || "/placeholder.svg"}
+          src="/images/product.jpg"
           alt={product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
