@@ -1,10 +1,11 @@
+// app/shop/page.tsx
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
-import ProductCard, { type Product } from "@/components/ui/ProductCard"
+import ProductCard from "@/components/ui/ProductCard" // ProductCard tidak perlu import Product type dari sini lagi
 import CustomDropdown from "@/components/ui/dropdown"
 import useMobile from "@/hooks/use-mobile"
 import MobileHeader from "@/components/mobile-header"
@@ -12,18 +13,13 @@ import MobileMenu from "@/components/mobile-menu"
 import FilterModal , { type FilterSelections } from "@/components/shop/filter-modal"
 import SortModal from "@/components/shop/sort-modal"
 
-const products: Product[] = Array(16)
-  .fill(null)
-  .map((_, index) => ({
-    id: index + 1,
-    name: "BEATER LONGSLEEVE",
-    category: "T-Shirts",
-    price: "Rp480.000",
-    image: `/placeholder.svg?height=400&width=300&query=black${index % 4 === 0 ? " jacket" : index % 4 === 1 ? " long sleeve" : index % 4 === 2 ? " blue t-shirt" : " sleeveless"}`,
-    colors: ["#000000", "#FFFFFF"],
-  }))
+// Import Product type dari lib/shopify/types
+import { ProductCardType } from "@/lib/shopify/types" // <-- Ganti ini dari Product ke ProductCardType
 
-// Dropdown options
+// Import fungsi fetching dari lib/shopify
+// import { getAllProductsForShopPage } from "@/lib/shopify" // <-- Ganti ini dari getAllProducts ke getAllProductsForShopPage
+
+// Dropdown options (tetap statis)
 const sizeOptions = [
   { value: "size-1", label: "Size 1" },
   { value: "size-2", label: "Size 2" },
@@ -52,7 +48,16 @@ const sortOptions = [
   { value: "price-high", label: "Price, High to Low" },
 ]
 
-export default function ShopPage() {
+// Tambahkan prop initialProducts
+interface ShopPageClientProps { // <-- Ganti nama interface ini agar spesifik untuk Client Component
+  initialProducts: ProductCardType[]; // <-- Sesuaikan tipe di sini
+}
+
+export default function ShopPageClient({ initialProducts }: ShopPageClientProps) {
+  const [products, setProducts] = useState<ProductCardType[]>(initialProducts); // <-- Sesuaikan tipe di sini
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const [size, setSize] = useState("")
   const [category, setCategory] = useState("")
   const [gender, setGender] = useState("")
@@ -72,6 +77,48 @@ export default function ShopPage() {
 
   const [appliedSort, setAppliedSort] = useState<string>("Featured")
 
+  useEffect(() => {
+    const applyClientSideFiltersAndSort = () => {
+      setLoading(true);
+      setError(null);
+      try {
+        let filteredProducts = [...initialProducts];
+
+        if (appliedFilters.category.length > 0) {
+            filteredProducts = filteredProducts.filter(product =>
+                appliedFilters.category.some(filterCat => product.productType?.toLowerCase() === filterCat.toLowerCase())
+            );
+        }
+
+        const sortedProducts = [...filteredProducts];
+        switch (appliedSort) {
+          case "Price, Low to High":
+            sortedProducts.sort((a, b) =>
+              parseFloat(a.priceRange.minVariantPrice.amount) - parseFloat(b.priceRange.minVariantPrice.amount)
+            );
+            break;
+          case "Price, High to Low":
+            sortedProducts.sort((a, b) =>
+              parseFloat(b.priceRange.minVariantPrice.amount) - parseFloat(a.priceRange.minVariantPrice.amount)
+            );
+            break;
+          default:
+            break;
+        }
+
+        setProducts(sortedProducts);
+
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    applyClientSideFiltersAndSort();
+
+  }, [appliedFilters, appliedSort, initialProducts]);
+
   const filterButtonLabel = useMemo(() => {
     const allFilters = [...appliedFilters.size, ...appliedFilters.category, ...appliedFilters.gender]
 
@@ -83,26 +130,27 @@ export default function ShopPage() {
       return `+ ${allFilters.join(", ")}`
     }
 
-    return `+ ${allFilters[0]}, ${allFilters[1]} +${allFilters.length - 2}`
+    return `+ ${allFilters[0]}, <span class="math-inline">\{allFilters\[1\]\} \+</span>{allFilters.length - 2}`
   }, [appliedFilters])
 
-  // Format sort button label
   const sortButtonLabel = useMemo(() => {
     return `Sort by: ${appliedSort}`
   }, [appliedSort])
 
   const handleApplyFilters = (filters: FilterSelections) => {
     setAppliedFilters(filters)
+    setShowFilter(false)
   }
 
   const handleApplySort = (sort: string) => {
     setAppliedSort(sort)
+    setShowSort(false)
   }
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen)
   }
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       {isMobile ? (
@@ -127,7 +175,7 @@ export default function ShopPage() {
             <div className="absolute w-full flex justify-center bottom-14 text-center items-center">
               <h1 className="flex flex-col gap-2 text-4xl font-bold font-avant-garde tracking-wide text-white">
                 <p>
-                  COLLECTIONS: 
+                  COLLECTIONS:
                 </p>
                 <p>
                   END OF <span className="italic">SUMMER</span>
@@ -171,7 +219,7 @@ export default function ShopPage() {
                   </div>
                 </div>
                 <div className="mt-8">
-                  <span className="text-sm font-avant-garde text-gray-500">80 ITEMS</span>
+                  <span className="text-sm font-avant-garde text-gray-500">{products.length} ITEMS</span>
                 </div>
               </>
             ): (
@@ -187,7 +235,7 @@ export default function ShopPage() {
                   <CustomDropdown options={genderOptions} value={gender} onChange={setGender} placeholder="Men" />
                 </div>
                 <div className="flex items-center space-x-4">
-                  <span className="text-sm font-avant-garde text-gray-500">80 ITEMS</span>
+                  <span className="text-sm font-avant-garde text-gray-500">{products.length} ITEMS</span>
                   <span>|</span>
                   <div className="flex items-center">
                     <span className="text-sm font-avant-garde mr-2">Sort By:</span>
@@ -198,8 +246,14 @@ export default function ShopPage() {
             )}
           </div>
 
+          {loading && <p className="text-center py-8">Loading products...</p>}
+          {error && <p className="text-center py-8 text-red-500">Error loading products: {error}</p>}
+          {!loading && !error && products.length === 0 && (
+            <p className="text-center py-8">No products found.</p>
+          )}
+
           <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-[15px] md:gap-6">
-            {products.map((product) => (
+            {!loading && !error && products.map((product) => (
               <ProductCard key={product.id} product={product} isShop={true}/>
             ))}
           </div>
