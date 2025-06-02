@@ -1,10 +1,10 @@
 // components/ui/ProductCard.tsx
 import Link from "next/link"
 import Image from "next/image"
-import { ProductCardType } from "@/lib/shopify/types" // Import tipe baru
+import { ProductCardType } from "@/lib/shopify/types"
 
 interface ProductCardProps {
-  product: ProductCardType // Gunakan ProductCardType
+  product: ProductCardType
   isShop?: boolean
 }
 
@@ -13,20 +13,11 @@ export default function ProductCard({ product, isShop }: ProductCardProps) {
   const imageAlt = product.images?.edges?.[0]?.node?.altText || product.title;
 
   const formattedPrice = `${product.priceRange.minVariantPrice.currencyCode} ${product.priceRange.minVariantPrice.amount}`;
-
-  // Logika untuk menghitung jumlah warna
-  // Ini adalah contoh sederhana. Anda mungkin perlu memeriksa `product.variants`
-  // dan `selectedOptions` untuk mendapatkan warna unik jika Anda memiliki atribut 'color'.
-  // Untuk demo, kita bisa asumsikan jika ada varian, ada 'warna'.
   const hasVariants = product.variants?.edges?.length > 0;
-  // Jika Anda memiliki varian dengan opsi 'Color', Anda bisa mengurai mereka
-  // Contoh: const uniqueColors = new Set(product.variants.edges.flatMap(v => v.node.selectedOptions.filter(opt => opt.name === 'Color').map(opt => opt.value)));
-  // const colorsCount = uniqueColors.size > 0 ? uniqueColors.size : (hasVariants ? 1 : 0);
-  // Untuk saat ini, kita bisa menggunakan jumlah varian atau asumsi.
-  const colorsCount = hasVariants ? (product.variants.edges.length) / 5 : 0; // Menggunakan jumlah varian sebagai proxy jumlah warna
+  const colorsCount = hasVariants ? (product.variants.edges.length) / 5 : 0;
 
   return (
-    <Link href={`/shop/${product.handle}`} className="group block w-full">
+    <Link key={product.id} href={`/shop/${product.handle}`} className="group block w-full">
       <div className={`bg-gray-100 ${isShop ? "w-full" : "w-[174px]"} md:w-[331px] h-[247px] md:h-[445px] relative mb-3 overflow-hidden mb-8`}>
         <Image
           src={imageUrl}
@@ -38,7 +29,7 @@ export default function ProductCard({ product, isShop }: ProductCardProps) {
         />
       </div>
       <h3 className="font-bold text-sm font-avant-garde">{product.title}</h3>
-      <p className="text-xs text-gray-600 mb-1 font-avant-garde">{colorsCount} Colors</p> {/* Pastikan ini benar sesuai data Anda */}
+      <p className="text-xs text-gray-600 mb-1 font-avant-garde">{colorsCount} Colors</p>
       <p className="text-sm font-avant-garde">{formattedPrice}</p>
     </Link>
   )

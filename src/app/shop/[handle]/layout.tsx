@@ -4,11 +4,12 @@
 import { getProductDetailByHandle, getAllProductHandles, getAllProductsForShopPage } from '@/lib/shopify';
 import { ProductDetailType, ProductCardType } from '@/lib/shopify/types';
 import ProductDetailPage from './page'; // <-- Import page.tsx sebagai Client Component
-import { Link } from 'react-router-dom';
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'; // Pastikan ini dinamis untuk pengembangan
 
 export default async function ProductDetailLayout({ params }: { params: { handle: string } }) {
+    console.log("--> PRODUCT DETAIL LAYOUT EXECUTED for handle:", params.handle);
     const { handle } = params;
     let product: ProductDetailType | null = null;
     let relatedProducts: ProductCardType[] = [];
@@ -17,6 +18,7 @@ export default async function ProductDetailLayout({ params }: { params: { handle
         product = await getProductDetailByHandle(handle); // Fetch detail produk
         const allProducts = await getAllProductsForShopPage(8); // Fetch produk terkait
         relatedProducts = allProducts.filter(p => p.handle !== handle).slice(0, 4);
+        console.log(product)
     } catch (error) {
         console.error("Failed to fetch product or related products:", error);
     }
@@ -36,8 +38,6 @@ export default async function ProductDetailLayout({ params }: { params: { handle
     );
 }
 
-// Ini adalah generateStaticParams untuk halaman detail produk.
-// Karena layout.tsx adalah Server Component, ia bisa menggunakan generateStaticParams.
 export async function generateStaticParams() {
     const handles = await getAllProductHandles();
     return handles.map((handle) => ({

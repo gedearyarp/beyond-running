@@ -1,31 +1,24 @@
-// app/shop/page.tsx
-"use client"
+"use client";
 
-import { useMemo, useState, useEffect } from "react"
-import Image from "next/image"
-import Header from "@/components/ui/Header"
-import Footer from "@/components/ui/Footer"
-import ProductCard from "@/components/ui/ProductCard" // ProductCard tidak perlu import Product type dari sini lagi
-import CustomDropdown from "@/components/ui/dropdown"
-import useMobile from "@/hooks/use-mobile"
-import MobileHeader from "@/components/mobile-header"
-import MobileMenu from "@/components/mobile-menu"
-import FilterModal , { type FilterSelections } from "@/components/shop/filter-modal"
-import SortModal from "@/components/shop/sort-modal"
+import { useMemo, useState, useEffect } from "react";
+import Image from "next/image";
+import Header from "@/components/ui/Header";
+import Footer from "@/components/ui/Footer";
+import ProductCard from "@/components/ui/ProductCard";
+import CustomDropdown from "@/components/ui/dropdown";
+import useMobile from "@/hooks/use-mobile";
+import MobileHeader from "@/components/mobile-header";
+import MobileMenu from "@/components/mobile-menu";
+import FilterModal, { type FilterSelections } from "@/components/shop/filter-modal";
+import SortModal from "@/components/shop/sort-modal";
+import { ProductCardType } from "@/lib/shopify/types";
 
-// Import Product type dari lib/shopify/types
-import { ProductCardType } from "@/lib/shopify/types" // <-- Ganti ini dari Product ke ProductCardType
-
-// Import fungsi fetching dari lib/shopify
-// import { getAllProductsForShopPage } from "@/lib/shopify" // <-- Ganti ini dari getAllProducts ke getAllProductsForShopPage
-
-// Dropdown options (tetap statis)
 const sizeOptions = [
   { value: "size-1", label: "Size 1" },
   { value: "size-2", label: "Size 2" },
   { value: "size-3", label: "Size 3" },
   { value: "one-size", label: "One Size Fit All" },
-]
+];
 
 const categoryOptions = [
   { value: "new-arrivals", label: "New Arrivals" },
@@ -34,48 +27,47 @@ const categoryOptions = [
   { value: "outerwear", label: "Outerwear" },
   { value: "postrun", label: "Postrun" },
   { value: "accessories", label: "Accessories" },
-]
+];
 
 const genderOptions = [
   { value: "men", label: "Men" },
   { value: "women", label: "Women" },
-]
+];
 
 const sortOptions = [
   { value: "featured", label: "Featured" },
   { value: "best-selling", label: "Best Selling" },
   { value: "price-low", label: "Price, Low to High" },
   { value: "price-high", label: "Price, High to Low" },
-]
+];
 
-// Tambahkan prop initialProducts
-interface ShopPageClientProps { // <-- Ganti nama interface ini agar spesifik untuk Client Component
-  initialProducts: ProductCardType[]; // <-- Sesuaikan tipe di sini
+interface ShopPageClientProps {
+  initialProducts: ProductCardType[];
 }
 
 export default function ShopPageClient({ initialProducts }: ShopPageClientProps) {
-  const [products, setProducts] = useState<ProductCardType[]>(initialProducts); // <-- Sesuaikan tipe di sini
+  const [products, setProducts] = useState<ProductCardType[]>(initialProducts);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [size, setSize] = useState("")
-  const [category, setCategory] = useState("")
-  const [gender, setGender] = useState("")
-  const [sortBy, setSortBy] = useState("featured")
+  const [size, setSize] = useState("");
+  const [category, setCategory] = useState("");
+  const [gender, setGender] = useState("");
+  const [sortBy, setSortBy] = useState("featured");
 
-  const isMobile = useMobile()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const isMobile = useMobile();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const [showFilter, setShowFilter] = useState(false)
-  const [showSort, setShowSort] = useState(false)
+  const [showFilter, setShowFilter] = useState(false);
+  const [showSort, setShowSort] = useState(false);
 
   const [appliedFilters, setAppliedFilters] = useState<FilterSelections>({
     size: [],
     category: [],
     gender: [],
-  })
+  });
 
-  const [appliedSort, setAppliedSort] = useState<string>("Featured")
+  const [appliedSort, setAppliedSort] = useState<string>("Featured");
 
   useEffect(() => {
     const applyClientSideFiltersAndSort = () => {
@@ -85,9 +77,9 @@ export default function ShopPageClient({ initialProducts }: ShopPageClientProps)
         let filteredProducts = [...initialProducts];
 
         if (appliedFilters.category.length > 0) {
-            filteredProducts = filteredProducts.filter(product =>
-                appliedFilters.category.some(filterCat => product.productType?.toLowerCase() === filterCat.toLowerCase())
-            );
+          filteredProducts = filteredProducts.filter(product =>
+            appliedFilters.category.some(filterCat => product.productType?.toLowerCase() === filterCat.toLowerCase())
+          );
         }
 
         const sortedProducts = [...filteredProducts];
@@ -107,49 +99,48 @@ export default function ShopPageClient({ initialProducts }: ShopPageClientProps)
         }
 
         setProducts(sortedProducts);
-
       } catch (err: any) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-
+    
+    console.log("--> SHOP PAGE CLIENT RENDERED (URL:", window.location.pathname, ")");
     applyClientSideFiltersAndSort();
-
   }, [appliedFilters, appliedSort, initialProducts]);
 
   const filterButtonLabel = useMemo(() => {
-    const allFilters = [...appliedFilters.size, ...appliedFilters.category, ...appliedFilters.gender]
+    const allFilters = [...appliedFilters.size, ...appliedFilters.category, ...appliedFilters.gender];
 
     if (allFilters.length === 0) {
-      return "+ Filter"
+      return "+ Filter";
     }
 
     if (allFilters.length <= 2) {
-      return `+ ${allFilters.join(", ")}`
+      return `+ ${allFilters.join(", ")}`;
     }
 
-    return `+ ${allFilters[0]}, <span class="math-inline">\{allFilters\[1\]\} \+</span>{allFilters.length - 2}`
-  }, [appliedFilters])
+    return `+ ${allFilters[0]}, ${allFilters[1]} +${allFilters.length - 2}`;
+  }, [appliedFilters]);
 
   const sortButtonLabel = useMemo(() => {
-    return `Sort by: ${appliedSort}`
-  }, [appliedSort])
+    return `Sort by: ${appliedSort}`;
+  }, [appliedSort]);
 
   const handleApplyFilters = (filters: FilterSelections) => {
-    setAppliedFilters(filters)
-    setShowFilter(false)
-  }
+    setAppliedFilters(filters);
+    setShowFilter(false);
+  };
 
   const handleApplySort = (sort: string) => {
-    setAppliedSort(sort)
-    setShowSort(false)
-  }
+    setAppliedSort(sort);
+    setShowSort(false);
+  };
 
   const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-  }
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -182,7 +173,7 @@ export default function ShopPageClient({ initialProducts }: ShopPageClientProps)
                 </p>
               </h1>
             </div>
-          ):(
+          ) : (
             <div className="absolute inset-y-0 right-0 flex items-center pr-12">
               <h1 className="text-4xl font-bold font-avant-garde tracking-wide text-white">
                 COLLECTIONS END OF <span className="italic">SUMMER</span>
@@ -192,7 +183,6 @@ export default function ShopPageClient({ initialProducts }: ShopPageClientProps)
         </div>
 
         <div className="container mx-auto px-4 py-12">
-          {/* Description */}
           <div className="max-w-3xl mb-12">
             <p className="text-xs md:text-sm font-avant-garde">
               Explore our performance-driven essentials merge cutting-edge innovation with the demands of real-world
@@ -222,7 +212,7 @@ export default function ShopPageClient({ initialProducts }: ShopPageClientProps)
                   <span className="text-sm font-avant-garde text-gray-500">{products.length} ITEMS</span>
                 </div>
               </>
-            ): (
+            ) : (
               <>
                 <div className="flex space-x-20 mb-4 md:mb-0">
                   <CustomDropdown options={sizeOptions} value={size} onChange={setSize} placeholder="Size" />
@@ -254,7 +244,7 @@ export default function ShopPageClient({ initialProducts }: ShopPageClientProps)
 
           <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-[15px] md:gap-6">
             {!loading && !error && products.map((product) => (
-              <ProductCard key={product.id} product={product} isShop={true}/>
+              <ProductCard key={product.id} product={product} isShop={true} />
             ))}
           </div>
 
@@ -278,5 +268,5 @@ export default function ShopPageClient({ initialProducts }: ShopPageClientProps)
         <SortModal onClose={() => setShowSort(false)} onApplySort={handleApplySort} initialSort={appliedSort} />
       )}
     </div>
-  )
+  );
 }
