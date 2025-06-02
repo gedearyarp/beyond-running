@@ -10,9 +10,11 @@ type MenuView = "main" | "shop" | "peripherals" | "community"
 
 interface MobileMenuProps {
   onClose: () => void
+  onCartClick?: () => void
+  cartItemCount?: number
 }
 
-export default function MobileMenu({ onClose }: MobileMenuProps) {
+export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: MobileMenuProps) {
   const [currentView, setCurrentView] = useState<MenuView>("main")
 
   const navigateTo = (view: MenuView) => {
@@ -21,6 +23,11 @@ export default function MobileMenu({ onClose }: MobileMenuProps) {
 
   const goBack = () => {
     setCurrentView("main")
+  }
+
+  const handleCartClick = () => {
+    onClose() // Close mobile menu first
+    onCartClick?.() // Then open cart
   }
 
   return (
@@ -39,9 +46,14 @@ export default function MobileMenu({ onClose }: MobileMenuProps) {
           <button aria-label="Search">
             <Search className="h-4 w-4" />
           </button>
-          <Link href="/cart" aria-label="Shopping cart">
+          <button onClick={handleCartClick} aria-label="Shopping cart" className="relative">
             <ShoppingBag className="h-4 w-4" />
-          </Link>
+            {cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
+                {cartItemCount}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 

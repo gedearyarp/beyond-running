@@ -6,9 +6,11 @@ import { Menu, Search, ShoppingBag } from "lucide-react"
 
 interface MobileHeaderProps {
   onMenuClick?: () => void
+  onCartClick?: () => void
+  cartItemCount?: number
 }
 
-export default function MobileHeader({ onMenuClick }: MobileHeaderProps) {
+export default function MobileHeader({ onMenuClick, onCartClick, cartItemCount = 0 }: MobileHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
 
   // Mendeteksi scroll untuk memberikan efek visual pada header
@@ -51,9 +53,14 @@ export default function MobileHeader({ onMenuClick }: MobileHeaderProps) {
           <button aria-label="Search">
             <Search className="h-4 w-4" />
           </button>
-          <Link href="/cart" aria-label="Shopping cart">
+          <button onClick={onCartClick} aria-label="Shopping cart" className="relative">
             <ShoppingBag className="h-4 w-4" />
-          </Link>
+            {cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
+                {cartItemCount}
+              </span>
+            )}
+          </button>
         </div>
       </header>
     </>

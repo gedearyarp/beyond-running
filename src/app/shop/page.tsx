@@ -144,14 +144,7 @@ export default function ShopPageClient({ initialProducts }: ShopPageClientProps)
 
   return (
     <div className="flex flex-col min-h-screen">
-      {isMobile ? (
-        <>
-          <MobileHeader onMenuClick={toggleMobileMenu} />
-          {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
-        </>
-      ) : (
-        <Header />
-      )}
+      <Header />
       <main className="flex-1">
         <div className="relative w-full h-[477px] md:h-[608px]">
           <Image
