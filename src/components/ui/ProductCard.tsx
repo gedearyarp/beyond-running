@@ -12,7 +12,7 @@ export default function ProductCard({ product, isShop }: ProductCardProps) {
   const imageUrl = product.images?.edges?.[0]?.node?.url || "/placeholder.svg";
   const imageAlt = product.images?.edges?.[0]?.node?.altText || product.title;
 
-  const formattedPrice = `${product.priceRange.minVariantPrice.currencyCode} ${product.priceRange.minVariantPrice.amount}`;
+  const formattedPrice = `${product.priceRange ? (product.priceRange.minVariantPrice.currencyCode) + (product.priceRange.minVariantPrice.amount) : "1"}`;
   const hasVariants = product.variants?.edges?.length > 0;
   const colorsCount = hasVariants ? (product.variants.edges.length) / 5 : 0;
 
@@ -21,7 +21,7 @@ export default function ProductCard({ product, isShop }: ProductCardProps) {
       <div className={`bg-gray-100 ${isShop ? "w-full" : "w-[174px]"} md:w-[331px] h-[247px] md:h-[445px] relative mb-3 overflow-hidden mb-8`}>
         <Image
           src={imageUrl}
-          alt={imageAlt}
+          alt={product.handle || "productCard"}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 33vw"
