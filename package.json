@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.9",
     "classnames": "^2.5.1",
     "graphql": "^16.11.0",
     "graphql-request": "^7.1.2",

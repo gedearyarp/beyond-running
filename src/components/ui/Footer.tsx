@@ -2,9 +2,97 @@ import Link from "next/link"
 import { ArrowRight, Instagram, Twitter } from "lucide-react"
 import Image from "next/image"
 import useMobile from "@/hooks/use-mobile"
+import { useState, useEffect } from "react"
+import { supabase } from "@/lib/supabase"
 
 export default function Footer() {
   const isMobile = useMobile();
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      // Check if email already exists
+      const { data: existingEmail } = await supabase
+        .from('newsletter_subscribers')
+        .select('email')
+        .eq('email', email)
+        .single();
+
+      if (existingEmail) {
+        setMessage('This email is already subscribed to our newsletter.');
+        setTimeout(() => setMessage(''), 3000);
+        return;
+      }
+
+      // Insert new email
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .insert([{ email }]);
+
+      if (error) throw error;
+
+      setEmail('');
+      setMessage('Thank you for subscribing!');
+      setTimeout(() => setMessage(''), 3000);
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('Something went wrong. Please try again.');
+      setTimeout(() => setMessage(''), 3000);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Only render the form on the client side
+  const renderNewsletterForm = () => {
+    if (!mounted) return null;
+
+    return (
+      <form onSubmit={handleSubmit}>
+        <div className="relative">
+          <input
+            type="email"
+            placeholder="Enter Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border-b border-[#000000] pb-2 focus:outline-none focus:border-black"
+            required
+            disabled={isSubmitting}
+          />
+          <button 
+            type="submit"
+            className="absolute right-0 bottom-2" 
+            title="Subscribe to newsletter"
+            disabled={isSubmitting}
+          >
+            <ArrowRight className={`h-5 w-5 ${isSubmitting ? 'opacity-50' : ''}`} />
+          </button>
+        </div>
+        {message && (
+          <p className={`text-sm mt-2 ${
+            message.includes('already subscribed') 
+              ? 'text-yellow-600' 
+              : message.includes('error') 
+                ? 'text-red-500' 
+                : 'text-green-500'
+          }`}>
+            {message}
+          </p>
+        )}
+      </form>
+    );
+  };
 
   return (
     <footer className="border-t border-black h-full md:h-[333px] w-full pt-12 md:pb-0">
@@ -41,16 +129,7 @@ export default function Footer() {
               <p className="text-sm mb-12 md:mb-6">Keep up with the new drops, insights, runners stories and more.</p>
             </div>
             <div>
-              <div className="relative">
-                <input
-                  type="email"
-                  placeholder="Enter Email"
-                  className="w-full border-b border-[#000000] pb-2 focus:outline-none focus:border-black"
-                />
-                <button className="absolute right-0 bottom-2" title="button">
-                  <ArrowRight className="h-5 w-5" />
-                </button>
-              </div>
+              {renderNewsletterForm()}
               <div className="flex flex-col md:flex-row justify-between md:items-center pt-8 border-t border-gray-200 text-sm">
                 <div className="flex space-x-6 mt-4 md:mt-0">
                   <Link href="/contact" className="hover:underline">
@@ -62,7 +141,6 @@ export default function Footer() {
                 </div>
               </div>
             </div>
-            
           </div>
 
           <div className="flex flex-col md:justify-between md:gap-0 gap-4">
