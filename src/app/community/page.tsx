@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
@@ -13,123 +13,24 @@ import MobileHeader from "@/components/mobile-header"
 import MobileMenu from "@/components/mobile-menu"
 import CommunityFilterModal from "@/components/community/filter-modal"
 import CommunitySortModal from "@/components/community/sort-modal"
+import { supabase } from "@/lib/supabase"
 
-// Sample events data
-export type Event = {
-  id: number
+// Type definition based on Supabase table
+export type Community = {
+  id: string
   title: string
-  date: string
-  location: string
-  organizer: string
-  image: string
-  day?: number
-  month?: string
-  year?: number
-  membersOnly?: boolean
+  category: string
+  event_date: string
+  event_location: string
+  event_overview: string
+  event_tnc: string
+  time_place: string
+  image_url: string
+  signup_link: string | null
+  is_active: boolean
+  created_at: string
+  updated_at: string
 }
-
-const events: Event[] = [
-  {
-    id: 1,
-    title: "EQUATOR STRIDE: THE BALI MARATHON",
-    date: "02.20.2025",
-    location: "BALI",
-    organizer: "FLOWER BOX X SATISFY RUNNING",
-    image: "/community/bali-marathon.jpg",
-    day: 20,
-    month: "FEBRUARY",
-    year: 2025,
-  },
-  {
-    id: 2,
-    title: "UNSEEN RUNNING EXHIBITION",
-    date: "02.04.2025",
-    location: "JOGJAKARTA",
-    organizer: "RUNHOOD MAGAZINE",
-    image: "/community/running-exhibition.jpg",
-    day: 4,
-    month: "FEBRUARY",
-    year: 2025,
-  },
-  {
-    id: 3,
-    title: "POCARI MARATHON",
-    date: "01.24.2025",
-    location: "JAKARTA",
-    organizer: "POCARI SWEAT",
-    image: "/community/pocari-marathon.jpg",
-    day: 24,
-    month: "JANUARY",
-    year: 2025,
-  },
-  {
-    id: 4,
-    title: "SEA RUN SUMMIT: TRAIL & TECH TALK",
-    date: "01.19.2025",
-    location: "JAKARTA",
-    organizer: "SOLOMON, GARMIN, STRAVA",
-    image: "/community/sea-run-summit.jpg",
-    day: 19,
-    month: "JANUARY",
-    year: 2025,
-  },
-  {
-    id: 5,
-    title: "SUNRISE DASH: BALI COASTAL RUN",
-    date: "01.13.2025",
-    location: "BALI",
-    organizer: "BALI HOPE ULTRA X TROPICFEEL",
-    image: "/community/sunrise-dash.jpg",
-    day: 13,
-    month: "JANUARY",
-    year: 2025,
-  },
-  {
-    id: 6,
-    title: "HIGHLAND TEMPO: MOUNT BROMO ALTITUDE CAMP",
-    date: "01.10.2025",
-    location: "PROBOLINGGO",
-    organizer: "SUNDO X VIBRAM",
-    image: "/community/highland-tempo.jpg",
-    day: 10,
-    month: "JANUARY",
-    year: 2025,
-  },
-  {
-    id: 7,
-    title: "RUN & RECOVER: MOVEMENT MINDFULNESS",
-    date: "01.03.2025",
-    location: "JAKARTA",
-    organizer: "BEYOND RUNNING",
-    image: "/community/run-recover.jpg",
-    day: 3,
-    month: "JANUARY",
-    year: 2025,
-    membersOnly: true,
-  },
-  {
-    id: 8,
-    title: "THE 140 RELAY RUN",
-    date: "12.20.2024",
-    location: "JAKARTA",
-    organizer: "BEYOND RUNNING",
-    image: "/community/relay-run.jpg",
-    day: 20,
-    month: "DECEMBER",
-    year: 2024,
-  },
-  {
-    id: 9,
-    title: "THE MONSOON DASH: KUALA LUMPUR NIGHT RUN",
-    date: "10.05.2024",
-    location: "KUALA LUMPUR",
-    organizer: "BEYOND RUNNING",
-    image: "/community/monsoon-dash.jpg",
-    day: 5,
-    month: "OCTOBER",
-    year: 2024,
-  },
-]
 
 // Dropdown options
 const sortOptions = [
@@ -151,6 +52,8 @@ export default function CommunityPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("grid")
   const [sortBy, setSortBy] = useState("featured")
   const [category, setCategory] = useState("all")
+  const [events, setEvents] = useState<Community[]>([])
+  const [loading, setLoading] = useState(true)
 
   const isMobile = useMobile()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -159,6 +62,42 @@ export default function CommunityPage() {
 
   const [appliedViewType, setAppliedViewType] = useState("Grid View")
   const [appliedSort, setAppliedSort] = useState("Featured")
+
+  useEffect(() => {
+    const fetchCommunities = async () => {
+      try {
+        let query = supabase
+          .from('communities')
+          .select('*')
+          .eq('is_active', true)
+
+        // Apply sorting
+        if (sortBy === 'upcoming') {
+          query = query.gte('event_date', new Date().toISOString()).order('event_date', { ascending: true })
+        } else if (sortBy === 'past') {
+          query = query.lt('event_date', new Date().toISOString()).order('event_date', { ascending: false })
+        }
+
+        const { data, error } = await query
+
+        if (error) throw error
+
+        // Transform the data to match the Event type
+        const transformedEvents = data.map(community => {
+          const eventDate = new Date(community.event_date)
+          return community
+        })
+
+        setEvents(transformedEvents)
+      } catch (error) {
+        console.error('Error fetching communities:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCommunities()
+  }, [sortBy])
 
   // Format filter button label
   const filterButtonLabel = useMemo(() => {
@@ -193,6 +132,20 @@ export default function CommunityPage() {
     } else if (sort === "Past Events") {
       setSortBy("past")
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <main className="flex-1">
+          <div className="container mx-auto px-4 py-12">
+            <p>Loading events...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
   }
 
   return (
@@ -243,7 +196,7 @@ export default function CommunityPage() {
                     {sortButtonLabel}
                   </button>
                 </div>
-                <span className="text-sm font-avant-garde mt-4">10 Stories</span>
+                <span className="text-sm font-avant-garde mt-4">{events.length} Stories</span>
               </>
             ) : (
               <>
@@ -278,7 +231,7 @@ export default function CommunityPage() {
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <span className="text-sm font-avant-garde text-gray-500">10 Stories</span>
+                  <span className="text-sm font-avant-garde text-gray-500">{events.length} Stories</span>
                   <div className="flex items-center">
                     <span className="text-sm font-avant-garde mr-2">Sort By:</span>
                     <CustomDropdown

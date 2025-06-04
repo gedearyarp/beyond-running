@@ -1,32 +1,49 @@
 import Link from "next/link"
-import type { Event } from "@/app/community/page"
+import type { Community } from "@/app/community/page"
 
 interface CalendarViewProps {
-  events: Event[]
+  events: Community[]
+}
+
+interface ProcessedEvent extends Community {
+  day: number
 }
 
 // Group events by year and month
-function groupEventsByYearAndMonth(events: Event[]) {
-  const grouped: Record<number, Record<string, Event[]>> = {}
+function groupEventsByYearAndMonth(events: Community[]) {
+  const grouped: Record<number, Record<string, ProcessedEvent[]>> = {}
 
   events.forEach((event) => {
-    if (!event.year || !event.month) return
+    const eventDate = new Date(event.event_date)
+    const year = eventDate.getFullYear()
+    const month = eventDate.toLocaleString('en-US', { month: 'long' }).toUpperCase()
 
-    if (!grouped[event.year]) {
-      grouped[event.year] = {}
+    if (!grouped[year]) {
+      grouped[year] = {}
     }
 
-    if (!grouped[event.year][event.month]) {
-      grouped[event.year][event.month] = []
+    if (!grouped[year][month]) {
+      grouped[year][month] = []
     }
 
-    grouped[event.year][event.month].push(event)
+    grouped[year][month].push({
+      ...event,
+      day: eventDate.getDate()
+    } as ProcessedEvent)
   })
 
   return grouped
 }
 
 export default function CalendarView({ events }: CalendarViewProps) {
+  if (events.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500 font-avant-garde">No events available</p>
+      </div>
+    )
+  }
+
   const groupedEvents = groupEventsByYearAndMonth(events)
 
   // Sort years in descending order
@@ -61,39 +78,30 @@ export default function CalendarView({ events }: CalendarViewProps) {
             .sort((a, b) => monthOrder.indexOf(a) - monthOrder.indexOf(b))
             .map((month) => {
               const sortedEvents = [...groupedEvents[year][month]].sort((a, b) => {
-                if (!a.day || !b.day) return 0
-                return b.day - a.day
+                const dayA = a.day || 0
+                const dayB = b.day || 0
+                return dayB - dayA
               })
 
               return (
                 <div key={month} className="mb-16">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-x-8 gap-y-16">
                     <div>
-                        <h3 className="text-xl font-bold font-avant-garde">{month}</h3>
+                      <h3 className="text-xl font-bold font-avant-garde">{month}</h3>
                     </div>
                     {sortedEvents.map((event) => (
                       <div key={event.id} className="relative">
-                        {event.membersOnly && (
-                          <div className="absolute right-0 top-0 -mt-4 -mr-4 bg-orange-500 text-white rounded-full w-20 h-20 flex items-center justify-center rotate-12 z-10">
-                            <div className="text-xs font-bold font-avant-garde text-center leading-tight">
-                              MEMBER
-                              <br />
-                              ONLY
-                            </div>
-                          </div>
-                        )}
+                        <div className="mb-4">
+                          <div className="text-3xl font-bold font-avant-garde mb-4">{event.day}</div>
 
-                        <Link href={`/community/${event.id}`} className="block group">
-                          <div className="mb-4">
-                            <div className="text-3xl font-bold font-avant-garde mb-4">{event.day}</div>
-
-                            <h4 className="text-base font-bold font-avant-garde mb-6 group-hover:underline">
+                          <Link href={`/community/${event.id}`} className="block">
+                            <h4 className="text-base font-bold font-avant-garde mb-6 hover:underline">
                               {event.title}
                             </h4>
+                          </Link>
 
-                            <p className="text-sm uppercase font-avant-garde">{event.location}</p>
-                          </div>
-                        </Link>
+                          <p className="text-sm uppercase font-avant-garde">{event.event_location}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
