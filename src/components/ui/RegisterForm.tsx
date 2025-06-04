@@ -1,12 +1,78 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
+import { useState } from "react"
+import { authApi } from "@/lib/api"
+import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase"
 
 export default function SignupForm() {
+  const router = useRouter()
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    newsletter: false
+  })
+  const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value, type, checked } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [id]: type === 'checkbox' ? checked : value
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setIsLoading(true)
+
+    try {
+      // Generate username from first and last name
+      const username = `${formData.firstName.toLowerCase()}_${formData.lastName.toLowerCase()}`
+      
+      // Send signup request with all required fields
+      await authApi.signup({
+        username,
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName
+      })
+
+      // If newsletter is checked, add to Supabase newsletter_subscribers
+      if (formData.newsletter) {
+        try {
+          const { error: newsletterError } = await supabase
+            .from('newsletter_subscribers')
+            .insert([{ email: formData.email }])
+
+          if (newsletterError) {
+            console.error('Newsletter subscription failed:', newsletterError)
+          }
+        } catch (newsletterError) {
+          console.error('Newsletter subscription failed:', newsletterError)
+        }
+      }
+
+      // Redirect to signin page after successful registration
+      router.push('/signin')
+    } catch (error: any) {
+      console.error('Signup error:', error)
+      setError(error.response?.data?.message || 'Registration failed. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="w-full max-w-md mx-auto px-6">
       <h1 className="md:text-4xl text-xl font-bold text-center mb-16 font-avant-garde">CREATE AN ACCOUNT</h1>
 
-      <form className="space-y-10 text">
+      <form className="space-y-10 text" onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <label htmlFor="firstName" className="block font-avant-garde text-sm md:text-lg">
@@ -16,8 +82,13 @@ export default function SignupForm() {
               <input
                 id="firstName"
                 type="text"
+                value={formData.firstName}
+                onChange={handleChange}
                 className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-avant-garde"
                 required
+                disabled={isLoading}
+                minLength={2}
+                maxLength={50}
               />
               <ArrowRight className="absolute right-0 bottom-2 h-3 w-3 md:h-5 md:w-5" />
             </div>
@@ -31,8 +102,13 @@ export default function SignupForm() {
               <input
                 id="lastName"
                 type="text"
+                value={formData.lastName}
+                onChange={handleChange}
                 className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-avant-garde"
                 required
+                disabled={isLoading}
+                minLength={2}
+                maxLength={50}
               />
               <ArrowRight className="absolute right-0 bottom-2 h-3 w-3" />
             </div>
@@ -47,8 +123,11 @@ export default function SignupForm() {
             <input
               id="email"
               type="email"
+              value={formData.email}
+              onChange={handleChange}
               className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-avant-garde"
               required
+              disabled={isLoading}
             />
             <ArrowRight className="absolute right-0 bottom-2 h-3 w-3" />
           </div>
@@ -62,31 +141,49 @@ export default function SignupForm() {
             <input
               id="password"
               type="password"
+              value={formData.password}
+              onChange={handleChange}
               className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-avant-garde"
               required
+              disabled={isLoading}
+              minLength={6}
             />
             <ArrowRight className="absolute right-0 bottom-2 h-3 w-3" />
           </div>
         </div>
 
         <div className="flex items-center space-x-3">
-          <input type="checkbox" id="newsletter" className="h-5 w-5 border-gray-300 focus:ring-black" />
+          <input 
+            type="checkbox" 
+            id="newsletter"
+            checked={formData.newsletter}
+            onChange={handleChange}
+            className="h-5 w-5 border-gray-300 focus:ring-black"
+            disabled={isLoading}
+          />
           <label htmlFor="newsletter" className="text-sm md:text-lg font-avant-garde">
             Subscribe to Our Newsletter
           </label>
         </div>
 
+        {error && (
+          <p className="text-red-500 text-sm">{error}</p>
+        )}
+
         <button
           type="submit"
-          className="w-full bg-black text-white py-2 md:py-4 font-medium hover:bg-gray-900 transition-colors font-avant-garde text-sm md:text-lg"
+          className={`w-full bg-black text-white py-2 md:py-4 font-medium transition-colors font-avant-garde text-sm md:text-lg ${
+            isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-900'
+          }`}
+          disabled={isLoading}
         >
-          LOGIN
+          {isLoading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}
         </button>
       </form>
 
       <div className="mt-8 text-left md:text-lg text-sm">
         <span className="font-avant-garde">Already a Member?</span>{" "}
-        <Link href="/login" className="underline font-medium font-avant-garde">
+        <Link href="/signin" className="underline font-medium font-avant-garde">
           Login
         </Link>
       </div>

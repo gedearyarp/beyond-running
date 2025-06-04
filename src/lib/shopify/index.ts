@@ -9,7 +9,7 @@ const apiVersion = process.env.SHOPIFY_STOREFRONT_API_VERSION || '2024-04';
 
 if (!domain || !storefrontAccessToken) {
   throw new Error(
-    'Missing Shopify API credentials. Make sure SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN are set in your .env.local file.'
+    'Missing Shopify API credentials. Make sure NEXT_PUBLIC_SHOPIFY_DOMAIN and NEXT_PUBLIC_SHOPIFY_TOKEN are set in your .env.local file.'
   );
 }
 
