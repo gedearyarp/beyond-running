@@ -140,7 +140,7 @@ export default function CommunityDetailPage() {
                 <h1 className="text-3xl md:text-4xl font-bold font-avant-garde mb-8">{event.title}</h1>
               )}
 
-              <div className="mb-8 py-12 text-center md:text-left">
+              <div className="mb-8 text-center md:text-left">
                 <RichTextViewer 
                   content={event.time_place} 
                   className="text-sm font-avant-garde mb-1"
@@ -150,6 +150,13 @@ export default function CommunityDetailPage() {
               <div className="mb-8">
                 <RichTextViewer 
                   content={event.event_overview} 
+                  className="text-sm font-avant-garde mb-8 leading-relaxed"
+                />
+              </div>
+
+              <div className="mb-8">
+                <RichTextViewer 
+                  content={event.event_tnc} 
                   className="text-sm font-avant-garde mb-8 leading-relaxed"
                 />
               </div>
