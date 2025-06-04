@@ -1,7 +1,10 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
+import { User } from "@/types/api"
+import { supabase } from "@/lib/supabase"
 
 interface Order {
   id: string
@@ -11,7 +14,78 @@ interface Order {
   totalPrice: number
 }
 
+interface CompleteUser extends User {
+  address?: string
+  phone?: string
+}
+
 export default function ProfilePage() {
+  const [user, setUser] = useState<CompleteUser | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
+    const fetchUserData = async () => {
+      try {
+        // Get basic user data from localStorage
+        const userStr = localStorage.getItem('user')
+        if (!userStr) {
+          setError('User not found')
+          setLoading(false)
+          return
+        }
+
+        const basicUserData = JSON.parse(userStr)
+
+        // Fetch complete user data from Supabase
+        const { data: userData, error: supabaseError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', basicUserData.id)
+          .single()
+
+        if (supabaseError) {
+          throw supabaseError
+        }
+
+        // Combine the data
+        setUser({
+          ...basicUserData,
+          ...userData
+        })
+      } catch (err) {
+        console.error('Error fetching user data:', err)
+        setError('Failed to load user data')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUserData()
+  }, [mounted])
+
+  // Show a blank loading state on server-side
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <main className="pt-24 md:pt-32 pb-12 md:pb-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p>Loading...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
   const orders: Order[] = [
     {
       id: "12009",
@@ -33,6 +107,34 @@ export default function ProfilePage() {
     return `IDR. ${price.toLocaleString("id-ID")},-`
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <main className="pt-24 md:pt-32 pb-12 md:pb-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p>Loading user data...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (error || !user) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <main className="pt-24 md:pt-32 pb-12 md:pb-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p className="text-red-500">{error || 'User not found'}</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -46,19 +148,19 @@ export default function ProfilePage() {
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black leading-tight">
                 WELCOME BACK,
                 <br />
-                NIZAR MONZA
+                {user.firstName.toUpperCase()} {user.lastName.toUpperCase()}
               </h1>
             </div>
 
             {/* Right Side - User Info */}
             <div className="lg:col-span-1">
               <div className="space-y-2 text-left lg:text-right">
-                <p className="text-base md:text-lg font-medium text-black">Nizar Monza</p>
-                <p className="text-sm md:text-base text-gray-600">nizarmonza@gmail.com</p>
+                <p className="text-base md:text-lg font-medium text-black">{user.firstName} {user.lastName}</p>
+                <p className="text-sm md:text-base text-gray-600">{user.email}</p>
                 <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                  1300 1st Ave, Seattle, WA 98101, United States
+                  {user.address || 'No address provided'}
                   <br />
-                  +12066543100
+                  {user.phone || 'No phone number provided'}
                 </p>
               </div>
             </div>
