@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { SignupInput } from '@/types/api';
+import { supabase } from '@/lib/supabase';
 
 if (!process.env.NEXT_PUBLIC_API_URL) {
   throw new Error('Missing env.NEXT_PUBLIC_API_URL');
@@ -48,7 +49,7 @@ api.interceptors.response.use(
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        window.location.href = '/signin';
         return Promise.reject(refreshError);
       }
     }
@@ -65,14 +66,39 @@ export const authApi = {
   },
 
   login: async (data: { email: string; password: string }) => {
+    // First, get the basic auth data
     const response = await api.post('/api/auth/login', data);
-    const { accessToken, refreshToken, user } = response.data.data;
+    const { accessToken, refreshToken, user: basicUser } = response.data.data;
     
+    // Fetch complete user data from Supabase
+    const { data: userData, error: supabaseError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', basicUser.id)
+      .single();
+
+    if (supabaseError) {
+      throw supabaseError;
+    }
+
+    // Combine basic user data with Supabase data
+    const completeUser = {
+      ...basicUser,
+      ...userData
+    };
+    
+    // Store complete data in localStorage
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
-    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(completeUser));
     
-    return response.data;
+    return {
+      ...response.data,
+      data: {
+        ...response.data.data,
+        user: completeUser
+      }
+    };
   },
 
   logout: () => {

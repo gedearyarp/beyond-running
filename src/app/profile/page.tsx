@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 import { User } from "@/types/api"
-import { supabase } from "@/lib/supabase"
 
 interface Order {
   id: string
@@ -20,9 +20,8 @@ interface CompleteUser extends User {
 }
 
 export default function ProfilePage() {
+  const router = useRouter()
   const [user, setUser] = useState<CompleteUser | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -32,47 +31,27 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!mounted) return
 
-    const fetchUserData = async () => {
-      try {
-        // Get basic user data from localStorage
-        const userStr = localStorage.getItem('user')
-        if (!userStr) {
-          setError('User not found')
-          setLoading(false)
-          return
-        }
+    // Check if user is logged in
+    const userStr = localStorage.getItem('user')
+    const token = localStorage.getItem('accessToken')
 
-        const basicUserData = JSON.parse(userStr)
-
-        // Fetch complete user data from Supabase
-        const { data: userData, error: supabaseError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', basicUserData.id)
-          .single()
-
-        if (supabaseError) {
-          throw supabaseError
-        }
-
-        // Combine the data
-        setUser({
-          ...basicUserData,
-          ...userData
-        })
-      } catch (err) {
-        console.error('Error fetching user data:', err)
-        setError('Failed to load user data')
-      } finally {
-        setLoading(false)
-      }
+    // If no user data or token, redirect to signin
+    if (!userStr || !token) {
+      router.replace('/signin')
+      return
     }
 
-    fetchUserData()
-  }, [mounted])
+    try {
+      const userData = JSON.parse(userStr)
+      setUser(userData)
+    } catch (error) {
+      console.error('Error parsing user data:', error)
+      router.replace('/signin')
+    }
+  }, [mounted, router])
 
   // Show a blank loading state on server-side
-  if (!mounted) {
+  if (!mounted || !user) {
     return (
       <div className="min-h-screen bg-white">
         <Header />
@@ -105,34 +84,6 @@ export default function ProfilePage() {
 
   const formatPrice = (price: number) => {
     return `IDR. ${price.toLocaleString("id-ID")},-`
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white">
-        <Header />
-        <main className="pt-24 md:pt-32 pb-12 md:pb-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p>Loading user data...</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    )
-  }
-
-  if (error || !user) {
-    return (
-      <div className="min-h-screen bg-white">
-        <Header />
-        <main className="pt-24 md:pt-32 pb-12 md:pb-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p className="text-red-500">{error || 'User not found'}</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    )
   }
 
   return (
