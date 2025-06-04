@@ -2,18 +2,69 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"
-import { Search, User, ShoppingBag } from "lucide-react"
+import Image from "next/image"
+import { Search, User, ShoppingBag, X } from "lucide-react"
 import CartDropdown, { type CartItem } from "./cart-dropdown"
 import MobileHeader from "@/components/mobile-header"
 import MobileMenu from "@/components/mobile-menu"
+
+// Mock product data for search results
+const mockProducts = [
+  {
+    id: "1",
+    name: "BEYOND QUARTER-ZIP TOP",
+    category: "MENS",
+    price: "Rp600.000",
+    image: "/images/per_1.png",
+  },
+  {
+    id: "2",
+    name: "BEATER LONGSLEEVE",
+    category: "MENS",
+    price: "Rp480.000",
+    image: "/images/per_1.png",
+  },
+  {
+    id: "3",
+    name: "RUNNING SHORTS",
+    category: "MENS",
+    price: "Rp350.000",
+    image: "/images/per_1.png",
+  },
+  {
+    id: "4",
+    name: "PERFORMANCE TEE",
+    category: "WOMENS",
+    price: "Rp420.000",
+    image: "/images/per_1.png",
+  },
+  {
+    id: "5",
+    name: "TRAINING VEST",
+    category: "MENS",
+    price: "Rp380.000",
+    image: "/images/per_1.png",
+  },
+  {
+    id: "6",
+    name: "RUNNING JACKET",
+    category: "WOMENS",
+    price: "Rp750.000",
+    image: "/images/per_1.png",
+  },
+]
 
 export default function Header() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const headerRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const searchOverlayRef = useRef<HTMLDivElement>(null)
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
       id: "1",
@@ -23,9 +74,18 @@ export default function Header() {
       price: "Rp480.000",
       priceNumber: 480000,
       quantity: 1,
-      image: "/placeholder.svg?height=200&width=160&query=black longsleeve shirt",
+      image: "/placeholder.svg?height=200&width=160",
     },
   ])
+
+  // Filter products based on search query
+  const filteredProducts = searchQuery
+    ? mockProducts.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.category.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    : mockProducts
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,7 +95,7 @@ export default function Header() {
         setIsScrolled(false)
       }
 
-      // Close dropdown on scroll
+      // Close dropdown on scroll, but NOT search overlay
       if (activeDropdown) {
         setActiveDropdown(null)
       }
@@ -45,6 +105,7 @@ export default function Header() {
       if (mobileMenuOpen) {
         setMobileMenuOpen(false)
       }
+      // Removed isSearchOpen from here to prevent closing on scroll
     }
 
     window.addEventListener("scroll", handleScroll)
@@ -52,6 +113,51 @@ export default function Header() {
       window.removeEventListener("scroll", handleScroll)
     }
   }, [activeDropdown, isCartOpen, mobileMenuOpen])
+
+  // Focus search input when search opens
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      setTimeout(() => {
+        searchInputRef.current?.focus()
+      }, 300) // Delay to allow animation to start
+    }
+  }, [isSearchOpen])
+
+  // Handle escape key to close search
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        if (isSearchOpen) {
+          setIsSearchOpen(false)
+          setSearchQuery("")
+        }
+        setActiveDropdown(null)
+        setIsCartOpen(false)
+        setMobileMenuOpen(false)
+      }
+    }
+
+    if (activeDropdown || isCartOpen || mobileMenuOpen || isSearchOpen) {
+      document.addEventListener("keydown", handleEscapeKey)
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey)
+    }
+  }, [activeDropdown, isCartOpen, mobileMenuOpen, isSearchOpen])
+
+  // Prevent body scroll when search is open
+  useEffect(() => {
+    if (isSearchOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+    }
+
+    return () => {
+      document.body.style.overflow = ""
+    }
+  }, [isSearchOpen])
 
   // Clear timeout helper
   const clearExistingTimeout = useCallback(() => {
@@ -64,11 +170,13 @@ export default function Header() {
   // Handle mouse enter with immediate response
   const handleMouseEnter = useCallback(
     (dropdown: string) => {
-      clearExistingTimeout()
-      setActiveDropdown(dropdown)
-      setIsCartOpen(false)
+      if (!isSearchOpen) {
+        clearExistingTimeout()
+        setActiveDropdown(dropdown)
+        setIsCartOpen(false)
+      }
     },
-    [clearExistingTimeout],
+    [clearExistingTimeout, isSearchOpen],
   )
 
   // Close dropdown when clicking outside
@@ -89,25 +197,6 @@ export default function Header() {
     }
   }, [activeDropdown, isCartOpen])
 
-  // Close dropdown with Escape key
-  useEffect(() => {
-    const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setActiveDropdown(null)
-        setIsCartOpen(false)
-        setMobileMenuOpen(false)
-      }
-    }
-
-    if (activeDropdown || isCartOpen || mobileMenuOpen) {
-      document.addEventListener("keydown", handleEscapeKey)
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscapeKey)
-    }
-  }, [activeDropdown, isCartOpen, mobileMenuOpen])
-
   const handleUpdateQuantity = (id: string, quantity: number) => {
     if (quantity === 0) {
       handleRemoveItem(id)
@@ -121,15 +210,31 @@ export default function Header() {
   }
 
   const handleCartClick = () => {
-    setIsCartOpen(!isCartOpen)
-    setActiveDropdown(null) // Close navigation dropdown when opening cart
-    setMobileMenuOpen(false) // Close mobile menu when opening cart
+    if (!isSearchOpen) {
+      setIsCartOpen(!isCartOpen)
+      setActiveDropdown(null)
+      setMobileMenuOpen(false)
+    }
+  }
+
+  const handleSearchClick = () => {
+    setIsSearchOpen(true)
+    setActiveDropdown(null)
+    setIsCartOpen(false)
+    setMobileMenuOpen(false)
+  }
+
+  const handleSearchClose = () => {
+    setIsSearchOpen(false)
+    setSearchQuery("")
   }
 
   const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-    setIsCartOpen(false) // Close cart when opening mobile menu
-    setActiveDropdown(null) // Close dropdown when opening mobile menu
+    if (!isSearchOpen) {
+      setMobileMenuOpen(!mobileMenuOpen)
+      setIsCartOpen(false)
+      setActiveDropdown(null)
+    }
   }
 
   // Cleanup timeout on unmount
@@ -143,6 +248,107 @@ export default function Header() {
 
   return (
     <>
+      {/* Search Overlay */}
+      <div
+        ref={searchOverlayRef}
+        className={`fixed inset-0 bg-white z-[60] transition-all duration-500 ease-in-out overflow-auto ${
+          isSearchOpen
+            ? "opacity-100 visible transform translate-y-0"
+            : "opacity-0 invisible transform -translate-y-full"
+        }`}
+      >
+        {/* Search Header */}
+        <div className="border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
+            <div className="flex items-center justify-between">
+              {/* Search Input */}
+              <div className="flex-1 relative">
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full text-lg md:text-xl font-medium bg-transparent border-none outline-none focus:ring-0 placeholder-gray-500"
+                />
+              </div>
+
+              {/* Search and Close Icons */}
+              <div className="flex items-center space-x-6 ml-6">
+                <Search className="h-5 w-5 text-black" />
+                <button
+                  onClick={handleSearchClose}
+                  className="p-1 transition-colors duration-200"
+                  aria-label="Close search"
+                >
+                  <X className="h-5 w-5 text-black" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Search Results */}
+        <div className="px-4 md:px-8 py-8">
+          <div className="max-w-7xl mx-auto">
+            {searchQuery && (
+              <div className="mb-6">
+                <p className="text-sm text-gray-600">
+                  {filteredProducts.length} result{filteredProducts.length !== 1 ? "s" : ""} for "{searchQuery}"
+                </p>
+              </div>
+            )}
+
+            {/* Product Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {filteredProducts.map((product, index) => (
+                <Link
+                  key={product.id}
+                  href={`/shop/${product.id}`}
+                  className={`group block animate-fade-in hover:transform hover:scale-105 transition-all duration-300`}
+                  style={{ animationDelay: `${index * 100}ms` }}
+                  onClick={handleSearchClose}
+                >
+                  <div className="aspect-[3/4] bg-gray-100 mb-3 overflow-hidden">
+                    <Image
+                      src={product.image || "/placeholder.svg"}
+                      alt={product.name}
+                      width={300}
+                      height={400}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="font-medium text-sm md:text-base text-black group-hover:text-orange-500 transition-colors duration-300">
+                      {product.name}
+                    </h3>
+                    <p className="text-xs md:text-sm text-gray-600">{product.category}</p>
+                    <p className="text-sm md:text-base font-medium text-black">{product.price}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* No Results */}
+            {searchQuery && filteredProducts.length === 0 && (
+              <div className="text-center py-16">
+                <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+                <p className="text-gray-600">
+                  Try adjusting your search terms or{" "}
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="text-orange-500 hover:text-orange-600 underline"
+                  >
+                    browse all products
+                  </button>
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Desktop Header */}
       <header
         ref={headerRef}
@@ -228,6 +434,7 @@ export default function Header() {
             {/* Right Icons */}
             <div className="flex items-center space-x-6">
               <button
+                onClick={handleSearchClick}
                 aria-label="Search"
                 className="hover:text-orange-500 hover:transform hover:scale-110 hover:rotate-12 transition-all duration-300 p-2"
                 onMouseEnter={() => {
@@ -250,7 +457,7 @@ export default function Header() {
               </Link>
               <button
                 onClick={handleCartClick}
-                className={`text-sm font-medium transition-all duration-300 relative ${
+                className={`text-sm cursor-pointer font-medium transition-all duration-300 relative ${
                   activeDropdown
                     ? "text-gray-400 hover:text-orange-500 hover:transform hover:scale-105"
                     : "text-black hover:text-orange-500 hover:transform hover:scale-105"
@@ -276,7 +483,7 @@ export default function Header() {
               activeDropdown ? "opacity-100 visible" : "opacity-0 invisible"
             }`}
             style={{ top: "110px" }}
-            onClick={() => setActiveDropdown(null)} // Click backdrop to close
+            onClick={() => setActiveDropdown(null)}
           />
 
           {/* Dropdown Menus */}

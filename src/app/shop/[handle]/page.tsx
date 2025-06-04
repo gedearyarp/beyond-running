@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ChevronRight, ChevronDown, ArrowLeft } from "lucide-react"
@@ -69,11 +69,16 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     technical: true, // Default open
     composition: false,
-    care: false,
   })
   const [isSizeChartOpen, setIsSizeChartOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [addingToCart, setAddingToCart] = useState(false)
 
+  // Refs for accordion content height measurement
+  const technicalRef = useRef<HTMLDivElement>(null)
+  const compositionRef = useRef<HTMLDivElement>(null)
+
+  // Add this function near the top of the component, after the state declarations
   const extractPureDescription = (htmlString: string): string => {
     // If no description, return empty string
     if (!htmlString) return ""
@@ -97,6 +102,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
   const isMobile = useMobile()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [activeGalleryImage, setActiveGalleryImage] = useState(0)
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen)
@@ -112,7 +118,13 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
   ]
 
   const handleCartClick = () => {
-    setIsCartOpen(true)
+    setAddingToCart(true)
+
+    // Simulate adding to cart with animation
+    setTimeout(() => {
+      setAddingToCart(false)
+      setIsCartOpen(true)
+    }, 800)
   }
 
   // Fungsi untuk mengonversi nama warna ke kode hex
@@ -128,6 +140,17 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
     return colorMap[colorName.toLowerCase()] || "#cccccc"
   }
+
+  // Auto-scroll gallery images every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (galleryImages.length > 1) {
+        setActiveGalleryImage((prev) => (prev + 1) % galleryImages.length)
+      }
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [galleryImages.length])
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -146,12 +169,12 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Kolom Kiri: Gambar Produk */}
             <div>
-              <div className="bg-gray-100 mt-16 aspect-square relative">
+              <div className="bg-gray-100 mt-16 aspect-square relative overflow-hidden">
                 <Image
                   src={mainImageUrl || "/placeholder.svg"}
                   alt={mainImageAlt}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 hover:scale-105"
                   priority // Prioritas tinggi untuk gambar utama
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
@@ -162,22 +185,30 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
             <div className="w-full flex md:justify-end">
               <div className="md:w-2/3 md:px-0 px-4">
                 <div className="flex mb-6">
-                  <Link href="/shop" className="flex items-center underline text-xs font-avant-garde">
-                    <ArrowLeft className="h-3 w-3 mr-1" /> BACK TO COLLECTIONS
+                  <Link
+                    href="/shop"
+                    className="flex items-center underline text-xs font-avant-garde group transition-all duration-300"
+                  >
+                    <ArrowLeft className="h-3 w-3 mr-1 transition-transform duration-300 group-hover:-translate-x-1" />
+                    <span className="group-hover:text-orange-500">BACK TO COLLECTIONS</span>
                   </Link>
                 </div>
-                <h1 className="text-3xl font-bold font-avant-garde mb-1">{product?.title || "Product Name"}</h1>
+                <h1 className="text-3xl font-bold font-avant-garde mb-1 animate-fade-in">
+                  {product?.title || "Product Name"}
+                </h1>
                 {/* Anda bisa tambahkan kategori atau gender di sini dari product.productType atau tags */}
-                <h2 className="text-2xl font-bold font-avant-garde mb-6">{product?.productType || "MENS"}</h2>
-                <p className="text-xl font-avant-garde mb-8">{formattedPrice}</p>
+                <h2 className="text-2xl font-bold font-avant-garde mb-6 animate-fade-in animation-delay-100">
+                  {product?.productType || "MENS"}
+                </h2>
+                <p className="text-xl font-avant-garde mb-8 animate-fade-in animation-delay-200">{formattedPrice}</p>
 
                 {product?.descriptionHtml ? (
                   <div
-                    className="text-sm font-avant-garde mb-10"
+                    className="text-sm font-avant-garde mb-10 animate-fade-in animation-delay-300"
                     dangerouslySetInnerHTML={{ __html: extractPureDescription(product.descriptionHtml) }}
                   />
                 ) : (
-                  <p className="text-sm font-avant-garde mb-10">
+                  <p className="text-sm font-avant-garde mb-10 animate-fade-in animation-delay-300">
                     This product is your go-to for all your running needs. Made with high-quality materials for maximum
                     comfort and performance.
                   </p>
@@ -186,109 +217,145 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 {/* Technical Details, Composition, Care: Konten dummy jika tidak ada di Shopify Metafields */}
                 <div className="border-t border-gray-200 py-4">
                   <button
-                    className="flex items-center justify-between w-full text-left font-avant-garde font-medium"
+                    className="flex items-center justify-between w-full text-left font-avant-garde font-medium group"
                     onClick={() => toggleSection("technical")}
                   >
-                    Technical Details
-                    {expandedSections.technical ? (
-                      <ChevronDown className="h-5 w-5" />
-                    ) : (
-                      <ChevronRight className="h-5 w-5" />
-                    )}
-                  </button>
-                  {expandedSections.technical && (
-                    <div className="mt-4">
-                      {product?.descriptionHtml && product.descriptionHtml.includes("Technical Details") ? (
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html:
-                              product.descriptionHtml
-                                .split("<h4><span>Technical Details</span></h4>")[1]
-                                ?.split("<h4>")[0] || "",
-                          }}
-                        />
+                    <span className="group-hover:text-orange-500 transition-colors duration-300">
+                      Technical Details
+                    </span>
+                    <div className="transition-transform duration-300 ease-in-out">
+                      {expandedSections.technical ? (
+                        <ChevronDown className="h-5 w-5 text-orange-500 transition-transform duration-300 transform rotate-0" />
                       ) : (
-                        <ul className="pl-5 text-sm font-avant-garde space-y-3">
-                          <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>Water-proof (Grade 3) fabric with 1000mm water repellent treatment</span>
-                          </li>
-                          <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>Wind-proof and down-proof for maximum protection</span>
-                          </li>
-                          <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>RDS-certified white down (90% down, 10% feathers), 750 fill power</span>
-                          </li>
-                          <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>Adjustable hood for a customized fit</span>
-                          </li>
-                          <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>Invisible zip side chest pockets and YKK two-way front zip</span>
-                          </li>
-                          <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>Elastic band cuffs and adjustable side hem</span>
-                          </li>
-                          <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>Inner chest pocket with zip closure</span>
-                          </li>
-                        </ul>
+                        <ChevronRight className="h-5 w-5 group-hover:text-orange-500 transition-transform duration-300 transform group-hover:rotate-90" />
                       )}
                     </div>
-                  )}
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                      expandedSections.technical ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    {expandedSections.technical && (
+                      <div className="mt-4" ref={technicalRef}>
+                        {product?.descriptionHtml && product.descriptionHtml.includes("Technical Details") ? (
+                          <ul className="pl-5 text-sm font-avant-garde space-y-3">
+                            {product.descriptionHtml
+                              .split("<h4><span>Technical Details</span></h4>")[1]
+                              ?.split("<h4>")[0]
+                              ?.match(/<li[^>]*>.*?<\/li>/g)
+                              ?.map((item, index) => {
+                                const text = item.replace(/<[^>]*>/g, "").trim()
+                                return (
+                                  <li key={index} className="flex items-start">
+                                    <span className="mr-2">•</span>
+                                    <span>{text}</span>
+                                  </li>
+                                )
+                              }) || []}
+                          </ul>
+                        ) : (
+                          <ul className="pl-5 text-sm font-avant-garde space-y-3">
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Water-proof (Grade 3) fabric with 1000mm water repellent treatment</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Wind-proof and down-proof for maximum protection</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>RDS-certified white down (90% down, 10% feathers), 750 fill power</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Adjustable hood for a customized fit</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Invisible zip side chest pockets and YKK two-way front zip</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Elastic band cuffs and adjustable side hem</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Inner chest pocket with zip closure</span>
+                            </li>
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="border-t border-gray-200 py-4">
                   <button
-                    className="flex items-center justify-between w-full text-left font-avant-garde font-medium"
+                    className="flex items-center justify-between w-full text-left font-avant-garde font-medium group"
                     onClick={() => toggleSection("composition")}
                   >
-                    Composition
-                    {expandedSections.composition ? (
-                      <ChevronDown className="h-5 w-5" />
-                    ) : (
-                      <ChevronRight className="h-5 w-5" />
-                    )}
-                  </button>
-                  {expandedSections.composition && (
-                    <div className="mt-4">
-                      {product?.descriptionHtml && product.descriptionHtml.includes("Composition") ? (
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: product.descriptionHtml.split("<h4><span>Composition</span></h4>")[1] || "",
-                          }}
-                        />
+                    <span className="group-hover:text-orange-500 transition-colors duration-300">Composition</span>
+                    <div className="transition-transform duration-300 ease-in-out">
+                      {expandedSections.composition ? (
+                        <ChevronDown className="h-5 w-5 text-orange-500 transition-transform duration-300 transform rotate-0" />
                       ) : (
-                        <ul className="pl-5 text-sm font-avant-garde space-y-3">
-                          <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>Main Fabric: 100% Polyester</span>
-                          </li>
-                          <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>Lining: 100% Polyester</span>
-                          </li>
-                          <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>Pocket Bag: 100% Polyester</span>
-                          </li>
-                          <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>Filling: 90% Duck Down, 10% Duck Feathers</span>
-                          </li>
-                          <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>Made in China</span>
-                          </li>
-                        </ul>
+                        <ChevronRight className="h-5 w-5 group-hover:text-orange-500 transition-transform duration-300 transform group-hover:rotate-90" />
                       )}
                     </div>
-                  )}
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                      expandedSections.composition ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    {expandedSections.composition && (
+                      <div className="mt-4" ref={compositionRef}>
+                        {product?.descriptionHtml && product.descriptionHtml.includes("Composition") ? (
+                          <div
+                            className="pl-5 text-sm font-avant-garde space-y-3"
+                            dangerouslySetInnerHTML={{
+                              __html:
+                                product.descriptionHtml
+                                  .split("<h4><span>Composition</span></h4>")[1]
+                                  ?.replace(/<ul[^>]*>/g, "")
+                                  ?.replace(/<\/ul>/g, "")
+                                  ?.replace(
+                                    /<li[^>]*>/g,
+                                    '<div class="flex items-start"><span class="mr-2">•</span><span>',
+                                  )
+                                  ?.replace(/<\/li>/g, "</span></div>")
+                                  ?.replace(/<span><\/span>/g, "") || "",
+                            }}
+                          />
+                        ) : (
+                          <ul className="pl-5 text-sm font-avant-garde space-y-3">
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Main Fabric: 100% Polyester</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Lining: 100% Polyester</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Pocket Bag: 100% Polyester</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Filling: 90% Duck Down, 10% Duck Feathers</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Made in China</span>
+                            </li>
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Bagian Warna */}
@@ -299,7 +366,11 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                       availableColors.map((color) => (
                         <button
                           key={color}
-                          className={`w-10 h-10 rounded-full ${selectedColor === color ? "ring-2 ring-offset-4 ring-black" : "border border-gray-300"}`}
+                          className={`w-10 h-10 rounded-full transition-all duration-300 transform ${
+                            selectedColor === color
+                              ? "ring-2 ring-offset-4 ring-black scale-110"
+                              : "border border-gray-300 hover:scale-110"
+                          }`}
                           style={{ backgroundColor: getColorHex(color) }}
                           onClick={() => setSelectedColor(color)}
                           aria-label={color}
@@ -317,9 +388,10 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                     <h3 className="text-sm font-avant-garde">SIZE</h3>
                     <button
                       onClick={() => setIsSizeChartOpen(true)}
-                      className="text-xs underline font-avant-garde hover:text-orange-500 transition-colors"
+                      className="text-xs underline font-avant-garde hover:text-orange-500 transition-colors relative group"
                     >
-                      SIZE GUIDE
+                      <span>SIZE GUIDE</span>
+                      <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
                     </button>
                   </div>
                   <div className="flex space-x-8">
@@ -327,10 +399,10 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                       availableSizes.map((size) => (
                         <button
                           key={size}
-                          className={`w-10 h-10 text-xs flex items-center justify-center ${
+                          className={`w-10 h-10 flex items-center justify-center transition-all duration-300 ${
                             selectedSize === size
-                              ? "border border-black rounded-full font-bold"
-                              : "border-gray-300 hover:border-black text-[#ADADAD]"
+                              ? "border border-black rounded-full font-bold transform scale-110"
+                              : "border-gray-300 hover:border-black text-[#ADADAD] hover:text-black hover:scale-110"
                           } font-avant-garde`}
                           onClick={() => setSelectedSize(size)}
                         >
@@ -344,21 +416,71 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 </div>
 
                 <button
-                  className="w-full bg-black text-white py-4 mt-10 font-avant-garde hover:bg-gray-900 transition-colors"
+                  className={`w-full bg-black text-white py-4 mt-10 font-avant-garde transition-all duration-500 relative overflow-hidden ${
+                    addingToCart ? "bg-orange-500" : "hover:bg-gray-900"
+                  }`}
                   onClick={handleCartClick}
+                  disabled={addingToCart}
                 >
-                  ADD TO CART
+                  <span className={`transition-opacity duration-300 ${addingToCart ? "opacity-0" : "opacity-100"}`}>
+                    ADD TO CART
+                  </span>
+
+                  {addingToCart && (
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                    </span>
+                  )}
+
+                  <span
+                    className={`absolute inset-0 w-full h-full flex items-center justify-center transition-all duration-500 ${
+                      addingToCart ? "scale-100 opacity-100" : "scale-150 opacity-0"
+                    }`}
+                  >
+                    <span className="absolute inset-0 bg-orange-500 transform scale-x-0 origin-left transition-transform duration-500"></span>
+                  </span>
                 </button>
 
                 <div className="flex gap-8 mt-6 text-xs w-full items-center justify-center font-avant-garde">
-                  <Link href="#" className="underline">
-                    Delivery
+                  <Link
+                    href="#"
+                    className="underline hover:text-orange-500 transition-colors duration-300 relative group"
+                  >
+                    <span>Delivery</span>
+                    <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
                   </Link>
-                  <Link href="#" className="underline">
-                    Return & Exchange
+                  <Link
+                    href="#"
+                    className="underline hover:text-orange-500 transition-colors duration-300 relative group"
+                  >
+                    <span>Return & Exchange</span>
+                    <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
                   </Link>
-                  <Link href="#" className="underline">
-                    Washing Guide
+                  <Link
+                    href="#"
+                    className="underline hover:text-orange-500 transition-colors duration-300 relative group"
+                  >
+                    <span>Washing Guide</span>
+                    <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
                   </Link>
                 </div>
               </div>
@@ -366,20 +488,45 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
           </div>
 
           {/* Gallery Images */}
-          <div className="mt-16 overflow-x-auto hide-scrollbar">
-            <div className="flex space-x-4">
+          <div className="mt-16 overflow-hidden">
+            <div
+              className="flex space-x-4 transition-transform duration-700 ease-in-out"
+              style={{ transform: `translateX(-${activeGalleryImage * (500 + 16)}px)` }}
+            >
               {galleryImages.map((image, index) => (
-                <div key={image} className="flex-shrink-0 w-[500px] h-[375px] relative">
+                <div
+                  key={image}
+                  className={`flex-shrink-0 w-[500px] h-[375px] relative transition-all duration-500 ${
+                    activeGalleryImage === index ? "scale-100 opacity-100" : "scale-95 opacity-80"
+                  }`}
+                  onClick={() => setActiveGalleryImage(index)}
+                >
                   <Image
                     src={image || "/placeholder.svg"}
                     alt={`Product view ${index + 1}`}
                     fill
-                    className="object-cover"
-                    sizes="500px" // Sesuaikan ukuran untuk gambar gallery
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                    sizes="500px"
                   />
                 </div>
               ))}
             </div>
+
+            {/* Gallery Navigation Dots */}
+            {galleryImages.length > 1 && (
+              <div className="flex justify-center mt-4 space-x-2">
+                {galleryImages.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      activeGalleryImage === index ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
+                    }`}
+                    onClick={() => setActiveGalleryImage(index)}
+                    aria-label={`View image ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Related Products */}
@@ -389,7 +536,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
               isMobile ? (
                 <div className="flex overflow-x-auto pb-4 gap-4 hide-scrollbar">
                   {relatedProducts.map((product) => (
-                    <div key={product.id}>
+                    <div key={product.id} className="transform transition-transform duration-300 hover:scale-105">
                       <ProductCard product={product} />
                     </div>
                   ))}
@@ -397,10 +544,16 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   {relatedProducts.map((product) => (
-                    <div key={product.id}>
+                    <div key={product.id} className="transform transition-transform duration-300 hover:scale-105">
                       <ProductCard product={product} />
-                      <button className="mt-2 text-xs underline font-avant-garde" onClick={handleCartClick}>
-                        ADD TO BAG
+                      <button
+                        className="mt-2 text-xs underline font-avant-garde relative group overflow-hidden"
+                        onClick={handleCartClick}
+                      >
+                        <span className="relative z-10 group-hover:text-orange-500 transition-colors duration-300">
+                          ADD TO BAG
+                        </span>
+                        <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
                       </button>
                     </div>
                   ))}
