@@ -11,7 +11,7 @@ import MobileHeader from "@/components/mobile-header";
 import MobileMenu from "@/components/mobile-menu";
 import FilterModal, { type FilterSelections } from "@/components/shop/filter-modal";
 import SortModal from "@/components/shop/sort-modal";
-import { ProductCardType } from "@/lib/shopify/types";
+import { ProductCardType, Collection } from "@/lib/shopify/types";
 
 const sizeOptions = [
   { value: "size-1", label: "Size 1" },
@@ -43,9 +43,11 @@ const sortOptions = [
 
 interface ShopPageClientProps {
   initialProducts: ProductCardType[];
+  collections: Collection[];
+  collection?: Collection;
 }
 
-export default function ShopPageClient({ initialProducts }: ShopPageClientProps) {
+export default function ShopPageClient({ initialProducts, collections, collection }: ShopPageClientProps) {
   const [products, setProducts] = useState<ProductCardType[]>(initialProducts);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,8 +107,7 @@ export default function ShopPageClient({ initialProducts }: ShopPageClientProps)
         setLoading(false);
       }
     };
-    
-    console.log("--> SHOP PAGE CLIENT RENDERED (URL:", window.location.pathname, ")");
+
     applyClientSideFiltersAndSort();
   }, [appliedFilters, appliedSort, initialProducts]);
 
@@ -144,12 +145,12 @@ export default function ShopPageClient({ initialProducts }: ShopPageClientProps)
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      <Header collections={collections} />
       <main className="flex-1">
         <div className="relative w-full h-[477px] md:h-[608px]">
           <Image
-            src="/images/shop.png"
-            alt="Collections End of Summer"
+            src={collection?.image?.url || "/images/shop.png"}
+            alt={collection?.title || "Collections End of Summer"}
             fill
             className="object-cover"
             priority
@@ -159,30 +160,30 @@ export default function ShopPageClient({ initialProducts }: ShopPageClientProps)
             <div className="absolute w-full flex justify-center bottom-14 text-center items-center">
               <h1 className="flex flex-col gap-2 text-4xl font-bold font-avant-garde tracking-wide text-white">
                 <p>
-                  COLLECTIONS:
+                  {collection ? "COLLECTION:" : "COLLECTIONS:"}
                 </p>
                 <p>
-                  END OF <span className="italic">SUMMER</span>
+                  {collection?.title || "END OF"} <span className="italic">{collection ? "" : "SUMMER"}</span>
                 </p>
               </h1>
             </div>
           ) : (
             <div className="absolute inset-y-0 right-0 flex items-center pr-12">
               <h1 className="text-4xl font-bold font-avant-garde tracking-wide text-white">
-                COLLECTIONS END OF <span className="italic">SUMMER</span>
+                {collection ? "COLLECTION: " : "COLLECTIONS "} {collection?.title || "END OF "}<span className="italic">{collection ? "" : "SUMMER"}</span>
               </h1>
             </div>
           )}
         </div>
 
         <div className="container mx-auto px-4 py-12">
-          <div className="max-w-3xl mb-12">
-            <p className="text-xs md:text-sm font-avant-garde">
-              Explore our performance-driven essentials merge cutting-edge innovation with the demands of real-world
-              running. Designed for the tropics, each piece balances breathability, durability, and adaptive comfort.
-              Every piece is crafted to support the runners journey, from training to race day and beyond.
-            </p>
-          </div>
+          {collection?.description && (
+            <div className="max-w-3xl mb-12">
+              <p className="text-xs md:text-sm font-avant-garde">
+                {collection.description}
+              </p>
+            </div>
+          )}
 
           <div className={`flex flex-wrap justify-between items-center ${isMobile ? "mb-2" : "border-b border-gray-200 mb-8"} pb-4`}>
             {isMobile ? (
@@ -237,7 +238,12 @@ export default function ShopPageClient({ initialProducts }: ShopPageClientProps)
 
           <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-[15px] md:gap-6">
             {!loading && !error && products.map((product) => (
-              <ProductCard key={product.id} product={product} isShop={true} />
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                isShop={true} 
+                collectionHandle={collection?.handle}
+              />
             ))}
           </div>
 

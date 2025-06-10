@@ -60,3 +60,11 @@ export type Shop = {
   name: string;
   description?: string;
 };
+
+export type Collection = {
+  id: string;
+  title: string;
+  handle: string;
+  description?: string;
+  image?: Image;
+};

@@ -7,6 +7,9 @@ import { Search, User, ShoppingBag, X } from "lucide-react"
 import CartDropdown, { type CartItem } from "./cart-dropdown"
 import MobileHeader from "@/components/mobile-header"
 import MobileMenu from "@/components/mobile-menu"
+import { Collection } from "@/lib/shopify"
+import { useCollectionsStore } from "@/store/collections"
+import { useCartStore } from "@/store/cart"
 
 // Mock product data for search results
 const mockProducts = [
@@ -54,10 +57,15 @@ const mockProducts = [
   },
 ]
 
-export default function Header() {
+interface HeaderProps {
+  collections: Collection[];
+}
+
+export default function Header({ collections: initialCollections }: HeaderProps) {
+  const { collections, refreshCollections } = useCollectionsStore();
+  const { items: cartItems, isOpen: isCartOpen, toggleCart, closeCart, updateQuantity, removeItem } = useCartStore()
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isCartOpen, setIsCartOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -65,18 +73,13 @@ export default function Header() {
   const headerRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchOverlayRef = useRef<HTMLDivElement>(null)
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: "1",
-      name: "BEATER LONGSLEEVE",
-      size: "2",
-      color: "Olive",
-      price: "Rp480.000",
-      priceNumber: 480000,
-      quantity: 1,
-      image: "/placeholder.svg?height=200&width=160",
-    },
-  ])
+
+  // Refresh collections when dropdown is opened
+  useEffect(() => {
+    if (activeDropdown === 'shop') {
+      refreshCollections();
+    }
+  }, [activeDropdown, refreshCollections]);
 
   // Filter products based on search query
   const filteredProducts = searchQuery
@@ -95,24 +98,22 @@ export default function Header() {
         setIsScrolled(false)
       }
 
-      // Close dropdown on scroll, but NOT search overlay
       if (activeDropdown) {
         setActiveDropdown(null)
       }
       if (isCartOpen) {
-        setIsCartOpen(false)
+        closeCart()
       }
       if (mobileMenuOpen) {
         setMobileMenuOpen(false)
       }
-      // Removed isSearchOpen from here to prevent closing on scroll
     }
 
     window.addEventListener("scroll", handleScroll)
     return () => {
       window.removeEventListener("scroll", handleScroll)
     }
-  }, [activeDropdown, isCartOpen, mobileMenuOpen])
+  }, [activeDropdown, isCartOpen, mobileMenuOpen, closeCart])
 
   // Focus search input when search opens
   useEffect(() => {
@@ -132,7 +133,9 @@ export default function Header() {
           setSearchQuery("")
         }
         setActiveDropdown(null)
-        setIsCartOpen(false)
+        if (isCartOpen) {
+          closeCart()
+        }
         setMobileMenuOpen(false)
       }
     }
@@ -144,7 +147,7 @@ export default function Header() {
     return () => {
       document.removeEventListener("keydown", handleEscapeKey)
     }
-  }, [activeDropdown, isCartOpen, mobileMenuOpen, isSearchOpen])
+  }, [activeDropdown, isCartOpen, mobileMenuOpen, isSearchOpen, closeCart])
 
   // Prevent body scroll when search is open
   useEffect(() => {
@@ -173,10 +176,12 @@ export default function Header() {
       if (!isSearchOpen) {
         clearExistingTimeout()
         setActiveDropdown(dropdown)
-        setIsCartOpen(false)
+        if (isCartOpen) {
+          closeCart()
+        }
       }
     },
-    [clearExistingTimeout, isSearchOpen],
+    [clearExistingTimeout, isSearchOpen, isCartOpen, closeCart]
   )
 
   // Close dropdown when clicking outside
@@ -184,7 +189,9 @@ export default function Header() {
     const handleClickOutside = (event: MouseEvent) => {
       if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
         setActiveDropdown(null)
-        setIsCartOpen(false)
+        if (isCartOpen) {
+          closeCart()
+        }
       }
     }
 
@@ -195,23 +202,23 @@ export default function Header() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
-  }, [activeDropdown, isCartOpen])
+  }, [activeDropdown, isCartOpen, closeCart])
 
   const handleUpdateQuantity = (id: string, quantity: number) => {
     if (quantity === 0) {
       handleRemoveItem(id)
       return
     }
-    setCartItems((items) => items.map((item) => (item.id === id ? { ...item, quantity } : item)))
+    updateQuantity(id, quantity)
   }
 
   const handleRemoveItem = (id: string) => {
-    setCartItems((items) => items.filter((item) => item.id !== id))
+    removeItem(id)
   }
 
   const handleCartClick = () => {
     if (!isSearchOpen) {
-      setIsCartOpen(!isCartOpen)
+      toggleCart()
       setActiveDropdown(null)
       setMobileMenuOpen(false)
     }
@@ -220,7 +227,9 @@ export default function Header() {
   const handleSearchClick = () => {
     setIsSearchOpen(true)
     setActiveDropdown(null)
-    setIsCartOpen(false)
+    if (isCartOpen) {
+      closeCart()
+    }
     setMobileMenuOpen(false)
   }
 
@@ -232,7 +241,9 @@ export default function Header() {
   const toggleMobileMenu = () => {
     if (!isSearchOpen) {
       setMobileMenuOpen(!mobileMenuOpen)
-      setIsCartOpen(false)
+      if (isCartOpen) {
+        closeCart()
+      }
       setActiveDropdown(null)
     }
   }
@@ -510,7 +521,6 @@ export default function Header() {
                     {[
                       { href: "/shop/men", text: "Men" },
                       { href: "/shop/women", text: "Women" },
-                      { href: "/shop/all", text: "All" },
                     ].map((item, index) => (
                       <li
                         key={item.href}
@@ -528,52 +538,19 @@ export default function Header() {
                     ))}
                   </ul>
                 </div>
-                <div className="mr-16">
+                <div>
                   <ul className="space-y-3">
-                    {[
-                      { href: "/shop/new-arrivals", text: "New Arrivals" },
-                      { href: "/shop/runners-favorite", text: "Runners Favorite" },
-                      { href: "/shop/running-tops", text: "Running Tops" },
-                      { href: "/shop/running-bottoms", text: "Running Bottoms" },
-                      { href: "/shop/post-run", text: "Post Run" },
-                      { href: "/shop/accessories", text: "Accessories" },
-                    ].map((item, index) => (
+                    {collections.map((collection, index) => (
                       <li
-                        key={item.href}
+                        key={collection.id}
                         className={`transform transition-all duration-500 ${activeDropdown === "shop" ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}
                         style={{ transitionDelay: `${(index + 3) * 100}ms` }}
                       >
                         <Link
-                          href={item.href}
+                          href={`/shop/${collection.handle}`}
                           className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
                         >
-                          <span className="relative z-10">{item.text}</span>
-                          <span className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <ul className="space-y-3">
-                    {[
-                      { href: "/shop/moment-of-stillness", text: "Moment of Stillness" },
-                      { href: "/shop/prototype-collection", text: "Prototype Collection" },
-                      { href: "/shop/running-series", text: "Running Series" },
-                      { href: "/shop/end-of-summer", text: "End of Summer" },
-                      { href: "/shop/celebration-of-running", text: "Celebration of Running" },
-                      { href: "/shop/past-seasons", text: "More Past Seasons Collections" },
-                    ].map((item, index) => (
-                      <li
-                        key={item.href}
-                        className={`transform transition-all duration-500 ${activeDropdown === "shop" ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}
-                        style={{ transitionDelay: `${(index + 9) * 100}ms` }}
-                      >
-                        <Link
-                          href={item.href}
-                          className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
-                        >
-                          <span className="relative z-10">{item.text}</span>
+                          <span className="relative z-10">{collection.title}</span>
                           <span className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
                         </Link>
                       </li>
@@ -675,7 +652,7 @@ export default function Header() {
       {/* Cart Dropdown */}
       <CartDropdown
         isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
+        onClose={closeCart}
         cartItems={cartItems}
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveItem}
