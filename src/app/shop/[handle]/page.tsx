@@ -2,6 +2,9 @@ import { getProductsByCollection, getAllCollections } from "@/lib/shopify";
 import { ProductCardType, Collection } from "@/lib/shopify/types";
 import ShopPageClient from "../client";
 import { notFound } from "next/navigation";
+import { getAllProductsForShopPage } from "@/lib/shopify";
+import { sortProductsByCategory } from "@/lib/utils/product-sorting";
+import ProductCard from "@/components/ui/ProductCard";
 
 export const dynamic = 'force-dynamic';
 
@@ -30,9 +33,12 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
       return <div className="container mx-auto py-20 text-center text-gray-500">Tidak ada produk di koleksi ini.</div>;
     }
 
+    // Sort products by category
+    const sortedProducts = sortProductsByCategory(products);
+
     return (
       <ShopPageClient 
-        initialProducts={products} 
+        initialProducts={sortedProducts} 
         collections={collections}
         collection={currentCollection}
       />

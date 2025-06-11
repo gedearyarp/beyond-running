@@ -3,67 +3,30 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Search, User, ShoppingBag, X } from "lucide-react"
-import CartDropdown, { type CartItem } from "./cart-dropdown"
+import { Search, User, ShoppingBag, X, Menu } from "lucide-react"
+import CartDropdown from "./cart-dropdown"
 import MobileHeader from "@/components/mobile-header"
 import MobileMenu from "@/components/mobile-menu"
-import { Collection } from "@/lib/shopify"
+import { Collection, getAllProductsForShopPage } from "@/lib/shopify"
 import { useCollectionsStore } from "@/store/collections"
 import { useCartStore } from "@/store/cart"
-
-// Mock product data for search results
-const mockProducts = [
-  {
-    id: "1",
-    name: "BEYOND QUARTER-ZIP TOP",
-    category: "MENS",
-    price: "Rp600.000",
-    image: "/images/per_1.png",
-  },
-  {
-    id: "2",
-    name: "BEATER LONGSLEEVE",
-    category: "MENS",
-    price: "Rp480.000",
-    image: "/images/per_1.png",
-  },
-  {
-    id: "3",
-    name: "RUNNING SHORTS",
-    category: "MENS",
-    price: "Rp350.000",
-    image: "/images/per_1.png",
-  },
-  {
-    id: "4",
-    name: "PERFORMANCE TEE",
-    category: "WOMENS",
-    price: "Rp420.000",
-    image: "/images/per_1.png",
-  },
-  {
-    id: "5",
-    name: "TRAINING VEST",
-    category: "MENS",
-    price: "Rp380.000",
-    image: "/images/per_1.png",
-  },
-  {
-    id: "6",
-    name: "RUNNING JACKET",
-    category: "WOMENS",
-    price: "Rp750.000",
-    image: "/images/per_1.png",
-  },
-]
+import type { ProductCardType } from "@/lib/shopify/types"
 
 interface HeaderProps {
   collections: Collection[];
 }
 
+// Ubah recent search: simpan array of produk (id, title, handle, image)
+type RecentProduct = {
+  id: string;
+  title: string;
+  handle: string;
+  image?: string;
+};
+
 export default function Header({ collections: initialCollections }: HeaderProps) {
   const { collections, refreshCollections } = useCollectionsStore();
-  const { items: cartItems, isOpen: isCartOpen, toggleCart, closeCart, updateQuantity, removeItem } = useCartStore()
+  const { toggleCart, getTotalItems, isOpen: isCartOpen, closeCart } = useCartStore();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -73,6 +36,53 @@ export default function Header({ collections: initialCollections }: HeaderProps)
   const headerRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchOverlayRef = useRef<HTMLDivElement>(null)
+  const RECENT_SEARCH_KEY = "recent_searches";
+  const [recentSearches, setRecentSearches] = useState<RecentProduct[]>([]);
+  const [allProducts, setAllProducts] = useState<ProductCardType[]>([]);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [productsError, setProductsError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false)
+
+  // Memoize functions that are used in useEffect dependencies
+  const handleScroll = useCallback(() => {
+    if (window.scrollY > 0) {
+      setIsScrolled(true)
+    } else {
+      setIsScrolled(false)
+    }
+
+    if (activeDropdown) {
+      setActiveDropdown(null)
+    }
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false)
+    }
+  }, [activeDropdown, mobileMenuOpen])
+
+  const handleClickOutside = useCallback((event: MouseEvent) => {
+    if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+      setActiveDropdown(null)
+    }
+  }, [])
+
+  // Scroll effect
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll)
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [handleScroll])
+
+  // Click outside effect
+  useEffect(() => {
+    if (activeDropdown || isCartOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [activeDropdown, isCartOpen, handleClickOutside])
 
   // Refresh collections when dropdown is opened
   useEffect(() => {
@@ -81,39 +91,30 @@ export default function Header({ collections: initialCollections }: HeaderProps)
     }
   }, [activeDropdown, refreshCollections]);
 
+  // Fetch real products saat search overlay dibuka
+  useEffect(() => {
+    if (isSearchOpen && allProducts.length === 0) {
+      setProductsLoading(true);
+      getAllProductsForShopPage(100)
+        .then((data) => {
+          setAllProducts(data);
+          setProductsLoading(false);
+        })
+        .catch((err) => {
+          setProductsError("Failed to load products");
+          setProductsLoading(false);
+        });
+    }
+  }, [isSearchOpen, allProducts.length]);
+
   // Filter products based on search query
   const filteredProducts = searchQuery
-    ? mockProducts.filter(
+    ? allProducts.filter(
         (product) =>
-          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchQuery.toLowerCase()),
+          product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (product.productType?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
       )
-    : mockProducts
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 0) {
-        setIsScrolled(true)
-      } else {
-        setIsScrolled(false)
-      }
-
-      if (activeDropdown) {
-        setActiveDropdown(null)
-      }
-      if (isCartOpen) {
-        closeCart()
-      }
-      if (mobileMenuOpen) {
-        setMobileMenuOpen(false)
-      }
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => {
-      window.removeEventListener("scroll", handleScroll)
-    }
-  }, [activeDropdown, isCartOpen, mobileMenuOpen, closeCart])
+    : allProducts;
 
   // Focus search input when search opens
   useEffect(() => {
@@ -134,7 +135,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
         }
         setActiveDropdown(null)
         if (isCartOpen) {
-          closeCart()
+          toggleCart()
         }
         setMobileMenuOpen(false)
       }
@@ -147,7 +148,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
     return () => {
       document.removeEventListener("keydown", handleEscapeKey)
     }
-  }, [activeDropdown, isCartOpen, mobileMenuOpen, isSearchOpen, closeCart])
+  }, [activeDropdown, isCartOpen, mobileMenuOpen, isSearchOpen, toggleCart])
 
   // Prevent body scroll when search is open
   useEffect(() => {
@@ -177,44 +178,12 @@ export default function Header({ collections: initialCollections }: HeaderProps)
         clearExistingTimeout()
         setActiveDropdown(dropdown)
         if (isCartOpen) {
-          closeCart()
+          toggleCart()
         }
       }
     },
-    [clearExistingTimeout, isSearchOpen, isCartOpen, closeCart]
+    [clearExistingTimeout, isSearchOpen, isCartOpen, toggleCart]
   )
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
-        setActiveDropdown(null)
-        if (isCartOpen) {
-          closeCart()
-        }
-      }
-    }
-
-    if (activeDropdown || isCartOpen) {
-      document.addEventListener("mousedown", handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [activeDropdown, isCartOpen, closeCart])
-
-  const handleUpdateQuantity = (id: string, quantity: number) => {
-    if (quantity === 0) {
-      handleRemoveItem(id)
-      return
-    }
-    updateQuantity(id, quantity)
-  }
-
-  const handleRemoveItem = (id: string) => {
-    removeItem(id)
-  }
 
   const handleCartClick = () => {
     if (!isSearchOpen) {
@@ -228,7 +197,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
     setIsSearchOpen(true)
     setActiveDropdown(null)
     if (isCartOpen) {
-      closeCart()
+      toggleCart()
     }
     setMobileMenuOpen(false)
   }
@@ -242,7 +211,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
     if (!isSearchOpen) {
       setMobileMenuOpen(!mobileMenuOpen)
       if (isCartOpen) {
-        closeCart()
+        toggleCart()
       }
       setActiveDropdown(null)
     }
@@ -255,7 +224,52 @@ export default function Header({ collections: initialCollections }: HeaderProps)
     }
   }, [clearExistingTimeout])
 
-  const totalCartItems = cartItems.reduce((sum, item) => sum + item.quantity, 0)
+  const totalCartItems = getTotalItems()
+
+  // Load recent search dari localStorage saat search overlay dibuka
+  useEffect(() => {
+    if (isSearchOpen) {
+      const stored = localStorage.getItem(RECENT_SEARCH_KEY);
+      setRecentSearches(stored ? JSON.parse(stored) : []);
+    }
+  }, [isSearchOpen]);
+
+  // Fungsi untuk menambah recent search (produk)
+  const addRecentSearch = (product: RecentProduct) => {
+    if (!product) return;
+    let updated = [product, ...recentSearches.filter((p) => p.id !== product.id)];
+    if (updated.length > 5) updated = updated.slice(0, 5);
+    setRecentSearches(updated);
+    localStorage.setItem(RECENT_SEARCH_KEY, JSON.stringify(updated));
+  };
+
+  // Pada saat klik hasil search, tambahkan ke recent search
+  const handleSearchResultClick = (product: ProductCardType) => {
+    addRecentSearch({
+      id: product.id,
+      title: product.title,
+      handle: product.handle,
+      image: product.images?.edges?.[0]?.node?.url || undefined,
+    });
+    setIsSearchOpen(false);
+    setSearchQuery("");
+  };
+
+  // Fungsi untuk mengambil 4 produk random
+  function getRandomProducts(products: ProductCardType[], count: number) {
+    const shuffled = [...products].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  }
+
+  // Fungsi untuk clear all recent search
+  const clearAllRecentSearch = () => {
+    setRecentSearches([]);
+    localStorage.removeItem(RECENT_SEARCH_KEY);
+  }
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <>
@@ -299,64 +313,117 @@ export default function Header({ collections: initialCollections }: HeaderProps)
           </div>
         </div>
 
-        {/* Search Results */}
-        <div className="px-4 md:px-8 py-8">
-          <div className="max-w-7xl mx-auto">
-            {searchQuery && (
-              <div className="mb-6">
-                <p className="text-sm text-gray-600">
-                  {filteredProducts.length} result{filteredProducts.length !== 1 ? "s" : ""} for "{searchQuery}"
-                </p>
-              </div>
-            )}
-
-            {/* Product Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {filteredProducts.map((product, index) => (
-                <Link
-                  key={product.id}
-                  href={`/shop/${product.id}`}
-                  className={`group block animate-fade-in hover:transform hover:scale-105 transition-all duration-300`}
-                  style={{ animationDelay: `${index * 100}ms` }}
-                  onClick={handleSearchClose}
+        {/* Search Results & Recent Search */}
+        <div className="max-w-7xl mx-auto mt-8">
+          {/* Recent Search Section */}
+          {recentSearches.length > 0 && (
+            <div className="mb-8 px-4 md:px-8">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xs text-gray-500 font-avant-garde">Recent Search</div>
+                <button
+                  onClick={clearAllRecentSearch}
+                  className="text-xs text-orange-500 hover:underline font-avant-garde"
                 >
-                  <div className="aspect-[3/4] bg-gray-100 mb-3 overflow-hidden">
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
-                      width={300}
-                      height={400}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  Clear All
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-4">
+                {recentSearches.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/shop/all/${item.handle}`}
+                    className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg hover:bg-orange-100 transition-colors font-avant-garde border border-gray-200"
+                    onClick={() => setIsSearchOpen(false)}
+                  >
+                    <img
+                      src={item.image || "/placeholder.svg"}
+                      alt={item.title}
+                      className="w-10 h-10 object-cover rounded"
                     />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="font-medium text-sm md:text-base text-black group-hover:text-orange-500 transition-colors duration-300">
-                      {product.name}
-                    </h3>
-                    <p className="text-xs md:text-sm text-gray-600">{product.category}</p>
-                    <p className="text-sm md:text-base font-medium text-black">{product.price}</p>
-                  </div>
-                </Link>
-              ))}
+                    <span className="text-xs font-medium truncate max-w-[100px]">{item.title}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
-
-            {/* No Results */}
-            {searchQuery && filteredProducts.length === 0 && (
+          )}
+          {/* Search Results Section */}
+          {productsLoading ? (
+            <div className="text-center py-16 text-gray-500">Loading products...</div>
+          ) : productsError ? (
+            <div className="text-center py-16 text-red-500">{productsError}</div>
+          ) : searchQuery ? (
+            filteredProducts.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-8">
+                {filteredProducts.map((product, index) => (
+                  <Link
+                    key={product.id}
+                    href={`/shop/all/${product.handle}`}
+                    className={`group block animate-fade-in hover:transform hover:scale-105 transition-all duration-300`}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                    onClick={() => handleSearchResultClick(product)}
+                  >
+                    <div className="aspect-[3/4] mb-3 overflow-hidden">
+                      <Image
+                        src={product.images?.edges?.[0]?.node?.url || "/placeholder.svg"}
+                        alt={product.images?.edges?.[0]?.node?.altText || product.title}
+                        width={300}
+                        height={400}
+                        className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="font-medium text-sm md:text-base text-black group-hover:text-orange-500 transition-colors duration-300">
+                        {product.title}
+                      </h3>
+                      <p className="text-xs md:text-sm text-gray-600">{product.productType}</p>
+                      <p className="text-sm md:text-base font-medium text-black">
+                        {product.priceRange.minVariantPrice.currencyCode} {product.priceRange.minVariantPrice.amount}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
               <div className="text-center py-16">
                 <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-600">
-                  Try adjusting your search terms or{" "}
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="text-orange-500 hover:text-orange-600 underline"
-                  >
-                    browse all products
-                  </button>
-                </p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Search Not Found</h3>
+                <p className="text-gray-600">Try adjusting your search terms or browse all products.</p>
               </div>
-            )}
-          </div>
+            )
+          ) : (
+            allProducts.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-8">
+                {getRandomProducts(allProducts, 4).map((product, index) => (
+                  <Link
+                    key={product.id}
+                    href={`/shop/all/${product.handle}`}
+                    className={`group block animate-fade-in hover:transform hover:scale-105 transition-all duration-300`}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                    onClick={() => handleSearchResultClick(product)}
+                  >
+                    <div className="aspect-[3/4] mb-3 overflow-hidden">
+                      <Image
+                        src={product.images?.edges?.[0]?.node?.url || "/placeholder.svg"}
+                        alt={product.images?.edges?.[0]?.node?.altText || product.title}
+                        width={300}
+                        height={400}
+                        className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="font-medium text-sm md:text-base text-black group-hover:text-orange-500 transition-colors duration-300">
+                        {product.title}
+                      </h3>
+                      <p className="text-xs md:text-sm text-gray-600">{product.productType}</p>
+                      <p className="text-sm md:text-base font-medium text-black">
+                        {product.priceRange.minVariantPrice.currencyCode} {product.priceRange.minVariantPrice.amount}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )
+          )}
         </div>
       </div>
 
@@ -468,18 +535,10 @@ export default function Header({ collections: initialCollections }: HeaderProps)
               </Link>
               <button
                 onClick={handleCartClick}
-                className={`text-sm cursor-pointer font-medium transition-all duration-300 relative ${
-                  activeDropdown
-                    ? "text-gray-400 hover:text-orange-500 hover:transform hover:scale-105"
-                    : "text-black hover:text-orange-500 hover:transform hover:scale-105"
-                }`}
-                onMouseEnter={() => {
-                  clearExistingTimeout()
-                  setActiveDropdown(null)
-                }}
+                className="text-sm cursor-pointer hover:text-gray-600 transition-colors relative"
               >
                 <ShoppingBag className="h-5 w-5" />
-                {totalCartItems > 0 && (
+                {mounted && totalCartItems > 0 && (
                   <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {totalCartItems}
                   </span>
@@ -638,7 +697,11 @@ export default function Header({ collections: initialCollections }: HeaderProps)
       </header>
 
       {/* Mobile Header */}
-      <MobileHeader onMenuClick={toggleMobileMenu} onCartClick={handleCartClick} cartItemCount={totalCartItems} />
+      <MobileHeader
+        onMenuClick={toggleMobileMenu}
+        onCartClick={handleCartClick}
+        isMenuOpen={mobileMenuOpen}
+      />
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
@@ -650,13 +713,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
       )}
 
       {/* Cart Dropdown */}
-      <CartDropdown
-        isOpen={isCartOpen}
-        onClose={closeCart}
-        cartItems={cartItems}
-        onUpdateQuantity={handleUpdateQuantity}
-        onRemoveItem={handleRemoveItem}
-      />
+      <CartDropdown />
     </>
   )
 }

@@ -44,6 +44,7 @@ export const GET_COLLECTION_PRODUCTS = gql`
             title
             handle
             description
+            productType
             images(first: 1) {
               edges {
                 node {

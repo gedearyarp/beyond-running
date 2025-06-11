@@ -26,7 +26,6 @@ export default async function RootLayout({
       <body className={`${inter.className} font-avant-garde pt-[88px]`}>
         <Header collections={collections} />
         <main>{children}</main>
-        <Footer />
       </body>
     </html>
   )

@@ -2,6 +2,8 @@
 import { getAllProductsForShopPage, getAllCollections } from "@/lib/shopify";
 import { ProductCardType, Collection } from "@/lib/shopify/types";
 import ShopPageClient from "./client"; // <--- Rename file lama kamu
+import { sortProductsByCategory } from "@/lib/utils/product-sorting";
+import ProductCard from "@/components/ui/ProductCard";
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +20,9 @@ export default async function ShopPage() {
     console.error("Failed to fetch initial data:", error);
   }
 
+  const sortedProducts = sortProductsByCategory(initialProducts)
+
   return (
-    <ShopPageClient initialProducts={initialProducts} collections={collections} />
+    <ShopPageClient initialProducts={sortedProducts} collections={collections} />
   );
 }

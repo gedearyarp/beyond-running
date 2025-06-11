@@ -2,16 +2,20 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Menu, Search, ShoppingBag } from "lucide-react"
+import { Menu, Search, ShoppingBag, X } from "lucide-react"
+import { useCartStore } from "@/store/cart"
 
 interface MobileHeaderProps {
-  onMenuClick?: () => void
-  onCartClick?: () => void
-  cartItemCount?: number
+  onMenuClick: () => void
+  onCartClick: () => void
+  isMenuOpen: boolean
 }
 
-export default function MobileHeader({ onMenuClick, onCartClick, cartItemCount = 0 }: MobileHeaderProps) {
+export default function MobileHeader({ onMenuClick, onCartClick, isMenuOpen }: MobileHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const { getTotalItems } = useCartStore()
+  const cartItemCount = getTotalItems()
 
   // Mendeteksi scroll untuk memberikan efek visual pada header
   useEffect(() => {
@@ -29,6 +33,10 @@ export default function MobileHeader({ onMenuClick, onCartClick, cartItemCount =
     }
   }, [])
 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <>
       {/* Announcement Bar */}
@@ -41,8 +49,16 @@ export default function MobileHeader({ onMenuClick, onCartClick, cartItemCount =
           isScrolled ? "shadow-md" : ""
         }`}
       >
-        <button onClick={onMenuClick} aria-label="Menu">
-          <Menu className="h-6 w-6" />
+        <button
+          onClick={onMenuClick}
+          className="p-2 -m-2 text-gray-400 hover:text-gray-500"
+          aria-label="Toggle menu"
+        >
+          {isMenuOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
         </button>
 
         <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-4 text-lg font-bold">
@@ -53,9 +69,13 @@ export default function MobileHeader({ onMenuClick, onCartClick, cartItemCount =
           <button aria-label="Search">
             <Search className="h-4 w-4" />
           </button>
-          <button onClick={onCartClick} aria-label="Shopping cart" className="relative">
+          <button
+            onClick={onCartClick}
+            className="relative p-2 -m-2 text-gray-400 hover:text-gray-500"
+            aria-label="Shopping cart"
+          >
             <ShoppingBag className="h-4 w-4" />
-            {cartItemCount > 0 && (
+            {mounted && cartItemCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
                 {cartItemCount}
               </span>

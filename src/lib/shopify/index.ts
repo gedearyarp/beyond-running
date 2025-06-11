@@ -3,6 +3,7 @@ import { ProductCardType, ProductDetailType, Shop, Connection } from './types';
 import * as ShopQueries from './queries/shop-queries';
 import * as ProductQueries from './queries/product-queries';
 import * as CollectionQueries from './queries/collection-queries';
+import Client from 'shopify-buy';
 
 // Shopify API Configuration
 const domain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN;
@@ -18,7 +19,7 @@ if (!domain || !storefrontAccessToken) {
 
 // Initialize GraphQL client
 const graphqlEndpoint = `https://${domain}/api/${apiVersion}/graphql.json`;
-const client = new GraphQLClient(graphqlEndpoint, {
+const graphqlClient = new GraphQLClient(graphqlEndpoint, {
   headers: {
     'Shopify-Storefront-Access-Token': storefrontAccessToken,
     'Content-Type': 'application/json',
@@ -150,3 +151,8 @@ export const getProductsByCollection = async (handle: string): Promise<ProductCa
 
   return collectionByHandle.products.edges.map((edge) => edge.node);
 };
+
+export const client = Client.buildClient({
+  domain: process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN!,
+  storefrontAccessToken: process.env.NEXT_PUBLIC_SHOPIFY_TOKEN!,
+});

@@ -5,6 +5,8 @@ export const PRODUCT_CARD_FRAGMENT = gql`
     id
     title
     handle
+    description
+    productType
     priceRange {
       minVariantPrice {
         amount
@@ -19,19 +21,6 @@ export const PRODUCT_CARD_FRAGMENT = gql`
         }
       }
     }
-    variants(first: 250) {
-      edges {
-        node {
-          id
-          title
-          availableForSale
-          selectedOptions {
-            name
-            value
-          }
-        }
-      }
-    }
   }
 `;
 
@@ -40,13 +29,11 @@ export const PRODUCT_DETAIL_FRAGMENT = gql`
     id
     title
     handle
+    description
     descriptionHtml
+    productType
     priceRange {
       minVariantPrice {
-        amount
-        currencyCode
-      }
-      maxVariantPrice {
         amount
         currencyCode
       }
@@ -56,34 +43,21 @@ export const PRODUCT_DETAIL_FRAGMENT = gql`
         node {
           url
           altText
-          width
-          height
         }
       }
     }
-    variants(first: 250) {
+    variants(first: 100) {
       edges {
         node {
           id
           title
-          availableForSale
           price {
-            amount
-            currencyCode
-          }
-          compareAtPrice {
             amount
             currencyCode
           }
           selectedOptions {
             name
             value
-          }
-          image {
-            url
-            altText
-            width
-            height
           }
         }
       }

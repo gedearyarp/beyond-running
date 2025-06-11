@@ -4,6 +4,8 @@ import { getProductDetailByHandle, getAllProductsForShopPage } from "@/lib/shopi
 import type { ProductDetailType, ProductCardType } from "@/lib/shopify/types"
 import ProductDetailPage from "./page"
 
+export const dynamic = "force-dynamic"
+
 // Generate metadata for the page
 export async function generateMetadata({
   params,
@@ -16,28 +18,24 @@ export async function generateMetadata({
     if (!product) {
       return {
         title: "Product Not Found",
+        description: "The requested product could not be found.",
       }
     }
 
     return {
-      title: `${product.title} | Beyond Running`,
-      description: product.descriptionHtml?.replace(/<[^>]*>/g, "").slice(0, 160) || "Product details",
+      title: product.title,
+      description: product.description,
       openGraph: {
         title: product.title,
-        description: product.descriptionHtml?.replace(/<[^>]*>/g, "").slice(0, 160) || "Product details",
-        images: [
-          {
-            url: product.images.edges[0]?.node.url || "/placeholder.svg",
-            width: 1200,
-            height: 630,
-            alt: product.title,
-          },
-        ],
+        description: product.description,
+        images: product.images.edges.map((edge) => edge.node.url),
       },
     }
   } catch (error) {
+    console.error('Error generating metadata:', error)
     return {
-      title: "Error | Beyond Running",
+      title: "Error",
+      description: "An error occurred while loading the product.",
     }
   }
 }
@@ -49,12 +47,12 @@ export default async function ProductLayout({
 }) {
   try {
     // Fetch product data and related products in parallel
-    const [productData, allProducts] = await Promise.all([
+    const [product, allProducts] = await Promise.all([
       getProductDetailByHandle(params.product),
-      getAllProductsForShopPage(8),
+      getAllProductsForShopPage(),
     ])
 
-    if (!productData) {
+    if (!product) {
       notFound()
     }
 
@@ -63,8 +61,9 @@ export default async function ProductLayout({
       .filter((p) => p.handle !== params.product)
       .slice(0, 4)
 
-    return <ProductDetailPage product={productData} relatedProducts={relatedProducts} />
+    return <ProductDetailPage product={product} relatedProducts={relatedProducts} />
   } catch (error) {
+    console.error('Error in ProductLayout:', error)
     notFound()
   }
 }
@@ -72,12 +71,14 @@ export default async function ProductLayout({
 // Generate static params for all products
 export async function generateStaticParams() {
   try {
-    const products = await getAllProductsForShopPage(250)
+    const products = await getAllProductsForShopPage()
+    
     return products.map((product) => ({
-      handle: "frontpage", // or you can get this from your collections
+      handle: product.handle,
       product: product.handle,
     }))
-  } catch {
+  } catch (error) {
+    console.error('Error generating static params:', error)
     return []
   }
 } 

@@ -4,58 +4,62 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { X, Minus, Plus } from "lucide-react"
+import { useCartStore } from "@/store/cart"
+import Button from "./button"
+import { useRouter } from "next/navigation"
 
-export interface CartItem {
-  id: string
-  name: string
-  size: string
-  color: string
-  price: string
-  priceNumber: number
-  quantity: number
-  image: string
-}
-
-interface CartDropdownProps {
-  isOpen: boolean
-  onClose: () => void
-  cartItems: CartItem[]
-  onUpdateQuantity: (id: string, quantity: number) => void
-  onRemoveItem: (id: string) => void
-}
-
-export default function CartDropdown({
-  isOpen,
-  onClose,
-  cartItems,
-  onUpdateQuantity,
-  onRemoveItem,
-}: CartDropdownProps) {
+export default function CartDropdown() {
   const [discountCode, setDiscountCode] = useState("")
+  const { 
+    items, 
+    updateQuantity, 
+    removeItem, 
+    getTotalItems, 
+    getTotalPrice,
+    isOpen,
+    closeCart,
+    checkout
+  } = useCartStore()
+  const [isCheckingOut, setIsCheckingOut] = useState(false)
+  const router = useRouter()
 
   if (!isOpen) return null
 
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0)
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.priceNumber * item.quantity, 0)
+  function formatPrice(price: number) {
+    if (typeof price !== 'number' || isNaN(price)) return 'Rp0';
+    return `Rp${price.toLocaleString('id-ID')}`;
+  }
 
-  const formatPrice = (price: number) => {
-    return `Rp${price.toLocaleString("id-ID")}`
+  const handleCheckout = async () => {
+    try {
+      setIsCheckingOut(true)
+      const checkoutUrl = await checkout()
+      router.push(checkoutUrl)
+    } catch (error) {
+      console.error("Checkout failed:", error)
+      // You might want to show an error message to the user here
+    } finally {
+      setIsCheckingOut(false)
+    }
   }
 
   return (
     <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/20 z-40" onClick={onClose} />
+      {/* Backdrop - No click handler */}
+      <div className="fixed inset-0 bg-black/20 z-40" />
 
       {/* Cart Dropdown - Responsive */}
-      <div className="fixed top-[100px] md:top-[100px] right-0 w-full md:max-w-md bg-white shadow-2xl z-50 h-[calc(100vh-100px)] md:h-[calc(100vh-100px)] flex flex-col">
+      <div 
+        className="fixed top-[100px] md:top-[100px] right-0 w-full md:max-w-md bg-white shadow-2xl z-50 h-[calc(100vh-100px)] md:h-[calc(100vh-100px)] flex flex-col"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200 flex-shrink-0">
           <h2 className="text-base md:text-lg font-bold">
-            {totalItems} Product{totalItems !== 1 ? "s" : ""}
+            {getTotalItems()} Product{getTotalItems() !== 1 ? "s" : ""}
           </h2>
+          {/* Only the close button has click handler */}
           <button
-            onClick={onClose}
+            onClick={closeCart}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             aria-label="Close cart"
           >
@@ -67,14 +71,13 @@ export default function CartDropdown({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
-          {cartItems.length === 0 ? (
+          {items.length === 0 ? (
             /* Empty Cart State */
             <div className="flex flex-col items-center justify-center h-full px-4 md:px-6">
               <div className="text-center mb-8">
                 <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-6 md:mb-8">Your Cart is Empty</h3>
                 <Link
                   href="/shop"
-                  onClick={onClose}
                   className="inline-block bg-black text-white px-6 md:px-8 py-3 md:py-4 text-sm md:text-base font-medium hover:bg-gray-900 transition-colors"
                 >
                   BACK TO SHOPPING
@@ -84,11 +87,11 @@ export default function CartDropdown({
           ) : (
             /* Cart Items */
             <div className="p-4 md:p-6 space-y-4 md:space-y-6">
-              {cartItems.map((item) => (
+              {items.map((item) => (
                 <div key={item.id} className="flex gap-3 md:gap-4">
                   {/* Product Image */}
                   <div className="w-20 h-24 md:w-32 md:h-40 bg-gray-100 flex-shrink-0 relative">
-                    <Image src={item.image || "/placeholder.svg"} alt={item.name} fill className="object-cover" />
+                    <Image src={item.image || "/placeholder.svg"} alt={item.title || 'Product image'} fill className="object-cover" />
                   </div>
 
                   {/* Product Details */}
@@ -103,15 +106,15 @@ export default function CartDropdown({
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-3 md:gap-4 mb-2 md:mb-4">
                       <button
-                        onClick={() => onUpdateQuantity(item.id, Math.max(0, item.quantity - 1))}
-                        className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center border border-gray-300 hover:border-gray-400 transition-colors"
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center border border-gray-300 hover:border-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={item.quantity <= 1}
                       >
                         <Minus className="h-3 w-3 md:h-4 md:w-4" />
                       </button>
                       <span className="w-6 md:w-8 text-center text-sm md:text-base font-medium">{item.quantity}</span>
                       <button
-                        onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center border border-gray-300 hover:border-gray-400 transition-colors"
                       >
                         <Plus className="h-3 w-3 md:h-4 md:w-4" />
@@ -120,7 +123,7 @@ export default function CartDropdown({
 
                     {/* Remove Button */}
                     <button
-                      onClick={() => onRemoveItem(item.id)}
+                      onClick={() => removeItem(item.id)}
                       className="text-xs md:text-sm text-gray-600 hover:text-gray-900 underline transition-colors"
                     >
                       Remove
@@ -133,7 +136,7 @@ export default function CartDropdown({
         </div>
 
         {/* Checkout Section - Only show when cart has items */}
-        {cartItems.length > 0 && (
+        {items.length > 0 && (
           <div className="border-t border-gray-200 p-4 md:p-6 flex-shrink-0">
             {/* Discount Code */}
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 md:mb-6 gap-2">
@@ -144,10 +147,14 @@ export default function CartDropdown({
             </div>
 
             {/* Checkout Button */}
-            <button className="w-full bg-black text-white py-3 md:py-4 px-4 text-sm md:text-base font-medium hover:bg-gray-900 transition-colors flex items-center justify-between">
-              <span>CHECK OUT</span>
-              <span>{formatPrice(totalPrice)}.-</span>
-            </button>
+            <Button
+              className="w-full bg-black text-white py-3 md:py-4 px-4 text-sm md:text-base font-medium hover:bg-gray-900 transition-colors flex items-center justify-between"
+              onClick={handleCheckout}
+              disabled={isCheckingOut}
+            >
+              <span>{isCheckingOut ? "Processing..." : "CHECK OUT"}</span>
+              <span>{formatPrice(getTotalPrice())}.-</span>
+            </Button>
 
             {/* Tax Notice */}
             <p className="text-xs text-gray-600 mt-2 md:mt-3">Tax incl. Shipping calculated at checkout</p>

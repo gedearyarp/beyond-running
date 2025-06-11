@@ -1,18 +1,18 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createCheckout } from '@/lib/shopify/checkout';
 
 export interface CartItem {
   id: string;
-  name: string;
-  size: string;
-  color: string;
-  price: string;
-  priceNumber: number;
+  title: string;
+  price: number;
   quantity: number;
   image: string;
+  size?: string;
+  color?: string;
 }
 
-interface CartState {
+interface CartStore {
   items: CartItem[];
   isOpen: boolean;
   addItem: (item: CartItem) => void;
@@ -23,37 +23,37 @@ interface CartState {
   closeCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  checkout: () => Promise<string>;
 }
 
-export const useCartStore = create<CartState>()(
+export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
       isOpen: false,
+
       addItem: (item) => {
         set((state) => {
-          const existingItem = state.items.find(
-            (i) => i.id === item.id && i.size === item.size && i.color === item.color
-          );
-
+          const existingItem = state.items.find((i) => i.id === item.id);
           if (existingItem) {
             return {
               items: state.items.map((i) =>
-                i.id === item.id && i.size === item.size && i.color === item.color
+                i.id === item.id
                   ? { ...i, quantity: i.quantity + item.quantity }
                   : i
               ),
             };
           }
-
           return { items: [...state.items, item] };
         });
       },
+
       removeItem: (id) => {
         set((state) => ({
           items: state.items.filter((item) => item.id !== id),
         }));
       },
+
       updateQuantity: (id, quantity) => {
         set((state) => ({
           items: state.items.map((item) =>
@@ -61,27 +61,59 @@ export const useCartStore = create<CartState>()(
           ),
         }));
       },
+
       clearCart: () => {
         set({ items: [] });
       },
+
       toggleCart: () => {
         set((state) => ({ isOpen: !state.isOpen }));
       },
+
       closeCart: () => {
         set({ isOpen: false });
       },
+
       getTotalItems: () => {
-        return get().items.reduce((total, item) => total + item.quantity, 0);
+        const state = get();
+        return state.items.reduce((total, item) => total + item.quantity, 0);
       },
+
       getTotalPrice: () => {
-        return get().items.reduce(
-          (total, item) => total + item.priceNumber * item.quantity,
+        const state = get();
+        return state.items.reduce(
+          (total, item) => total + Number(item.price) * item.quantity,
           0
         );
+      },
+
+      checkout: async () => {
+        const state = get();
+        try {
+          const { checkoutUrl } = await createCheckout(state.items);
+          // Clear cart after successful checkout creation
+          state.clearCart();
+          state.closeCart();
+          return checkoutUrl;
+        } catch (error) {
+          console.error("Checkout error:", error);
+          throw new Error("Failed to create checkout");
+        }
       },
     }),
     {
       name: 'cart-storage',
+      migrate: (persistedState, version) => {
+        if (persistedState && Array.isArray(persistedState.items)) {
+          persistedState.items = persistedState.items.map((item) => ({
+            ...item,
+            price: typeof item.price === "string"
+              ? Number(item.price.replace(/[^0-9.]/g, ""))
+              : item.price,
+          }))
+        }
+        return persistedState
+      },
     }
   )
 ); 
