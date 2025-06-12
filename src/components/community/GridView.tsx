@@ -45,7 +45,12 @@ export default function GridView({ events }: GridViewProps) {
     }).replace(/\//g, '.')
 
     // Validate and format image URL
-    const imageUrl = '/images/per_1.png'
+    const imageUrl = event.main_img && event.main_img.trim() !== "" ? event.main_img : '/images/per_1.png'
+    
+    // Debug logging
+    if (event.main_img) {
+      console.log('Event:', event.title, 'Image URL:', imageUrl)
+    }
 
     return (
       <div key={event.id} className={`relative ${heights[size]} overflow-hidden group`}>
@@ -54,6 +59,7 @@ export default function GridView({ events }: GridViewProps) {
           alt={event.title}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500"
+          unoptimized={imageUrl.includes('supabase.co')}
         />
         <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
 

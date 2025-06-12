@@ -25,7 +25,9 @@ export type Community = {
   event_overview: string
   event_tnc: string
   time_place: string
-  image_url: string
+  main_img: string | null
+  banner_img: string | null
+  community_img: string | null
   signup_link: string | null
   is_active: boolean
   created_at: string

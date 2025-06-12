@@ -10,6 +10,19 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/s/files/**', // Ini penting untuk mencakup semua path di bawah /s/files
       },
+      {
+        protocol: 'https',
+        hostname: 'lujxxelwmdfouixiqhrha.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
+      // More flexible pattern for any Supabase project
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
     ],
   },
 };

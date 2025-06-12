@@ -48,8 +48,8 @@ export default function CommunityDetailPage() {
   }
 
   // Validate and format image URL
-  const getValidImageUrl = (url: string | null) => {
-    return "/images/per_1.png"
+  const getValidImageUrl = (url: string | null, fallback: string = "/images/per_1.png") => {
+    return url && url.trim() !== "" ? url : fallback
   }
 
   if (loading) {
@@ -94,7 +94,8 @@ export default function CommunityDetailPage() {
     )
   }
 
-  const imageUrl = getValidImageUrl(event.image_url)
+  const bannerImageUrl = getValidImageUrl(event.banner_img, "/images/com_banner.png")
+  const communityImageUrl = getValidImageUrl(event.community_img, "/images/per_1.png")
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -110,11 +111,12 @@ export default function CommunityDetailPage() {
         {/* Hero Banner */}
         <div className="relative w-full h-[477px] md:h-[608px]">
           <Image 
-            src={imageUrl}
+            src={bannerImageUrl}
             alt={event.title} 
             fill 
             className="object-cover" 
             priority 
+            unoptimized={bannerImageUrl.includes('supabase.co')}
           />
         </div>
 
@@ -127,10 +129,11 @@ export default function CommunityDetailPage() {
               )}
               <div className="relative h-[481px] md:h-[900px] w-full">
                 <Image 
-                  src={imageUrl}
+                  src={communityImageUrl}
                   alt={event.title} 
                   fill 
                   className="object-cover" 
+                  unoptimized={communityImageUrl.includes('supabase.co')}
                 />
               </div>
             </div>
