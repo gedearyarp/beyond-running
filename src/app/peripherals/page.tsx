@@ -1,94 +1,40 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 import ViewList from "@/components/peripherals/ListView"
 import GridView from "@/components/peripherals/GridView"
 import CustomDropdown from "@/components/ui/dropdown"
-import type { Peripherals } from "@/components/peripherals/ListViewItem"
 import useMobile from "@/hooks/use-mobile"
 import MobileHeader from "@/components/mobile-header"
 import MobileMenu from "@/components/mobile-menu"
 import PeripheralsFilterModal from "@/components/peripherals/filter-modal"
 import PeripheralsSortModal from "@/components/peripherals/sort-modal"
+import { supabase } from "@/lib/supabase"
 
-// Sample stories data
-const peripherals: Peripherals[] = [
-  {
-    id: 1,
-    date: "17.02.2025",
-    title: "RUNS IN THE FAMILY",
-    category: "COMMUNITY:FEATURED RUNNER",
-    image_url: "/images/per_1.png",
-    slug: "runs-in-the-family",
-    desc: "The story of a furniture maker, found solace in running amid Seoul's Urban sprawl. Raised in nature, he now escapes the city's relentless pace through his runs."
-  },
-  {
-    id: 2,
-    date: "17.02.2025",
-    title: "BEYOND SOLSTICE",
-    category: "COMMUNITY:EVENT",
-    image_url: "/images/per_2.png",
-    slug: "beyond-solstice",
-    desc: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl"
-  },
-  {
-    id: 3,
-    date: "17.02.2025",
-    title: "A POSTCARD FROM BANDUNG",
-    category: "COMMUNITY:EVENT",
-    image_url: "/images/per_3.png",
-    slug: "postcard-from-bandung",
-    desc: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl"
-  },
-  {
-    id: 4,
-    date: "17.02.2025",
-    title: "TRAILS THROUGH THE TIME",
-    category: "COMMUNITY:EVENT",
-    image_url: "/images/per_4.png",
-    slug: "trails-through-time",
-    desc: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl"
-  },
-  {
-    id: 5,
-    date: "17.02.2025",
-    title: "ENDLESS ROAD",
-    category: "COMMUNITY:EVENT",
-    image_url: "/images/per_5.png",
-    slug: "endless-road",
-    desc: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl"
-  },
-  {
-    id: 6,
-    date: "17.02.2025",
-    title: "RUNNING IS YOUR LIFE",
-    category: "COMMUNITY:EVENT",
-    image_url: "/images/per_6.png",
-    slug: "running-is-your-life",
-    desc: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl"
-  },
-  {
-    id: 7,
-    date: "17.02.2025",
-    title: "BEYOND:MATERIALITY",
-    category: "COMMUNITY:EVENT",
-    image_url: "/images/per_7.png",
-    slug: "beyond-materiality",
-    desc: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl"
-  },
-  {
-    id: 8,
-    date: "17.02.2025",
-    title: "THE PERSONAL RUN OF A LIFETIME",
-    category: "COMMUNITY:EVENT",
-    image_url: "/images/per_8.png",
-    slug: "personal-run-of-lifetime",
-    desc: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl"
-  },
-]
+// Type definition based on Supabase table
+export type Peripherals = {
+  id: string
+  title: string | null
+  category: string | null
+  is_active: boolean | null
+  created_at: string | null
+  updated_at: string | null
+  credits: string | null
+  event_overview: string | null
+  event_date: string | null
+  highlight_quote: string | null
+  paragraph_1: string | null
+  paragraph_2: string | null
+  paragraph_bottom: string | null
+  background_color: string | null
+  main_img: string | null
+  banner_img: string | null
+  left_img: string | null
+  right_img: string | null
+}
 
 // Dropdown options
 const sortOptions = [
@@ -110,6 +56,8 @@ export default function PeripheralsPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("grid")
   const [sortBy, setSortBy] = useState("featured")
   const [filter, setFilter] = useState("all")
+  const [peripherals, setPeripherals] = useState<Peripherals[]>([])
+  const [loading, setLoading] = useState(true)
 
   const isMobile = useMobile()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -121,6 +69,44 @@ export default function PeripheralsPage() {
     viewType: "Grid View",
   })
   const [appliedSort, setAppliedSort] = useState("Featured")
+
+  useEffect(() => {
+    const fetchPeripherals = async () => {
+      try {
+        let query = supabase
+          .from('peripherals')
+          .select('*')
+          .eq('is_active', true)
+
+        // Apply sorting
+        if (sortBy === 'latest') {
+          query = query.order('event_date', { ascending: false })
+        } else if (sortBy === 'oldest') {
+          query = query.order('event_date', { ascending: true })
+        } else {
+          // Default featured sorting by created_at desc
+          query = query.order('created_at', { ascending: false })
+        }
+
+        // Apply category filter
+        if (filter !== 'all') {
+          query = query.ilike('category', `%${filter}%`)
+        }
+
+        const { data, error } = await query
+
+        if (error) throw error
+
+        setPeripherals(data || [])
+      } catch (error) {
+        console.error('Error fetching peripherals:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPeripherals()
+  }, [sortBy, filter])
 
   // Format filter button label
   const filterButtonLabel = useMemo(() => {
@@ -169,6 +155,20 @@ export default function PeripheralsPage() {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen)
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <main className="flex-1">
+          <div className="container mx-auto px-4 py-12">
+            <p>Loading stories...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
   }
 
   return (
@@ -242,7 +242,7 @@ export default function PeripheralsPage() {
                     </div>
                   </div>
                 </div>
-                <span className="text-sm font-avant-garde mt-8">10 Stories</span>
+                <span className="text-sm font-avant-garde mt-8">{peripherals.length} Stories</span>
               </>
             ): (
               <>
@@ -264,7 +264,7 @@ export default function PeripheralsPage() {
                   </button>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <span className="hidden md:block text-sm font-avant-garde text-gray-500">10 Stories</span>
+                  <span className="hidden md:block text-sm font-avant-garde text-gray-500">{peripherals.length} Stories</span>
                   <span className="hidden md:block text-sm font-avant-garde text-gray-500">|</span>
                   <div className="flex items-center">
                     <span className="text-sm font-avant-garde mr-2">Sort By:</span>
