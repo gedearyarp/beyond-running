@@ -41,7 +41,7 @@ export default function StoryGrid({ peripherals }: PeripheralGridProps) {
                   </div>
                   <h3 className="text-2xl font-bold font-avant-garde tracking-wide">{peripheral.title}</h3>
                   <div className="absolute flex flex-col bottom-4 md:bottom-8 gap-8 md:gap-16 px-12 md:px-28">
-                    <p className="text-[9px] md:text-sm font-avant-garde font-bold">{peripheral.event_overview}</p>
+                    <p className="text-[9px] md:text-sm font-avant-garde font-bold">{peripheral.short_overview}</p>
                     <p className="text-[7px] md:text-[10px] font-avant-garde">{peripheral.category}</p>
                   </div>
                 </div>

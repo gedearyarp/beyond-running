@@ -10,6 +10,7 @@ export interface Peripherals {
   updated_at: string | null
   credits: string | null
   event_overview: string | null
+  short_overview: string | null
   event_date: string | null
   highlight_quote: string | null
   paragraph_1: string | null
