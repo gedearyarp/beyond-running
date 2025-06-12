@@ -29,6 +29,8 @@ export type Community = {
   banner_img: string | null
   community_img: string | null
   signup_link: string | null
+  full_rundown_url: string | null
+  documentation_url: string | null
   is_active: boolean
   created_at: string
   updated_at: string

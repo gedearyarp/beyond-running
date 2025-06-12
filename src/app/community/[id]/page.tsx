@@ -17,7 +17,6 @@ export default function CommunityDetailPage() {
   const id = params.id as string
   const [event, setEvent] = useState<Community | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<"rundown" | "documentation">("rundown")
   const isMobile = useMobile()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -175,22 +174,30 @@ export default function CommunityDetailPage() {
                 </a>
               )}
 
-              <div className="flex border-t border-gray-200 pt-4">
-                <button
-                  className={`mr-6 text-sm font-avant-garde ${activeTab === "rundown" ? "font-bold" : "text-gray-500"}`}
-                  onClick={() => setActiveTab("rundown")}
-                >
-                  Full Rundown
-                </button>
-                <button
-                  className={`text-sm font-avant-garde ${
-                    activeTab === "documentation" ? "font-bold" : "text-gray-500"
-                  }`}
-                  onClick={() => setActiveTab("documentation")}
-                >
-                  Documentation
-                </button>
-              </div>
+              {(event.full_rundown_url || event.documentation_url) && (
+                <div className="flex border-t border-gray-200 pt-4 space-x-6">
+                  {event.full_rundown_url && (
+                    <a
+                      href={event.full_rundown_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-avant-garde font-bold hover:underline"
+                    >
+                      Full Rundown
+                    </a>
+                  )}
+                  {event.documentation_url && (
+                    <a
+                      href={event.documentation_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-avant-garde font-bold hover:underline"
+                    >
+                      Documentation
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
