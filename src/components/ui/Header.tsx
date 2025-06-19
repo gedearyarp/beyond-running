@@ -633,18 +633,18 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                 <div>
                   <ul className="space-y-3">
                     {[
-                      { href: "/peripherals/discovery", text: "Discovery" },
-                      { href: "/peripherals/clarity", text: "Clarity" },
-                      { href: "/peripherals/community", text: "Community" },
-                      { href: "/peripherals/all", text: "All" },
+                      { filter: "discovery", text: "Discovery" },
+                      { filter: "clarity", text: "Clarity" },
+                      { filter: "community", text: "Community" },
+                      { filter: "all", text: "All" },
                     ].map((item, index) => (
                       <li
-                        key={item.href}
+                        key={item.filter}
                         className={`transform transition-all duration-500 ${activeDropdown === "peripherals" ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}
                         style={{ transitionDelay: `${index * 100}ms` }}
                       >
                         <Link
-                          href={item.href}
+                          href={{ pathname: "/peripherals", query: { filter: item.filter } }}
                           className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
                         >
                           <span className="relative z-10">{item.text}</span>

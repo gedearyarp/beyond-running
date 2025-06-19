@@ -13,6 +13,7 @@ import MobileMenu from "@/components/mobile-menu"
 import PeripheralsFilterModal from "@/components/peripherals/filter-modal"
 import PeripheralsSortModal from "@/components/peripherals/sort-modal"
 import { supabase } from "@/lib/supabase"
+import { useSearchParams } from "next/navigation"
 
 // Type definition based on Supabase table
 export type Peripherals = {
@@ -70,6 +71,17 @@ export default function PeripheralsPage() {
     viewType: "Grid View",
   })
   const [appliedSort, setAppliedSort] = useState("Featured")
+
+  const searchParams = useSearchParams();
+
+  // Sync filter param from URL to state
+  useEffect(() => {
+    const filterParam = searchParams?.get("filter");
+    if (filterParam && filterParam !== filter) {
+      setFilter(filterParam);
+    }
+    // Jika tidak ada param, biarkan default "all"
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchPeripherals = async () => {
