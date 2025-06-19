@@ -10,13 +10,28 @@ export interface FilterSelections {
   gender: string[]
 }
 
+export interface FilterOption {
+  value: string
+  label: string
+}
+
 interface FilterModalProps {
   onClose: () => void
   onApplyFilters: (filters: FilterSelections) => void
   initialFilters: FilterSelections
+  sizeOptions: FilterOption[]
+  categoryOptions: FilterOption[]
+  genderOptions: FilterOption[]
 }
 
-export default function FilterModal({ onClose, onApplyFilters, initialFilters }: FilterModalProps) {
+export default function FilterModal({ 
+  onClose, 
+  onApplyFilters, 
+  initialFilters, 
+  sizeOptions, 
+  categoryOptions, 
+  genderOptions 
+}: FilterModalProps) {
   const [expandedSections, setExpandedSections] = useState({
     size: true,
     category: true,
@@ -71,18 +86,18 @@ export default function FilterModal({ onClose, onApplyFilters, initialFilters }:
         </div>
         {expandedSections.size && (
           <div className="space-y-4">
-            {["Size 1", "Size 2", "Size 3", "One Size Fit All"].map((size) => (
+            {sizeOptions.map((size) => (
               <div
-                key={size}
-                className={`text-xl cursor-pointer flex items-center ${isFilterSelected("size", size) ? "font-semibold" : ""}`}
-                onClick={() => toggleFilter("size", size)}
+                key={size.value}
+                className={`text-xl cursor-pointer flex items-center ${isFilterSelected("size", size.label) ? "font-semibold" : ""}`}
+                onClick={() => toggleFilter("size", size.label)}
               >
                 <div
-                  className={`w-5 h-5 border border-black mr-2 flex items-center justify-center ${isFilterSelected("size", size) ? "bg-black" : "bg-white"}`}
+                  className={`w-5 h-5 border border-black mr-2 flex items-center justify-center ${isFilterSelected("size", size.label) ? "bg-black" : "bg-white"}`}
                 >
-                  {isFilterSelected("size", size) && <span className="text-white text-xs">✓</span>}
+                  {isFilterSelected("size", size.label) && <span className="text-white text-xs">✓</span>}
                 </div>
-                {size}
+                {size.label}
               </div>
             ))}
           </div>
@@ -100,22 +115,20 @@ export default function FilterModal({ onClose, onApplyFilters, initialFilters }:
         </div>
         {expandedSections.category && (
           <div className="space-y-4">
-            {["New Arrivals", "Running Tops", "Running Bottoms", "Outerwear", "Postrun", "Accessories"].map(
-              (category) => (
+            {categoryOptions.map((category) => (
+              <div
+                key={category.value}
+                className={`text-xl cursor-pointer flex items-center ${isFilterSelected("category", category.label) ? "font-semibold" : ""}`}
+                onClick={() => toggleFilter("category", category.label)}
+              >
                 <div
-                  key={category}
-                  className={`text-xl cursor-pointer flex items-center ${isFilterSelected("category", category) ? "font-semibold" : ""}`}
-                  onClick={() => toggleFilter("category", category)}
+                  className={`w-5 h-5 border border-black mr-2 flex items-center justify-center ${isFilterSelected("category", category.label) ? "bg-black" : "bg-white"}`}
                 >
-                  <div
-                    className={`w-5 h-5 border border-black mr-2 flex items-center justify-center ${isFilterSelected("category", category) ? "bg-black" : "bg-white"}`}
-                  >
-                    {isFilterSelected("category", category) && <span className="text-white text-xs">✓</span>}
-                  </div>
-                  {category}
+                  {isFilterSelected("category", category.label) && <span className="text-white text-xs">✓</span>}
                 </div>
-              ),
-            )}
+                {category.label}
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -128,18 +141,18 @@ export default function FilterModal({ onClose, onApplyFilters, initialFilters }:
         </div>
         {expandedSections.gender && (
           <div className="space-y-4">
-            {["Men", "Women", "Unisex"].map((gender) => (
+            {genderOptions.map((gender) => (
               <div
-                key={gender}
-                className={`text-xl cursor-pointer flex items-center ${isFilterSelected("gender", gender) ? "font-semibold" : ""}`}
-                onClick={() => toggleFilter("gender", gender)}
+                key={gender.value}
+                className={`text-xl cursor-pointer flex items-center ${isFilterSelected("gender", gender.label) ? "font-semibold" : ""}`}
+                onClick={() => toggleFilter("gender", gender.label)}
               >
                 <div
-                  className={`w-5 h-5 border border-black mr-2 flex items-center justify-center ${isFilterSelected("gender", gender) ? "bg-black" : "bg-white"}`}
+                  className={`w-5 h-5 border border-black mr-2 flex items-center justify-center ${isFilterSelected("gender", gender.label) ? "bg-black" : "bg-white"}`}
                 >
-                  {isFilterSelected("gender", gender) && <span className="text-white text-xs">✓</span>}
+                  {isFilterSelected("gender", gender.label) && <span className="text-white text-xs">✓</span>}
                 </div>
-                {gender}
+                {gender.label}
               </div>
             ))}
           </div>

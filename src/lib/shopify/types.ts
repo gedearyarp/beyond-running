@@ -31,6 +31,21 @@ export type ProductVariant = {
   image?: Image;
 };
 
+export type MetafieldReference = {
+  id: string;
+  handle: string;
+  field?: {
+    value: string;
+  };
+};
+
+export type Metafield = {
+  key: string;
+  references: {
+    nodes: MetafieldReference[];
+  };
+};
+
 export type ProductCardType = {
   id: string;
   title: string;
@@ -41,6 +56,7 @@ export type ProductCardType = {
   images: Connection<Image>;
   variants: Connection<Pick<ProductVariant, 'id' | 'title' | 'availableForSale' | 'selectedOptions'>>;
   productType?: string;
+  metafields?: (Metafield | null)[];
 };
 
 export type ProductDetailType = {

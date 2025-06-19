@@ -14,14 +14,18 @@ export default function SortModal({ onClose, onApplySort, initialSort }: SortMod
   const [selectedSort, setSelectedSort] = useState<string>(initialSort)
   const [expanded, setExpanded] = useState(true)
 
-  const sortOptions = ["Featured", "New Arrivals", "Price: Low to High", "Price: High to Low"]
+  const sortOptions = [
+    { value: "featured", label: "Featured" },
+    { value: "price-low", label: "Price, Low to High" },
+    { value: "price-high", label: "Price, High to Low" },
+  ]
 
   const toggleExpanded = () => {
     setExpanded(!expanded)
   }
 
   const handleReset = () => {
-    setSelectedSort("Featured")
+    setSelectedSort("featured")
   }
 
   const handleApply = () => {
@@ -40,16 +44,16 @@ export default function SortModal({ onClose, onApplySort, initialSort }: SortMod
           <div className="space-y-4">
             {sortOptions.map((option) => (
               <div
-                key={option}
-                className={`text-xl cursor-pointer flex items-center ${selectedSort === option ? "font-semibold" : ""}`}
-                onClick={() => setSelectedSort(option)}
+                key={option.value}
+                className={`text-xl cursor-pointer flex items-center ${selectedSort === option.value ? "font-semibold" : ""}`}
+                onClick={() => setSelectedSort(option.value)}
               >
                 <div
-                  className={`w-5 h-5 rounded-full border border-black mr-2 flex items-center justify-center ${selectedSort === option ? "bg-black" : "bg-white"}`}
+                  className={`w-5 h-5 rounded-full border border-black mr-2 flex items-center justify-center ${selectedSort === option.value ? "bg-black" : "bg-white"}`}
                 >
-                  {selectedSort === option && <div className="w-2 h-2 rounded-full bg-white"></div>}
+                  {selectedSort === option.value && <div className="w-2 h-2 rounded-full bg-white"></div>}
                 </div>
-                {option}
+                {option.label}
               </div>
             ))}
           </div>
