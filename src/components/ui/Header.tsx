@@ -669,26 +669,53 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                   </Link>
                 </div>
                 <ul className="space-y-3">
-                  {[
-                    { href: "/community?view=upcoming", text: "Upcoming Events" },
-                    { href: "/community?view=past", text: "Past Events" },
-                    { href: "/community?view=calendar", text: "Calendar" },
-                    { href: "/community/membership", text: "Membership" },
-                  ].map((item, index) => (
-                    <li
-                      key={item.href}
-                      className={`transform transition-all duration-500 ${activeDropdown === "community" ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}
-                      style={{ transitionDelay: `${index * 100}ms` }}
+                  <li
+                    className={`transform transition-all duration-500 ${activeDropdown === "community" ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}
+                    style={{ transitionDelay: `0ms` }}
+                  >
+                    <Link
+                      href={{ pathname: "/community", query: { view: "upcoming" } }}
+                      className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
                     >
-                      <Link
-                        href={item.href}
-                        className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
-                      >
-                        <span className="relative z-10">{item.text}</span>
-                        <span className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
-                      </Link>
-                    </li>
-                  ))}
+                      <span className="relative z-10">Upcoming Events</span>
+                      <span className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
+                    </Link>
+                  </li>
+                  <li
+                    className={`transform transition-all duration-500 ${activeDropdown === "community" ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}
+                    style={{ transitionDelay: `100ms` }}
+                  >
+                    <Link
+                      href={{ pathname: "/community", query: { view: "past" } }}
+                      className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
+                    >
+                      <span className="relative z-10">Past Events</span>
+                      <span className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
+                    </Link>
+                  </li>
+                  <li
+                    className={`transform transition-all duration-500 ${activeDropdown === "community" ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}
+                    style={{ transitionDelay: `200ms` }}
+                  >
+                    <Link
+                      href={{ pathname: "/community", query: { view: "calendar" } }}
+                      className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
+                    >
+                      <span className="relative z-10">Calendar</span>
+                      <span className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
+                    </Link>
+                  </li>
+                  <li
+                    className={`transform transition-all duration-500 ${activeDropdown === "community" ? "translate-x-0 opacity-60 cursor-not-allowed" : "translate-x-4 opacity-0"}`}
+                    style={{ transitionDelay: `300ms` }}
+                  >
+                    <span
+                      className="text-sm text-gray-400 block py-2 px-2 rounded cursor-not-allowed select-none bg-gray-100"
+                      title="Coming Soon"
+                    >
+                      <span className="relative z-10">Membership (Coming Soon)</span>
+                    </span>
+                  </li>
                 </ul>
               </div>
             )}
