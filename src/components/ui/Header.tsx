@@ -322,7 +322,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                 <div className="text-xs text-gray-500 font-avant-garde">Recent Search</div>
                 <button
                   onClick={clearAllRecentSearch}
-                  className="text-xs text-orange-500 hover:underline font-avant-garde"
+                  className="text-xs text-gray-500 hover:underline font-avant-garde"
                 >
                   Clear All
                 </button>
@@ -332,7 +332,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                   <Link
                     key={item.id}
                     href={`/shop/all/${item.handle}`}
-                    className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg hover:bg-orange-100 transition-colors font-avant-garde border border-gray-200"
+                    className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-100 transition-colors font-avant-garde border border-gray-200"
                     onClick={() => setIsSearchOpen(false)}
                   >
                     <img
@@ -372,7 +372,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                       />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="font-medium text-sm md:text-base text-black group-hover:text-orange-500 transition-colors duration-300">
+                      <h3 className="font-medium text-sm md:text-base text-black group-hover:text-gray-500 transition-colors duration-300">
                         {product.title}
                       </h3>
                       <p className="text-xs md:text-sm text-gray-600">{product.productType}</p>
@@ -411,7 +411,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                       />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="font-medium text-sm md:text-base text-black group-hover:text-orange-500 transition-colors duration-300">
+                      <h3 className="font-medium text-sm md:text-base text-black group-hover:text-gray-500 transition-colors duration-300">
                         {product.title}
                       </h3>
                       <p className="text-xs md:text-sm text-gray-600">{product.productType}</p>
@@ -442,14 +442,14 @@ export default function Header({ collections: initialCollections }: HeaderProps)
           {/* Navigation Bar */}
           <div className="flex items-center justify-between px-8 py-4 border-b border-gray-200">
             {/* Left Navigation */}
-            <nav className="flex space-x-6">
+            <nav className="flex space-x-6 font-folio-bold">
               <div onMouseEnter={() => handleMouseEnter("shop")} className="relative py-2">
                 <Link
                   href="/shop"
-                  className={`text-sm font-medium transition-all duration-300 ${
+                  className={`text-[14px] font-medium transition-all duration-300 ${
                     activeDropdown === "shop"
-                      ? "text-orange-500 transform scale-105"
-                      : "hover:text-orange-500 hover:transform hover:scale-105"
+                      ? "text-gray-500 transform scale-105"
+                      : "hover:text-gray-500 hover:transform hover:scale-105"
                   }`}
                 >
                   Shop
@@ -459,10 +459,10 @@ export default function Header({ collections: initialCollections }: HeaderProps)
               <div onMouseEnter={() => handleMouseEnter("peripherals")} className="relative py-2">
                 <Link
                   href="/peripherals"
-                  className={`text-sm font-medium transition-all duration-300 ${
+                  className={`text-[14px] font-medium transition-all duration-300 ${
                     activeDropdown === "peripherals"
-                      ? "text-orange-500 transform scale-105"
-                      : "hover:text-orange-500 hover:transform hover:scale-105"
+                      ? "text-gray-500 transform scale-105"
+                      : "hover:text-gray-500 hover:transform hover:scale-105"
                   }`}
                 >
                   Peripherals
@@ -472,10 +472,10 @@ export default function Header({ collections: initialCollections }: HeaderProps)
               <div onMouseEnter={() => handleMouseEnter("community")} className="relative py-2">
                 <Link
                   href="/community"
-                  className={`text-sm font-medium transition-all duration-300 ${
+                  className={`text-[14px] font-medium transition-all duration-300 ${
                     activeDropdown === "community"
-                      ? "text-orange-500 transform scale-105"
-                      : "hover:text-orange-500 hover:transform hover:scale-105"
+                      ? "text-gray-500 transform scale-105"
+                      : "hover:text-gray-500 hover:transform hover:scale-105"
                   }`}
                 >
                   Community
@@ -484,7 +484,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
               <div className="relative py-2">
                 <Link
                   href="/about"
-                  className="text-sm font-medium hover:text-orange-500 hover:transform hover:scale-105 transition-all duration-300"
+                  className="text-[14px] font-medium hover:text-gray-500 hover:transform hover:scale-105 transition-all duration-300"
                   onMouseEnter={() => {
                     clearExistingTimeout()
                     setActiveDropdown(null)
@@ -496,7 +496,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
             </nav>
 
             {/* Logo - Centered */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold">
+            <div className="absolute left-1/2 transform -translate-x-1/2 text-[30px] font-itc-bold">
               <Link
                 href="/"
                 className={`hover:transform hover:scale-105 transition-all duration-300 ${activeDropdown ? "text-[#ADADAD]" : ""}`}
@@ -514,7 +514,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
               <button
                 onClick={handleSearchClick}
                 aria-label="Search"
-                className="hover:text-orange-500 hover:transform hover:scale-110 hover:rotate-12 transition-all duration-300 p-2"
+                className="hover:text-gray-500 hover:transform hover:scale-110 hover:rotate-12 transition-all duration-300 p-2"
                 onMouseEnter={() => {
                   clearExistingTimeout()
                   setActiveDropdown(null)
@@ -525,7 +525,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
               <Link
                 href="/profile"
                 aria-label="Profile"
-                className="hover:text-orange-500 hover:transform hover:scale-110 hover:-rotate-12 transition-all duration-300 p-2"
+                className="hover:text-gray-500 hover:transform hover:scale-110 hover:-rotate-12 transition-all duration-300 p-2"
                 onMouseEnter={() => {
                   clearExistingTimeout()
                   setActiveDropdown(null)
@@ -539,7 +539,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
               >
                 <ShoppingBag className="h-5 w-5" />
                 {mounted && totalCartItems > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-gray-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {totalCartItems}
                   </span>
                 )}
@@ -570,12 +570,12 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                 <div className="mr-16">
                   <Link
                     href="/shop"
-                    className="inline-block bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-full px-6 py-3 text-sm font-medium mb-6 hover:from-orange-500 hover:to-orange-600 hover:transform hover:scale-105 hover:shadow-lg transition-all duration-300"
+                    className="inline-block bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-full px-6 py-3 text-sm font-folio-bold mb-6 hover:from-gray-500 hover:to-gray-600 hover:transform hover:scale-105 hover:shadow-lg transition-all duration-300"
                   >
                     Discover All
                   </Link>
                 </div>
-                <div className="mr-16">
+                <div className="mr-16 font-folio-bold">
                   <ul className="space-y-3">
                     {[
                       { href: "/shop/men", text: "Men" },
@@ -588,16 +588,16 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                       >
                         <Link
                           href={item.href}
-                          className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
+                          className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
                         >
                           <span className="relative z-10">{item.text}</span>
-                          <span className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
+                          <span className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
                         </Link>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <div>
+                <div className="font-folio-bold">
                   <ul className="space-y-3">
                     {collections.map((collection, index) => (
                       <li
@@ -607,10 +607,10 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                       >
                         <Link
                           href={`/shop/${collection.handle}`}
-                          className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
+                          className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
                         >
                           <span className="relative z-10">{collection.title}</span>
-                          <span className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
+                          <span className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
                         </Link>
                       </li>
                     ))}
@@ -625,12 +625,12 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                 <div className="mr-16">
                   <Link
                     href="/peripherals"
-                    className="inline-block bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-full px-6 py-3 text-sm font-medium mb-6 hover:from-orange-500 hover:to-orange-600 hover:transform hover:scale-105 hover:shadow-lg transition-all duration-300"
+                    className="inline-block bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-full px-6 py-3 text-sm font-folio-bold mb-6 hover:from-gray-500 hover:to-gray-600 hover:transform hover:scale-105 hover:shadow-lg transition-all duration-300"
                   >
                     Read All
                   </Link>
                 </div>
-                <div>
+                <div className="font-folio-bold">
                   <ul className="space-y-3">
                     {[
                       { filter: "discovery", text: "Discovery" },
@@ -645,10 +645,10 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                       >
                         <Link
                           href={{ pathname: "/peripherals", query: { filter: item.filter } }}
-                          className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
+                          className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
                         >
                           <span className="relative z-10">{item.text}</span>
-                          <span className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
+                          <span className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
                         </Link>
                       </li>
                     ))}
@@ -663,22 +663,22 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                 <div className="mr-16">
                   <Link
                     href="/community/join"
-                    className="inline-block bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-full px-6 py-3 text-sm font-medium mb-6 hover:from-orange-500 hover:to-orange-600 hover:transform hover:scale-105 hover:shadow-lg transition-all duration-300"
+                    className="inline-block bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-full px-6 py-3 text-sm font-folio-bold mb-6 hover:from-gray-500 hover:to-gray-600 hover:transform hover:scale-105 hover:shadow-lg transition-all duration-300"
                   >
                     Join Now
                   </Link>
                 </div>
-                <ul className="space-y-3">
+                <ul className="space-y-3 font-folio-bold">
                   <li
                     className={`transform transition-all duration-500 ${activeDropdown === "community" ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}
                     style={{ transitionDelay: `0ms` }}
                   >
                     <Link
                       href={{ pathname: "/community", query: { view: "upcoming" } }}
-                      className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
+                      className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
                     >
                       <span className="relative z-10">Upcoming Events</span>
-                      <span className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
+                      <span className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
                     </Link>
                   </li>
                   <li
@@ -687,10 +687,10 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                   >
                     <Link
                       href={{ pathname: "/community", query: { view: "past" } }}
-                      className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
+                      className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
                     >
                       <span className="relative z-10">Past Events</span>
-                      <span className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
+                      <span className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
                     </Link>
                   </li>
                   <li
@@ -699,10 +699,10 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                   >
                     <Link
                       href={{ pathname: "/community", query: { view: "calendar" } }}
-                      className="text-sm hover:text-orange-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
+                      className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
                     >
                       <span className="relative z-10">Calendar</span>
-                      <span className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
+                      <span className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
                     </Link>
                   </li>
                   <li

@@ -32,9 +32,9 @@ export default function GridView({ events }: GridViewProps) {
     }
 
     const heights = {
-      large: 'h-[400px]',
-      medium: 'h-[400px]',
-      small: 'h-[300px]'
+      large: 'h-[408px]',
+      medium: 'h-[408px]',
+      small: 'h-[408px]'
     }
 
     const eventDate = new Date(event.event_date)
@@ -64,17 +64,17 @@ export default function GridView({ events }: GridViewProps) {
         <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
 
         {/* Location Tag */}
-        <div className="absolute top-4 left-4 bg-black/70 text-white text-xs px-3 py-1 font-avant-garde">
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-white text-[12px] px-3 py-1 font-itc-bold uppercase">
           {event.event_location}
         </div>
 
         {/* Content */}
         <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-6 text-white">
-          <h3 className={`${titleSizes[size]} font-bold font-avant-garde mb-4`}>{event.title}</h3>
+          <h3 className={`text-[24px] md:text-[28px] font-itc-demi mb-8`}>{event.title}</h3>
 
           <Link
             href={`/community/${event.id}`}
-            className="bg-white text-black text-xs px-4 py-1 rounded-full hover:bg-gray-200 transition-colors font-avant-garde mb-8"
+            className="bg-[#ADADAD] text-black text-xs px-4 py-1 rounded-full hover:bg-gray-200 transition-colors font-folio-bold mb-8"
           >
             More
           </Link>
@@ -82,8 +82,8 @@ export default function GridView({ events }: GridViewProps) {
 
         {/* Date and organizer at bottom */}
         <div className="absolute bottom-4 left-0 right-0 text-center text-white">
-          <p className="text-sm font-avant-garde">{formattedDate}</p>
-          <p className="text-xs font-avant-garde opacity-80">{event.category}</p>
+          <p className="text-[21px] font-folio-extra-bold">{formattedDate}</p>
+          <p className="text-[21px] font-folio-extra-bold">{event.category}</p>
         </div>
       </div>
     )

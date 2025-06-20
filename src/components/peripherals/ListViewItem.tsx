@@ -44,7 +44,7 @@ export default function ListViewItem({ peripherals }: ListViewItemProps) {
     {isMobile ? (
       <Link href={`/peripherals/${peripherals.id}`} className="block group">
         <div className="border-t border-gray-200 py-6">
-          <div className="flex justify-between items-center space-x-16">
+          <div className="flex justify-between items-center space-x-6">
             <div className="flex-shrink-0 w-24">
               <p className="text-[12px] font-bold font-avant-garde">{formattedDate}</p>
             </div>
@@ -58,15 +58,15 @@ export default function ListViewItem({ peripherals }: ListViewItemProps) {
     ):(
       <Link href={`/peripherals/${peripherals.id}`} className="block group">
         <div className="border-t border-gray-200 py-6">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center space-x-36">
             <div className="flex-shrink-0 w-24">
-              <p className="text-sm font-avant-garde">{formattedDate}</p>
+              <p className="text-[18px] font-folio-bold">{formattedDate}</p>
             </div>
             <div className="flex-grow">
-              <h3 className="text-xl md:text-2xl font-bold font-avant-garde group-hover:underline">{peripherals.title}</h3>
+              <h3 className="text-xl md:text-[36px] font-bold font-itc-demi uppercase group-hover:underline">{peripherals.title}</h3>
             </div>
             <div className="flex-shrink-0 text-right">
-              <span className="text-xs uppercase font-avant-garde">{peripherals.category}</span>
+              <span className="text-[10px] uppercase font-itc-md">{peripherals.category}</span>
             </div>
           </div>
         </div>

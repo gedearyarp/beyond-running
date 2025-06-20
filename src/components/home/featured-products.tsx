@@ -78,10 +78,10 @@ export default function FeaturedProducts() {
   return (
     <div className="my-12">
       <div className="mb-6">
-        <h2 className="text-xl font-bold mb-4 font-avant-garde">FEATURED ARTICLES</h2>
+        <h2 className="text-xl md:text-[42px] font-itc-demi mb-4 md:mb-10">FEATURED ARTICLES</h2>
         <div className="flex pb-2 gap-3 md:gap-6">
           <button
-            className={`text-xs md:text-sm font-medium md:mr-6 font-avant-garde ${
+            className={`text-xs md:text-sm font-medium md:mr-6 font-folio-medium ${
               activeTab === "new" ? "font-bold" : "text-gray-500"
             }`}
             onClick={() => setActiveTab("new")}
@@ -89,19 +89,19 @@ export default function FeaturedProducts() {
             New Arrivals
           </button>
           <button
-            className={`text-xs md:text-sm md:mr-6 font-avant-garde ${activeTab === "favorite" ? "font-bold" : "text-gray-500"}`}
+            className={`text-xs md:text-sm md:mr-6 font-folio-medium ${activeTab === "favorite" ? "font-bold" : "text-gray-500"}`}
             onClick={() => setActiveTab("favorite")}
           >
             Runners Favorite
           </button>
           <button
-            className={`text-xs md:text-sm font-avant-garde ${activeTab === "sale" ? "font-bold" : "text-gray-500"}`}
+            className={`text-xs md:text-sm font-folio-medium ${activeTab === "sale" ? "font-bold" : "text-gray-500"}`}
             onClick={() => setActiveTab("sale")}
           >
             Past Season Sale
           </button>
           <div className="md:text-sm text-xs ml-auto">
-            <Link href="/shop" className="text-xs md:text-sm font-avant-garde underline">
+            <Link href="/shop" className="text-xs md:text-sm font-itc-md underline">
               SHOP NOW
             </Link>
           </div>

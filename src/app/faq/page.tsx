@@ -118,8 +118,8 @@ export default function FAQPage() {
                 request customers post the item at their own expense to our warehouse, and contact our email regarding
                 their claim no more than 31 days after initial delivery of the item:
               </p>
-              <div className="mb-4 p-4 bg-gray-50 rounded-lg border-l-4 border-orange-500">
-                <p className="font-medium">Beyond Running Returns</p>
+              <div className="mb-4 p-4 bg-gray-50 font-folio-light rounded-lg border-l-4 border-gray-500">
+                <p className="font-folio-medium">Beyond Running Returns</p>
                 <p>Haul + Store</p>
                 <p>Unit 17, Admiralty Way Camberley,</p>
                 <p>Surrey</p>
@@ -290,7 +290,7 @@ export default function FAQPage() {
       <main className="flex-1 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-16 pb-12 md:pb-20">
           <div className="mb-8 md:mb-12">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black animate-fade-in">FAQ</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-itc-demi text-black animate-fade-in">FAQ</h1>
           </div>
 
           <div className="mb-8 md:mb-12">
@@ -307,7 +307,7 @@ export default function FAQPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all duration-300"
+                className="w-full font-folio-light pl-10 pr-4 pt-4.5 pb-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all duration-300"
               />
             </div>
           </div>
@@ -321,7 +321,7 @@ export default function FAQPage() {
                     <button
                       key={key}
                       onClick={() => handleSectionChange(key as FAQSection)}
-                      className={`block w-full text-left py-3 px-4 text-sm md:text-base font-medium transition-all duration-300 rounded-lg group animate-fade-in cursor-pointer ${
+                      className={`block w-full text-left py-3 px-4 text-sm md:text-base font-folio-bold transition-all duration-300 rounded-lg group animate-fade-in cursor-pointer ${
                         activeSection === key && !searchQuery
                           ? "text-white bg-black transform scale-105"
                           : "text-gray-600 hover:text-black hover:bg-gray-100 hover:transform hover:translate-x-2"
@@ -350,7 +350,7 @@ export default function FAQPage() {
                     <button
                       key={key}
                       onClick={() => handleSectionChange(key as FAQSection)}
-                      className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ${
+                      className={`flex-shrink-0 px-4 py-2 text-sm font-folio-bold rounded-full transition-all duration-300 ${
                         activeSection === key
                           ? "bg-black text-white transform scale-105"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -366,9 +366,9 @@ export default function FAQPage() {
             {/* FAQ Content */}
             <div className={`${!isMobile ? "lg:col-span-3" : ""}`}>
               {searchQuery && (
-                <div className="mb-6 p-4 bg-orange-50 rounded-lg border border-orange-200 animate-fade-in">
-                  <p className="text-sm text-orange-800">
-                    <span className="font-medium">{Object.values(filteredFAQData).flat().length} result(s) found</span>{" "}
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200 animate-fade-in">
+                  <p className="text-sm font-folio-light text-gray-800">
+                    <span className="font-folio-bold">{Object.values(filteredFAQData).flat().length} result(s) found</span>{" "}
                     for "{searchQuery}"
                   </p>
                 </div>
@@ -392,10 +392,10 @@ export default function FAQPage() {
                               className="w-full text-left p-4 md:p-6 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-between group"
                             >
                               <div>
-                                <h3 className="text-base md:text-lg font-bold text-black group-hover:text-orange-500 transition-colors duration-300">
+                                <h3 className="text-base md:text-lg font-folio-bold text-black group-hover:text-gray-500 transition-colors duration-300">
                                   {faq.question}
                                 </h3>
-                                <p className="text-sm text-gray-500 mt-1 capitalize">
+                                <p className="text-sm font-folio-light text-gray-500 mt-1 capitalize">
                                   {sectionTitles[section as FAQSection]}
                                 </p>
                               </div>
@@ -404,7 +404,7 @@ export default function FAQPage() {
                                   isExpanded ? "rotate-180" : ""
                                 }`}
                               >
-                                <ChevronDown className="h-5 w-5 text-gray-400 group-hover:text-orange-500" />
+                                <ChevronDown className="h-5 w-5 text-gray-400 group-hover:text-gray-500" />
                               </div>
                             </button>
                             <div
@@ -412,7 +412,7 @@ export default function FAQPage() {
                                 isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                               }`}
                             >
-                              <div className="p-4 md:p-6 pt-0 text-sm md:text-base text-gray-700 leading-relaxed">
+                              <div className="p-4 md:p-6 pt-0 font-folio-light text-sm md:text-base text-gray-700 leading-relaxed">
                                 {typeof faq.answer === "string" ? <p>{faq.answer}</p> : faq.answer}
                               </div>
                             </div>
@@ -436,7 +436,7 @@ export default function FAQPage() {
                               onClick={() => toggleExpanded(itemKey)}
                               className="w-full text-left p-4 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-between group"
                             >
-                              <h3 className="text-base font-bold text-black group-hover:text-orange-500 transition-colors duration-300 pr-4">
+                              <h3 className="text-base font-folio-bold text-black group-hover:text-orange-500 transition-colors duration-300 pr-4">
                                 {faq.question}
                               </h3>
                               <div
@@ -452,7 +452,7 @@ export default function FAQPage() {
                                 isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                               }`}
                             >
-                              <div className="p-4 pt-0 text-sm text-gray-700 leading-relaxed">
+                              <div className="p-4 pt-0 font-folio-medium text-sm text-gray-700 leading-relaxed">
                                 {typeof faq.answer === "string" ? <p>{faq.answer}</p> : faq.answer}
                               </div>
                             </div>
@@ -465,10 +465,10 @@ export default function FAQPage() {
                             className="border-b border-gray-200 pb-8 md:pb-12 last:border-b-0 animate-fade-in hover:bg-gray-50 transition-colors duration-300 rounded-lg p-4 md:p-6 -m-4 md:-m-6 mb-4 md:mb-6 cursor-pointer"
                             style={{ animationDelay: `${index * 100}ms` }}
                           >
-                            <h3 className="text-lg md:text-xl font-bold text-black mb-4 md:mb-6 transition-colors duration-300">
+                            <h3 className="text-lg md:text-xl font-folio-bold text-black mb-4 md:mb-6 transition-colors duration-300">
                               {faq.question}
                             </h3>
-                            <div className="text-sm md:text-base text-gray-700 leading-relaxed">
+                            <div className="text-sm md:text-base font-folio-light text-gray-700 leading-relaxed">
                               {typeof faq.answer === "string" ? <p>{faq.answer}</p> : faq.answer}
                             </div>
                           </div>
@@ -478,16 +478,16 @@ export default function FAQPage() {
 
                 {/* No Results */}
                 {searchQuery && Object.values(filteredFAQData).flat().length === 0 && (
-                  <div className="text-center py-12 animate-fade-in">
+                  <div className="text-center py-12 animate-fade-in font-folio-medium">
                     <div className="text-gray-400 mb-4">
                       <Search className="h-16 w-16 mx-auto" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No results found</h3>
+                    <h3 className="text-lg text-gray-900 mb-2">No results found</h3>
                     <p className="text-gray-600">
                       Try adjusting your search terms or{" "}
                       <button
                         onClick={() => setSearchQuery("")}
-                        className="text-orange-500 hover:text-orange-600 underline"
+                        className="text-gray-500 hover:text-gray-600 underline"
                       >
                         browse all FAQs
                       </button>

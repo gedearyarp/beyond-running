@@ -40,9 +40,9 @@ export default function ProductCard({ product, isShop, collectionHandle }: Produ
           priority={isShop}
         />
       </div>
-      <h3 className="font-bold text-sm font-avant-garde">{product.title}</h3>
-      <p className="text-xs text-gray-600 mb-1 font-avant-garde">{colorsCount} Colors</p>
-      <p className="text-sm font-avant-garde">{formattedPrice}</p>
+      <h3 className="font-bold text-sm font-folio-bold">{product.title}</h3>
+      <p className="text-xs text-gray-600 mb-1 font-folio-light">{colorsCount} Colors</p>
+      <p className="text-sm font-folio-bold">{formattedPrice}</p>
     </Link>
   )
 }

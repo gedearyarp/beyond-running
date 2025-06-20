@@ -197,13 +197,13 @@ export default function PeripheralsPage() {
           <div className="absolute inset-0 bg-black/10" />
           {isMobile ? (
             <div className="absolute w-full flex justify-center bottom-14 text-center items-center">
-              <h1 className="flex flex-col gap-2 text-3xl font-bold font-avant-garde tracking-wide text-white">
+              <h1 className="flex flex-col gap-2 text-3xl font-itc-demi tracking-wide text-white">
                 BEYOND : PERIPHERALS
               </h1>
             </div>
           ) : (
             <div className="absolute inset-y-0 right-0 flex items-center pr-12">
-              <h1 className="text-4xl font-bold font-avant-garde tracking-wide text-white">PERIPHERALS</h1>
+              <h1 className="text-4xl font-itc-demi tracking-wide text-white">PERIPHERALS</h1>
             </div>
           )}
         </div>
@@ -211,7 +211,7 @@ export default function PeripheralsPage() {
         <div className="container mx-auto px-4 py-12">
           {/* Description */}
           <div className="max-w-3xl mb-12">
-            <p className="text-xs md:text-sm font-avant-garde">
+            <p className="text-xs md:text-sm font-folio-bold">
               Dive into our curated stories that highlight the intersection of journey, innovation, culture, and
               community. Discover how Beyond Running extends beyond the track into everyday movement.
             </p>
@@ -312,7 +312,7 @@ export default function PeripheralsPage() {
                 {/* Desktop Filter Controls */}
                 <div className="flex justify-between items-start">
                   <div className="flex items-center space-x-8 mb-4 md:mb-0">
-                    <div className="">
+                    <div className="font-folio-medium">
                       <CustomDropdown
                         options={filterOptions}
                         value={filter}
@@ -323,10 +323,10 @@ export default function PeripheralsPage() {
 
                     <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-8">
                       <button
-                        className={`text-sm font-avant-garde transition-all duration-200 ${
+                        className={`text-sm transition-all duration-200 ${
                           viewMode === "grid"
-                            ? "font-bold text-black border-b-2 border-black pb-1"
-                            : "text-gray-500 hover:text-gray-700"
+                            ? "font-folio-bold text-black border-b-2 border-black pb-1"
+                            : "font-folio-medium text-gray-500 hover:text-gray-700"
                         }`}
                         onClick={() => setViewMode("grid")}
                       >
@@ -335,8 +335,8 @@ export default function PeripheralsPage() {
                       <button
                         className={`text-sm font-avant-garde transition-all duration-200 ${
                           viewMode === "list"
-                            ? "font-bold text-black border-b-2 border-black pb-1"
-                            : "text-gray-500 hover:text-gray-700"
+                            ? "font-folio-bold text-black border-b-2 border-black pb-1"
+                            : "font-folio-medium text-gray-500 hover:text-gray-700"
                         }`}
                         onClick={() => setViewMode("list")}
                       >
@@ -346,11 +346,12 @@ export default function PeripheralsPage() {
                   </div>
 
                   <div className="flex items-center space-x-6">
-                    <span className="text-sm font-avant-garde text-gray-500">{peripherals.length} STORIES</span>
+                    <span className="text-sm font-folio-medium">{peripherals.length} STORIES</span>
+                    <span className="text-sm font-folio-medium">|</span>
 
                     <div className="flex items-center space-x-4">
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-avant-garde">Sort By:</span>
+                      <div className="flex items-center gap-3 font-folio-medium">
+                        <span className="text-sm">Sort By:</span>
                         <CustomDropdown
                           isSort={true}
                           options={sortOptions}

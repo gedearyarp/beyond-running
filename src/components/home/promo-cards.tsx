@@ -117,7 +117,7 @@ export default function PromoCards() {
             <div className="flex flex-col gap-8 items-center text-center">
               {/* Title with Scale Effect */}
               <h3
-                className={`text-2xl font-bold font-avant-garde tracking-wide transition-all duration-500 ease-out ${
+                className={`text-[27px] font-itc-demi tracking-wide transition-all duration-500 ease-out ${
                   hoveredCard === card.id ? "scale-105 text-white drop-shadow-lg" : "scale-100 text-white/90"
                 }`}
               >
@@ -127,7 +127,7 @@ export default function PromoCards() {
               {/* Button with Premium Hover */}
               <Link
                 href={card.link}
-                className={`bg-white text-black text-sm py-3 px-10 rounded-full font-avant-garde transition-all duration-500 ease-out transform ${
+                className={`bg-white text-black text-sm py-2.5 px-5 rounded-full font-folio-bold transition-all duration-500 ease-out transform ${
                   hoveredCard === card.id
                     ? "bg-white text-black scale-110 shadow-2xl shadow-white/25 hover:bg-gray-100"
                     : "bg-white/90 text-black/90 scale-100 shadow-lg hover:bg-white"
@@ -138,7 +138,7 @@ export default function PromoCards() {
 
               {/* Footer Text with Fade */}
               <p
-                className={`text-xs font-avant-garde absolute bottom-8 transition-all duration-500 ease-out ${
+                className={`text-xs font-itc-xl absolute bottom-8 transition-all duration-500 ease-out ${
                   hoveredCard === card.id ? "opacity-100 transform translate-y-0" : "opacity-70 transform translate-y-2"
                 }`}
               >

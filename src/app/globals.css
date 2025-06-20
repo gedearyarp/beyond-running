@@ -2,6 +2,130 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600&display=swap');
 
+@font-face {
+  font-family: 'itc-bk';
+  src: url('../assets/fonts/primary/ITCAvantGardePro-Bk.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'itc-bk-obl';
+  src: url('../assets/fonts/primary/ITCAvantGardePro-BkObl.otf') format('opentype');
+  font-weight: 400;
+  font-style: oblique;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'itc-bold';
+  src: url('../assets/fonts/primary/ITCAvantGardePro-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'itc-bold-obl';
+  src: url('../assets/fonts/primary/ITCAvantGardePro-BoldObl.otf') format('opentype');
+  font-weight: 700;
+  font-style: oblique;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'itc-demi';
+  src: url('../assets/fonts/primary/ITCAvantGardePro-Demi.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'itc-demi-obl';
+  src: url('../assets/fonts/primary/ITCAvantGardePro-DemiObl.otf') format('opentype');
+  font-weight: 600;
+  font-style: oblique;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'itc-md';
+  src: url('../assets/fonts/primary/ITCAvantGardePro-Md.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'itc-md-obl';
+  src: url('../assets/fonts/primary/ITCAvantGardePro-MdObl.otf') format('opentype');
+  font-weight: 500;
+  font-style: oblique;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'itc-xl';
+  src: url('../assets/fonts/primary/ITCAvantGardePro-XLt.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'itc-xl-obl';
+  src: url('../assets/fonts/primary/ITCAvantGardePro-XLtObl.otf') format('opentype');
+  font-weight: 300;
+  font-style: oblique;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'folio-bold';
+  src: url('../assets/fonts/secondary/FolioStd-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'folio-bold-condensed';
+  src: url('../assets/fonts/secondary/FolioStd-BoldCondensed.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-stretch: condensed;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'folio-extra-bold';
+  src: url('../assets/fonts/secondary/FolioStd-ExtraBold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'folio-light';
+  src: url('../assets/fonts/secondary/FolioStd-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'folio-medium';
+  src: url('../assets/fonts/secondary/FolioStd-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-itc-bk: 'itc-bk', sans-serif;
+  --font-itc-bk-obl: 'itc-bk-obl', sans-serif;
+  --font-itc-bold: 'itc-bold', sans-serif;
+  --font-itc-bold-obl: 'itc-bold-obl', sans-serif;
+  --font-itc-demi: 'itc-demi', sans-serif;
+  --font-itc-demi-obl: 'itc-demi-obl', sans-serif;
+  --font-itc-md: 'itc-md', sans-serif;
+  --font-itc-md-obl: 'itc-md-obl', sans-serif;
+  --font-itc-xl: 'itc-xl', sans-serif;
+  --font-itc-xl-obl: 'itc-xl-obl', sans-serif;
+  --font-folio-bold: 'folio-bold', sans-serif;
+  --font-folio-bold-condensed: 'folio-bold-condensed', sans-serif;
+  --font-folio-extra-bold: 'folio-extra-bold', sans-serif;
+  --font-folio-light: 'folio-light', sans-serif;
+  --font-folio-medium: 'folio-medium', sans-serif;
+}
 
 .hide-scrollbar::-webkit-scrollbar {
   height: 4px;

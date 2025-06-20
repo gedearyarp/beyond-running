@@ -222,7 +222,7 @@ export default function CommunityPage() {
           </div>
 
           {/* Enhanced Filters and Controls */}
-          <div className={`${isMobile ? "mb-2" : "border-b border-gray-200 mb-8"} pb-4`}>
+          <div className={`${isMobile ? "mb-2" : "border-gray-200 mb-8"} pb-4`}>
             {isMobile ? (
               <>
                 {/* Mobile Filter Controls */}
@@ -316,7 +316,7 @@ export default function CommunityPage() {
                 {/* Desktop Filter Controls */}
                 <div className="flex justify-between items-start">
                   <div className="flex items-center space-x-8 mb-4 md:mb-0">
-                    <div className="">
+                    <div className="font-folio-medium">
                       <CustomDropdown
                         options={categoryOptions}
                         value={category}
@@ -329,8 +329,8 @@ export default function CommunityPage() {
                       <button
                         className={`text-sm font-avant-garde transition-all duration-200 ${
                           viewMode === "grid"
-                            ? "font-bold text-black border-b-2 border-black pb-1"
-                            : "text-gray-500 hover:text-gray-700"
+                            ? "font-folio-bold text-black border-b-2 border-black pb-1"
+                            : "font-folio-medium text-gray-500 hover:text-gray-700"
                         }`}
                         onClick={() => setViewMode("grid")}
                       >
@@ -339,8 +339,8 @@ export default function CommunityPage() {
                       <button
                         className={`text-sm font-avant-garde transition-all duration-200 ${
                           viewMode === "list"
-                            ? "font-bold text-black border-b-2 border-black pb-1"
-                            : "text-gray-500 hover:text-gray-700"
+                            ? "font-folio-bold text-black border-b-2 border-black pb-1"
+                            : "font-folio-medium text-gray-500 hover:text-gray-700"
                         }`}
                         onClick={() => setViewMode("list")}
                       >
@@ -349,8 +349,8 @@ export default function CommunityPage() {
                       <button
                         className={`text-sm font-avant-garde transition-all duration-200 ${
                           viewMode === "calendar"
-                            ? "font-bold text-black border-b-2 border-black pb-1"
-                            : "text-gray-500 hover:text-gray-700"
+                            ? "font-folio-bold text-black border-b-2 border-black pb-1"
+                            : "font-folio-medium text-gray-500 hover:text-gray-700"
                         }`}
                         onClick={() => setViewMode("calendar")}
                       >
@@ -360,11 +360,12 @@ export default function CommunityPage() {
                   </div>
 
                   <div className="flex items-center space-x-6">
-                    <span className="text-sm font-avant-garde text-gray-500">{filteredEvents.length} STORIES</span>
+                    <span className="text-sm font-folio-medium">{filteredEvents.length} STORIES</span>
+                    <span className="text-sm font-folio-medium">|</span>
 
                     <div className="flex items-center space-x-4">
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-avant-garde">Sort By:</span>
+                      <div className="flex items-center gap-3 font-folio-medium">
+                        <span className="text-sm">Sort By:</span>
                         <CustomDropdown
                           isSort={true}
                           options={sortOptions}

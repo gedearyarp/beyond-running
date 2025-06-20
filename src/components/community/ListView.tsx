@@ -12,7 +12,7 @@ export default function ListView({ events }: ListViewProps) {
   if (events.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 font-avant-garde">No events available</p>
+        <p className="text-gray-500 font-folio-medium">No events available</p>
       </div>
     )
   }
@@ -30,9 +30,9 @@ export default function ListView({ events }: ListViewProps) {
         return (
           <Link key={event.id} href={`/community/${event.id}`} className="block group">
             <div className="border-t border-gray-200 py-6">
-              <div className="flex justify-between items-center space-x-16 md:space-x-0">
+              <div className="flex justify-between items-center space-x-16 md:space-x-36">
                 <div className="flex-shrink-0 w-24">
-                  <p className="text-[12px] font-bold md:font-normal md:text-sm font-avant-garde">{formattedDate}</p>
+                  <p className="text-[12px] font-folio-bold md:text-[18px]">{formattedDate}</p>
                 </div>
                 {isMobile ? (
                   <>
@@ -44,10 +44,10 @@ export default function ListView({ events }: ListViewProps) {
                 ) : (
                   <>
                     <div className="flex-grow">
-                      <h3 className="text-xl md:text-2xl font-bold font-avant-garde group-hover:underline">{event.title}</h3>
+                      <h3 className="text-xl md:text-[36px] font-itc-demi uppercase group-hover:underline">{event.title}</h3>
                     </div>
                     <div className="flex-shrink-0 text-right">
-                      <span className="text-xs uppercase font-avant-garde">{event.category}</span>
+                      <span className="text-[10px] uppercase font-itc-md">{event.category}</span>
                     </div>
                   </>
                 )}

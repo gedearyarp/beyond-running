@@ -71,7 +71,7 @@ export default function CalendarView({ events }: CalendarViewProps) {
     <div className="w-full">
       {sortedYears.map((year) => (
         <div key={year} className="mb-12">
-          <h2 className="text-2xl font-bold font-avant-garde mb-6">{year}</h2>
+          <h2 className="text-[14px] font-folio-bold mb-6">{year}</h2>
           <hr className="border-t border-gray-200 mb-8" />
 
           {Object.keys(groupedEvents[year])
@@ -84,29 +84,29 @@ export default function CalendarView({ events }: CalendarViewProps) {
               })
 
               return (
-                <div key={month} className="mb-16">
+                <div key={month} className="mb-12">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-x-8 gap-y-16">
                     <div>
-                      <h3 className="text-xl font-bold font-avant-garde">{month}</h3>
+                      <h3 className="text-[14px] font-folio-bold">{month}</h3>
                     </div>
                     {sortedEvents.map((event) => (
                       <div key={event.id} className="relative">
                         <div className="mb-4">
-                          <div className="text-3xl font-bold font-avant-garde mb-4">{event.day}</div>
+                          <div className="text-[14px] font-folio-bold mb-4">{event.day}</div>
 
                           <Link href={`/community/${event.id}`} className="block">
-                            <h4 className="text-base font-bold font-avant-garde mb-6 hover:underline">
+                            <h4 className="text-[14px] font-folio-bold mb-8 hover:underline">
                               {event.title}
                             </h4>
                           </Link>
 
-                          <p className="text-sm uppercase font-avant-garde">{event.event_location}</p>
+                          <p className="text-sm uppercase font-folio-medium">{event.event_location}</p>
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  <hr className="border-t border-gray-200 mt-16" />
+                  <hr className="border-t border-gray-200 mt-12" />
                 </div>
               )
             })}

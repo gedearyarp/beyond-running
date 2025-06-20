@@ -297,8 +297,8 @@ export default function ShopPageClient({ initialProducts, collections, collectio
             </div>
           ) : (
             <div className="absolute inset-y-0 right-0 flex items-center pr-12">
-              <h1 className="text-4xl font-bold font-avant-garde tracking-wide text-white">
-                {collection ? "COLLECTION: " : "COLLECTIONS "} {collection?.title || "END OF "}
+              <h1 className="text-4xl font-itc-demi tracking-wide text-white uppercase">
+                {collection ? "COLLECTIONS " : "COLLECTIONS "} {collection?.title || "END OF "}
                 <span className="italic">{collection ? "" : "SUMMER"}</span>
               </h1>
             </div>
@@ -308,7 +308,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
         <div className="container mx-auto px-4 py-12">
           {collection?.description && (
             <div className="max-w-3xl mb-12">
-              <p className="text-xs md:text-sm font-avant-garde">{collection.description}</p>
+              <p className="text-xs md:text-sm font-folio-bold">{collection.description}</p>
             </div>
           )}
 
@@ -465,7 +465,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
               <>
                 {/* Desktop Filter Controls */}
                 <div className="flex justify-between items-start">
-                  <div className="flex space-x-8 mb-4 md:mb-0">
+                  <div className="flex font-folio-medium space-x-8 mb-4 md:mb-0">
                     <div className="">
                       <CustomDropdown options={sizeOptions} value={size} onChange={setSize} placeholder="Size" />
                     </div>
@@ -489,12 +489,12 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-6">
-                    <span className="text-sm font-avant-garde text-gray-500">{displayedProducts.length} ITEMS</span>
-
+                  <div className="flex items-center font-folio-medium space-x-6">
+                    <span className="text-sm">{displayedProducts.length} ITEMS</span>
+                    <span className="text-sm">|</span>
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center gap-3">
-                        <span className="text-sm font-avant-garde">Sort By:</span>
+                        <span className="text-sm">Sort By:</span>
                         <CustomDropdown
                           isSort={true}
                           options={sortOptions}
@@ -864,12 +864,12 @@ export default function ShopPageClient({ initialProducts, collections, collectio
             
             {!hasMore && displayedProducts.length > 0 && !loading && !error && (
               <div className="text-center">
-                <p className="text-sm font-avant-garde text-gray-500 mb-4">
+                <p className="text-sm font-folio-light text-gray-500 mb-4">
                   You've reached the end of the collection
                 </p>
                 <button 
                   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  className="flex items-center gap-2 mx-auto text-sm font-avant-garde text-gray-600 hover:text-black transition-colors"
+                  className="flex gap-2 mx-auto text-sm font-folio-light text-gray-600 hover:text-black transition-colors cursor-pointer"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path

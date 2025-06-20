@@ -10,7 +10,22 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        "avant-garde": ['"ITC Avant Garde Gothic Pro"', "sans-serif"],
+        "avant-garde": ['"ITC Avant Garde Gothic Pro"', 'sans-serif'],
+        "avant-bk": ['ITCAvantGardePro-Bk', 'sans-serif'],
+        "avant-bk-obl": ['ITCAvantGardePro-BkObl', 'sans-serif'],
+        "avant-bold": ['ITCAvantGardePro-Bold', 'sans-serif'],
+        "avant-bold-obl": ['ITCAvantGardePro-BoldObl', 'sans-serif'],
+        "avant-demi": ['ITCAvantGardePro-Demi', 'sans-serif'],
+        "avant-demi-obl": ['ITCAvantGardePro-DemiObl', 'sans-serif'],
+        "avant-md": ['ITCAvantGardePro-Md', 'sans-serif'],
+        "avant-md-obl": ['ITCAvantGardePro-MdObl', 'sans-serif'],
+        "avant-xlt": ['ITCAvantGardePro-XLt', 'sans-serif'],
+        "avant-xlt-obl": ['ITCAvantGardePro-XLtObl', 'sans-serif'],
+        "folio-bold": ['FolioStd-Bold', 'sans-serif'],
+        "folio-bold-condensed": ['FolioStd-BoldCondensed', 'sans-serif'],
+        "folio-extrabold": ['FolioStd-ExtraBold', 'sans-serif'],
+        "folio-light": ['FolioStd-Light', 'sans-serif'],
+        "folio-medium": ['FolioStd-Medium', 'sans-serif'],
       },
       colors: {
         background: "hsl(var(--background))",
