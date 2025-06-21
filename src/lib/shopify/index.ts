@@ -33,7 +33,10 @@ type ShopifyFetchParams = {
   query: string;
   variables?: Record<string, any>;
   cache?: RequestCache;
+  tags?: string[];
 };
+
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 /**
  * Generic function to fetch data from Shopify Storefront API
@@ -42,6 +45,7 @@ export async function shopifyFetch<T = any>({
   query,
   variables,
   cache = 'force-cache',
+  tags = ['shopify-products', 'shopify-collections'],
 }: ShopifyFetchParams): Promise<T> {
   try {
     const response = await fetch(`https://${domain}/api/${apiVersion}/graphql.json`, {
@@ -54,7 +58,11 @@ export async function shopifyFetch<T = any>({
         query,
         variables,
       }),
-      cache,
+      cache: isDevelopment ? 'no-store' : cache, // No cache di development
+      next: isDevelopment ? undefined : { 
+        revalidate: 300, // Revalidate setiap 5 menit
+        tags // Cache tags untuk invalidation
+      },
     });
 
     if (!response.ok) {
@@ -90,6 +98,7 @@ export const getAllProductsForShopPage = async (first: number = 20): Promise<Pro
   const { products } = await shopifyFetch<{ products: Connection<ProductCardType> }>({
     query: ProductQueries.GET_ALL_PRODUCTS_FOR_SHOP_PAGE,
     variables: { first },
+    tags: ['shopify-products'],
   });
   return products.edges.map((edge) => edge.node);
 };
@@ -101,6 +110,7 @@ export const getProductDetailByHandle = async (handle: string): Promise<ProductD
   const { productByHandle } = await shopifyFetch<{ productByHandle: ProductDetailType }>({
     query: ProductQueries.GET_PRODUCT_DETAIL_BY_HANDLE_QUERY,
     variables: { handle },
+    tags: ['shopify-products'],
   });
   return productByHandle;
 };
@@ -111,6 +121,7 @@ export const getProductDetailByHandle = async (handle: string): Promise<ProductD
 export const getAllProductHandles = async (): Promise<string[]> => {
   const { products } = await shopifyFetch<{ products: Connection<{ handle: string }> }>({
     query: ProductQueries.GET_ALL_PRODUCT_HANDLES_QUERY,
+    tags: ['shopify-products'],
   });
   return products.edges.map((edge) => edge.node.handle);
 };
@@ -132,6 +143,7 @@ export type Collection = {
 export const getAllCollections = async (): Promise<Collection[]> => {
   const { collections } = await shopifyFetch<{ collections: Connection<Collection> }>({
     query: CollectionQueries.GET_ALL_COLLECTIONS,
+    tags: ['shopify-collections'],
   });
   return collections.edges.map((edge) => edge.node);
 };
@@ -143,6 +155,7 @@ export const getProductsByCollection = async (handle: string): Promise<ProductCa
   const { collectionByHandle } = await shopifyFetch<{ collectionByHandle: { products: Connection<ProductCardType> } }>({
     query: CollectionQueries.GET_COLLECTION_PRODUCTS,
     variables: { handle },
+    tags: ['shopify-products', 'shopify-collections'],
   });
 
   if (!collectionByHandle) {

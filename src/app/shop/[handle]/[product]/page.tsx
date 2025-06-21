@@ -535,7 +535,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                   selectedColor={selectedColor}
                   onAddToCart={handleCartClick}
                   disabled={!isAnyVariantInStock || (selectedColor && selectedSize ? !isVariantAvailable(selectedColor, selectedSize) : true)}
-                  buttonText={!isAnyVariantInStock ? "STOK HABIS" : undefined}
+                  buttonText={!isAnyVariantInStock ? "OUT OF STOCK" : undefined}
                 />
 
                 {/* Additional Links */}
