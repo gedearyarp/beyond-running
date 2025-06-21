@@ -71,6 +71,26 @@ export const GET_COLLECTION_PRODUCTS = gql`
                 }
               }
             }
+            metafields(
+              identifiers: [
+                { namespace: "shopify", key: "color-pattern" },
+                { namespace: "shopify", key: "size" },
+                { namespace: "shopify", key: "target-gender" }
+              ]
+            ) {
+              key
+              references(first: 10) {
+                nodes {
+                  ... on Metaobject {
+                    id
+                    handle
+                    field(key: "name") {
+                      value
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

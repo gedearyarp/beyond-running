@@ -22,7 +22,6 @@ export default function CartDropdown() {
   } = useCartStore()
   const [isCheckingOut, setIsCheckingOut] = useState(false)
   const router = useRouter()
-  console.log(items)
 
   if (!isOpen) return null
 

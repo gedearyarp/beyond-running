@@ -14,8 +14,16 @@ export default function ProductCard({ product, isShop, collectionHandle }: Produ
   const imageAlt = product.images?.edges?.[0]?.node?.altText || product.title;
 
   const formattedPrice = `${product.priceRange ? (product.priceRange.minVariantPrice.currencyCode) + (product.priceRange.minVariantPrice.amount) : "1"}`;
-  const hasVariants = product.variants?.edges?.length > 0;
-  const colorsCount = hasVariants ? (product.variants.edges.length) / 5 : 0;
+  
+  // Calculate colors count from metafields
+  const colorsCount = (() => {
+    if (!product.metafields || !Array.isArray(product.metafields)) return 0;
+    
+    const colorMetafield = product.metafields.find(m => m && m.key === "color-pattern");
+    if (!colorMetafield || !colorMetafield.references || !colorMetafield.references.nodes) return 0;
+    
+    return colorMetafield.references.nodes.filter(node => node && node.handle).length;
+  })();
 
   // Ensure product.handle exists
   if (!product.handle) {
