@@ -95,7 +95,7 @@ export default function CartDropdown() {
                   </div>
 
                   {/* Product Details */}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 mt-4">
                     <h3 className="font-itc-demi text-sm md:text-lg mb-1 md:mb-2 truncate">{item.title}</h3>
                     <div className="text-xs md:text-sm font-itc-md space-y-1 mb-2 md:mb-3">
                       <p>Size: {item.size}</p>

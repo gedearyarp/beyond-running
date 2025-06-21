@@ -51,7 +51,7 @@ export default function IntroSection() {
 
       {/* Brand Text */}
       <div className="absolute bottom-20 left-0 right-0 text-center text-white">
-        <p className="text-sm font-bold font-avant-garde mb-2 underline animate-pulse">SCROLL DOWN TO EXPLORE</p>
+        <p className="text-sm font-itc-bold mb-2 underline animate-pulse">SCROLL DOWN TO EXPLORE</p>
       </div>
 
       {/* Scroll indicator */}

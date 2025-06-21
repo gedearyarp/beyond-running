@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect, useCallback } from "react"
+import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ChevronRight, ChevronDown, ArrowLeft } from "lucide-react"
@@ -28,7 +28,7 @@ interface ProductDetailPageProps {
 // Utility functions
 const extractPureDescription = (htmlString: string): string => {
   if (!htmlString) return ""
-  const firstParagraphMatch = htmlString.match(/<p>.*?<\/p>/s)
+  const firstParagraphMatch = htmlString.match(/<p>[\s\S]*?<\/p>/)
   return firstParagraphMatch ? firstParagraphMatch[0] : htmlString
 }
 
@@ -48,9 +48,32 @@ const getColorHex = (colorName: string): string => {
 
 // Main component
 export default function ProductDetailPage({ product, relatedProducts }: ProductDetailPageProps) {
-  // Data extraction
-  const mainImageUrl = product?.images?.edges?.[0]?.node?.url || "/placeholder.svg"
-  const mainImageAlt = product?.images?.edges?.[0]?.node?.altText || product?.title || "Product image"
+  // --- MEMOS ---
+  const variantAvailability = useMemo(() => {
+    const availability = new Map<string, boolean>()
+    product.variants.edges.forEach((edge) => {
+      const colorOption = edge.node.selectedOptions.find((opt) => opt.name.toLowerCase() === "color")
+      const sizeOption = edge.node.selectedOptions.find((opt) => opt.name.toLowerCase() === "size")
+      if (colorOption && sizeOption) {
+        availability.set(`${colorOption.value}-${sizeOption.value}`, edge.node.availableForSale)
+      }
+    })
+    return availability
+  }, [product.variants])
+
+  const isVariantAvailable = useCallback(
+    (color: string, size: string) => {
+      return variantAvailability.get(`${color}-${size}`) ?? false
+    },
+    [variantAvailability],
+  )
+
+  const isAnyVariantInStock = useMemo(
+    () => Array.from(variantAvailability.values()).some((available) => available),
+    [variantAvailability],
+  )
+
+  // --- DATA EXTRACTION ---
   const galleryImages = product?.images?.edges?.map((edge) => edge.node.url) || []
   const formattedPrice = product?.priceRange?.minVariantPrice
     ? `${product.priceRange.minVariantPrice.currencyCode} ${product.priceRange.minVariantPrice.amount}`
@@ -79,9 +102,19 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
       )
     : []
 
-  // State management
-  const [selectedSize, setSelectedSize] = useState<string | null>(availableSizes[0] || null)
-  const [selectedColor, setSelectedColor] = useState<string | null>(availableColors[0] || null)
+  // --- STATE MANAGEMENT ---
+  const [selectedSize, setSelectedSize] = useState<string | null>(() => {
+    const firstAvailable = product.variants.edges.find((v) => v.node.availableForSale)
+    return firstAvailable?.node.selectedOptions.find((opt) => opt.name.toLowerCase() === "size")?.value || null
+  })
+  const [selectedColor, setSelectedColor] = useState<string | null>(() => {
+    const firstAvailable = product.variants.edges.find((v) => v.node.availableForSale)
+    return firstAvailable?.node.selectedOptions.find((opt) => opt.name.toLowerCase() === "color")?.value || null
+  })
+  const [displayImage, setDisplayImage] = useState({
+    url: product?.images?.edges?.[0]?.node?.url || "/placeholder.svg",
+    altText: product?.images?.edges?.[0]?.node?.altText || product?.title || "Product image",
+  })
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     technical: true,
     composition: false,
@@ -119,7 +152,67 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
     setMobileMenuOpen((prev) => !prev)
   }, [])
 
+  const handleColorSelect = (color: string) => {
+    // Don't change if it's the same color
+    if (selectedColor === color) return
+    
+    setSelectedColor(color)
+    
+    // Only change size if the current size is not available with the new color
+    if (selectedSize && !isVariantAvailable(color, selectedSize)) {
+      // Try to find an available size for this color
+      const availableSizeForColor = availableSizes.find((size) => isVariantAvailable(color, size))
+      if (availableSizeForColor) {
+        setSelectedSize(availableSizeForColor)
+      } else {
+        // If no size is available for this color, keep the current size but it will be disabled
+        // Don't reset to null as it might confuse the user
+      }
+    }
+  }
+
+  const handleSizeSelect = (size: string) => {
+    // Don't change if it's the same size
+    if (selectedSize === size) return
+    
+    setSelectedSize(size)
+    
+    // Only change color if the current color is not available with the new size
+    if (selectedColor && !isVariantAvailable(selectedColor, size)) {
+      // Try to find an available color for this size
+      const availableColorForSize = availableColors.find((color) => isVariantAvailable(color, size))
+      if (availableColorForSize) {
+        setSelectedColor(availableColorForSize)
+      } else {
+        // If no color is available for this size, keep the current color but it will be disabled
+        // Don't reset to null as it might confuse the user
+      }
+    }
+  }
+
   // Effects
+  useEffect(() => {
+    if (selectedColor && product.variants) {
+      const variant = product.variants.edges.find((edge) =>
+        edge.node.selectedOptions.some(
+          (option) => option.name.toLowerCase() === "color" && option.value === selectedColor,
+        ),
+      )
+      if (variant?.node.image) {
+        setDisplayImage({
+          url: variant.node.image.url,
+          altText: variant.node.image.altText || product.title,
+        })
+      } else {
+        // Fallback to the first product image if variant has no image or no color is selected
+        setDisplayImage({
+          url: product?.images?.edges?.[0]?.node?.url || "/placeholder.svg",
+          altText: product?.images?.edges?.[0]?.node?.altText || product?.title || "Product image",
+        })
+      }
+    }
+  }, [selectedColor, product])
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (galleryImages.length > 1) {
@@ -129,6 +222,25 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
     return () => clearInterval(interval)
   }, [galleryImages.length])
+
+  // Ensure we have valid initial selections
+  useEffect(() => {
+    if (!selectedColor && availableColors.length > 0) {
+      const firstAvailable = product.variants.edges.find((v) => v.node.availableForSale)
+      const initialColor = firstAvailable?.node.selectedOptions.find((opt) => opt.name.toLowerCase() === "color")?.value
+      if (initialColor) {
+        setSelectedColor(initialColor)
+      }
+    }
+    
+    if (!selectedSize && availableSizes.length > 0) {
+      const firstAvailable = product.variants.edges.find((v) => v.node.availableForSale)
+      const initialSize = firstAvailable?.node.selectedOptions.find((opt) => opt.name.toLowerCase() === "size")?.value
+      if (initialSize) {
+        setSelectedSize(initialSize)
+      }
+    }
+  }, [product.variants, availableColors, availableSizes, selectedColor, selectedSize])
 
   // Size chart data
   const sizeChartData = [
@@ -158,8 +270,8 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
             <div>
               <div className="bg-gray-100 mt-16 aspect-square relative overflow-hidden">
                 <Image
-                  src={mainImageUrl}
-                  alt={mainImageAlt}
+                  src={displayImage.url}
+                  alt={displayImage.altText}
                   fill
                   className="object-cover transition-transform duration-700 hover:scale-105"
                   priority
@@ -350,19 +462,24 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                   <h3 className="text-sm font-folio-bold mb-4">COLOR</h3>
                   <div className="flex space-x-3">
                     {availableColors.length > 0 ? (
-                      availableColors.map((color) => (
-                        <button
-                          key={color}
-                          className={`w-10 h-10 rounded-full transition-all duration-300 transform ${
-                            selectedColor === color
-                              ? "ring-2 ring-offset-4 ring-black scale-110"
-                              : "border border-gray-300 hover:scale-110"
-                          }`}
-                          style={{ backgroundColor: getColorHex(color) }}
-                          onClick={() => setSelectedColor(color)}
-                          aria-label={color}
-                        />
-                      ))
+                      availableColors.map((color) => {
+                        // A color is available if there's at least one size available for it
+                        const isAvailable = availableSizes.some((size) => isVariantAvailable(color, size))
+                        return (
+                          <button
+                            key={color}
+                            disabled={!isAvailable}
+                            className={`w-10 h-10 rounded-full transition-all duration-300 transform ${
+                              selectedColor === color
+                                ? "ring-2 ring-offset-4 ring-black scale-110"
+                                : "border border-gray-300 hover:scale-110"
+                            } ${!isAvailable ? "opacity-50 cursor-not-allowed" : ""}`}
+                            style={{ backgroundColor: getColorHex(color) }}
+                            onClick={() => handleColorSelect(color)}
+                            aria-label={color}
+                          />
+                        )
+                      })
                     ) : (
                       <p className="text-xs text-gray-500">No colors available</p>
                     )}
@@ -383,19 +500,28 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                   </div>
                   <div className="flex space-x-8">
                     {availableSizes.length > 0 ? (
-                      availableSizes.map((size) => (
-                        <button
-                          key={size}
-                          className={`w-10 h-10 flex items-center justify-center transition-all duration-300 ${
-                            selectedSize === size
-                              ? "border border-black rounded-full font-bold transform scale-110"
-                              : "border-gray-300 hover:border-black text-[#ADADAD] hover:text-black hover:scale-110"
-                          } font-itc-bold`}
-                          onClick={() => setSelectedSize(size)}
-                        >
-                          {size}
-                        </button>
-                      ))
+                      availableSizes.map((size) => {
+                        // A size is available if the selected color is available with this size
+                        // If no color is selected, show all sizes as available
+                        const isAvailable = selectedColor ? isVariantAvailable(selectedColor, size) : true
+                        return (
+                          <button
+                            key={size}
+                            disabled={!isAvailable}
+                            className={`w-10 h-10 flex items-center justify-center transition-all duration-300 ${
+                              selectedSize === size
+                                ? "border border-black rounded-full font-bold transform scale-110"
+                                : "border-gray-300 hover:border-black text-[#ADADAD] hover:text-black hover:scale-110"
+                            } ${!isAvailable ? "opacity-25 cursor-not-allowed relative" : ""} font-itc-bold`}
+                            onClick={() => handleSizeSelect(size)}
+                          >
+                            {size}
+                            {!isAvailable && (
+                              <span className="absolute w-full h-0.5 bg-gray-400 transform rotate-45"></span>
+                            )}
+                          </button>
+                        )
+                      })
                     ) : (
                       <p className="text-xs font-folio-medium text-gray-500">No sizes available</p>
                     )}
@@ -408,6 +534,8 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                   selectedSize={selectedSize}
                   selectedColor={selectedColor}
                   onAddToCart={handleCartClick}
+                  disabled={!isAnyVariantInStock || (selectedColor && selectedSize ? !isVariantAvailable(selectedColor, selectedSize) : true)}
+                  buttonText={!isAnyVariantInStock ? "STOK HABIS" : undefined}
                 />
 
                 {/* Additional Links */}

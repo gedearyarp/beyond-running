@@ -75,9 +75,14 @@ export const PRODUCT_DETAIL_FRAGMENT = gql`
             amount
             currencyCode
           }
+          availableForSale
           selectedOptions {
             name
             value
+          }
+          image {
+            url
+            altText
           }
         }
       }

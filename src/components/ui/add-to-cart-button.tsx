@@ -9,9 +9,18 @@ interface AddToCartButtonProps {
   selectedSize: string | null
   selectedColor: string | null
   onAddToCart?: () => void
+  disabled?: boolean
+  buttonText?: string
 }
 
-export default function AddToCartButton({ product, selectedSize, selectedColor, onAddToCart }: AddToCartButtonProps) {
+export default function AddToCartButton({
+  product,
+  selectedSize,
+  selectedColor,
+  onAddToCart,
+  disabled,
+  buttonText,
+}: AddToCartButtonProps) {
   const [isAdding, setIsAdding] = useState(false)
   const { addItem } = useCartStore()
 
@@ -23,8 +32,8 @@ export default function AddToCartButton({ product, selectedSize, selectedColor, 
     // Find the selected variant
     const selectedVariant = product.variants.edges.find(
       (edge) =>
-        edge.node.selectedOptions.some((opt) => opt.name === "Size" && opt.value === selectedSize) &&
-        edge.node.selectedOptions.some((opt) => opt.name === "Color" && opt.value === selectedColor)
+        edge.node.selectedOptions.some((opt) => opt.name.toLowerCase() === "size" && opt.value === selectedSize) &&
+        edge.node.selectedOptions.some((opt) => opt.name.toLowerCase() === "color" && opt.value === selectedColor)
     )
 
     if (selectedVariant) {
@@ -33,9 +42,9 @@ export default function AddToCartButton({ product, selectedSize, selectedColor, 
         title: product.title,
         size: selectedSize,
         color: selectedColor,
-        price: parseFloat(product.priceRange.minVariantPrice.amount),
+        price: parseFloat(selectedVariant.node.price.amount),
         quantity: 1,
-        image: product.images.edges[0]?.node.url || "/placeholder.svg"
+        image: selectedVariant.node.image?.url || product.images.edges[0]?.node.url || "/placeholder.svg"
       })
 
       onAddToCart?.()
@@ -47,19 +56,23 @@ export default function AddToCartButton({ product, selectedSize, selectedColor, 
     }, 800)
   }
 
+  const isButtonDisabled = disabled || !selectedSize || !selectedColor || isAdding
+
   return (
     <button
       onClick={handleAddToCart}
-      disabled={!selectedSize || !selectedColor || isAdding}
+      disabled={isButtonDisabled}
       className={`w-full mt-10 py-4 px-6 text-sm md:text-[21px] font-itc-md transition-all duration-300 ${
-        !selectedSize || !selectedColor
+        isButtonDisabled
           ? "bg-gray-200 text-gray-500 cursor-not-allowed"
           : isAdding
           ? "bg-green-500 text-white"
           : "bg-black text-white hover:bg-gray-900"
       }`}
     >
-      {!selectedSize || !selectedColor
+      {buttonText
+        ? buttonText
+        : !selectedSize || !selectedColor
         ? "SELECT SIZE & COLOR"
         : isAdding
         ? "ADDED TO CART"
