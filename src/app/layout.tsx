@@ -5,6 +5,7 @@ import "./globals.css"
 import "./fonts.css"
 import Header from "@/components/ui/Header"
 import { getAllCollections } from "@/lib/shopify"
+import { Toaster } from "react-hot-toast"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -29,6 +30,7 @@ export default async function RootLayout({
           <Header collections={collections} />
         </div>
         <main>{children}</main>
+        <Toaster />
       </body>
     </html>
   )
