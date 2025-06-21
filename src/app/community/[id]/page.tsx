@@ -124,7 +124,7 @@ export default function CommunityDetailPage() {
             {/* Left Column - Event Image */}
             <div>
               {isMobile && (
-                <h1 className="text-2xl md:text-4xl font-bold font-avant-garde mb-8">{event.title}</h1>
+                <h1 className="text-2xl md:text-4xl font-itc-demi mb-8">{event.title}</h1>
               )}
               <div className="relative h-[481px] md:h-[900px] w-full">
                 <Image 
@@ -139,27 +139,27 @@ export default function CommunityDetailPage() {
 
             <div>
               {!isMobile && (
-                <h1 className="text-3xl md:text-4xl font-bold font-avant-garde mb-8">{event.title}</h1>
+                <h1 className="text-3xl md:text-[42px] font-itc-demi mb-8">{event.title}</h1>
               )}
 
               <div className="mb-8 text-center md:text-left">
                 <RichTextViewer 
                   content={event.time_place} 
-                  className="text-sm font-avant-garde mb-1"
+                  className="text-[16px] font-folio-bold mb-1"
                 />
               </div>
 
               <div className="mb-8">
                 <RichTextViewer 
                   content={event.event_overview} 
-                  className="text-sm font-avant-garde mb-8 leading-relaxed"
+                  className="text-[16px] font-folio-medium mb-8 leading-relaxed"
                 />
               </div>
 
               <div className="mb-8">
                 <RichTextViewer 
                   content={event.event_tnc} 
-                  className="text-sm font-avant-garde mb-8 leading-relaxed"
+                  className="text-[16px] font-folio-medium mb-8 leading-relaxed"
                 />
               </div>
 
@@ -168,7 +168,7 @@ export default function CommunityDetailPage() {
                   href={event.signup_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-full bg-black text-white py-4 font-avant-garde hover:bg-gray-900 transition-colors mb-6 text-center"
+                  className="text-[24px] block w-full bg-black text-white py-4 font-itc-md hover:bg-gray-900 transition-colors mb-6 text-center"
                 >
                   SIGN UP
                 </a>
@@ -181,7 +181,7 @@ export default function CommunityDetailPage() {
                       href={event.full_rundown_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm font-avant-garde font-bold hover:underline"
+                      className="text-sm font-folio-medium hover:underline"
                     >
                       Full Rundown
                     </a>
@@ -191,7 +191,7 @@ export default function CommunityDetailPage() {
                       href={event.documentation_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm font-avant-garde font-bold hover:underline"
+                      className="text-sm font-folio-medium hover:underline"
                     >
                       Documentation
                     </a>

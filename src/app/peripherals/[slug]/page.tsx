@@ -135,18 +135,18 @@ export default function PeripheralsDetailPage() {
         <div className="container mx-auto px-4 py-16 md:py-16 flex flex-col gap-0 md:gap-36">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <div>
-              <h1 className="text-[21px] md:text-5xl font-bold font-avant-garde mb-6">{peripheral.title}</h1>
-              <p className="text-xs md:text-sm font-avant-garde mb-6">{formattedDate}</p>
+              <h1 className="text-[21px] md:text-5xl font-itc-demi mb-6">{peripheral.title}</h1>
+              <p className="text-xs md:text-sm font-folio-bold mb-6">{formattedDate}</p>
               {peripheral.credits && (
                 <RichTextViewer 
                   content={peripheral.credits} 
-                  className="font-bold text-sm font-avant-garde"
+                  className="text-sm font-folio-bold"
                 />
               )}
             </div>
             <div>
               {peripheral.event_overview && (
-                <div className="text-[12px] md:text-base font-avant-garde leading-relaxed space-y-6">
+                <div className="text-[12px] md:text-sm font-folio-light leading-relaxed space-y-6">
                   <RichTextViewer content={peripheral.event_overview} />
                 </div>
               )}
@@ -155,7 +155,7 @@ export default function PeripheralsDetailPage() {
           
           {peripheral.highlight_quote && (
             <div className="my-28 md:my-36 max-w-4xl mx-auto text-center">
-              <h2 className="text-[20px] md:text-4xl font-bold font-avant-garde leading-tight">
+              <h2 className="text-[20px] md:text-4xl font-itc-demi leading-tight">
                 <RichTextViewer content={peripheral.highlight_quote} />
               </h2>
             </div>
@@ -163,12 +163,12 @@ export default function PeripheralsDetailPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-24">
             {peripheral.paragraph_1 && (
-              <div className="text-[12px] md:text-base font-avant-garde leading-relaxed">
+              <div className="text-[12px] md:text-sm font-folio-light leading-relaxed">
                 <RichTextViewer content={peripheral.paragraph_1} />
               </div>
             )}
             {peripheral.paragraph_2 && (
-              <div className="text-[12px] md:text-base font-avant-garde leading-relaxed">
+              <div className="text-[12px] md:text-sm font-folio-light leading-relaxed">
                 <RichTextViewer content={peripheral.paragraph_2} />
               </div>
             )}
@@ -217,7 +217,7 @@ export default function PeripheralsDetailPage() {
 
         {peripheral.paragraph_bottom && (
           <div className="max-w-3xl px-4 md:px-0 md:ml-34 md:mb-24">
-            <div className="text-[12px] md:text-base font-avant-garde leading-relaxed">
+            <div className="text-[12px] md:text-sm font-folio-light leading-relaxed">
               <RichTextViewer content={peripheral.paragraph_bottom} />
             </div>
           </div>

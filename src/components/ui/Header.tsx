@@ -294,7 +294,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                   placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full text-lg md:text-xl font-medium bg-transparent border-none outline-none focus:ring-0 placeholder-gray-500"
+                  className="w-full text-lg md:text-xl font-folio-light bg-transparent border-none outline-none focus:ring-0 placeholder-gray-500"
                 />
               </div>
 
@@ -319,10 +319,10 @@ export default function Header({ collections: initialCollections }: HeaderProps)
           {recentSearches.length > 0 && (
             <div className="mb-8 px-4 md:px-8">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-xs text-gray-500 font-avant-garde">Recent Search</div>
+                <div className="text-sm text-gray-500 font-folio-medium">Recent Search</div>
                 <button
                   onClick={clearAllRecentSearch}
-                  className="text-xs text-gray-500 hover:underline font-avant-garde"
+                  className="text-sm text-gray-500 hover:underline font-folio-medium"
                 >
                   Clear All
                 </button>
@@ -340,7 +340,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                       alt={item.title}
                       className="w-10 h-10 object-cover rounded"
                     />
-                    <span className="text-xs font-medium truncate max-w-[100px]">{item.title}</span>
+                    <span className="text-xs font-folio-medium  max-w-[100px]">{item.title}</span>
                   </Link>
                 ))}
               </div>

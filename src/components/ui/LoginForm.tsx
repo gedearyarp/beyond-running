@@ -44,11 +44,11 @@ export default function LoginForm() {
 
   return (
     <div className="w-full max-w-md mx-auto px-6">
-      <h1 className="md:text-4xl text-xl font-bold text-center mb-16 font-avant-garde">LOGIN</h1>
+      <h1 className="md:text-4xl text-xl font-bold text-center mb-16 font-itc-demi">LOGIN</h1>
 
       <form className="space-y-10" onSubmit={handleSubmit}>
         <div className="space-y-2">
-          <label htmlFor="email" className="block font-avant-garde text-sm md:text-lg">
+          <label htmlFor="email" className="block font-folio-bold text-sm md:text-lg">
             Email
           </label>
           <div className="relative">
@@ -57,7 +57,7 @@ export default function LoginForm() {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-avant-garde"
+              className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-folio-light"
               required
               disabled={isLoading}
             />
@@ -66,7 +66,7 @@ export default function LoginForm() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="password" className="block font-avant-garde text-sm md:text-lg">
+          <label htmlFor="password" className="block font-folio-bold text-sm md:text-lg">
             Password
           </label>
           <div className="relative">
@@ -75,7 +75,7 @@ export default function LoginForm() {
               type="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-avant-garde"
+              className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-folio-light"
               required
               disabled={isLoading}
               minLength={6}
@@ -84,19 +84,13 @@ export default function LoginForm() {
           </div>
         </div>
 
-        <div className="text-left">
-          <Link href="/forgot-password" className="text-sm text-gray-400 hover:text-gray-600 font-avant-garde">
-            Forgot Password?
-          </Link>
-        </div>
-
         {error && (
           <p className="text-red-500 text-sm">{error}</p>
         )}
 
         <button
           type="submit"
-          className={`w-full bg-black text-white py-2 md:py-4 font-medium transition-colors font-avant-garde text-sm md:text-lg ${
+          className={`w-full bg-black text-white py-2 md:py-4 transition-colors font-folio-bold text-sm md:text-lg ${
             isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-900'
           }`}
           disabled={isLoading}
@@ -105,9 +99,9 @@ export default function LoginForm() {
         </button>
       </form>
 
-      <div className="mt-8 text-left md:text-lg text-sm">
-        <span className="font-avant-garde">Not a Member yet?</span>{" "}
-        <Link href="/register" className="underline font-medium font-avant-garde">
+      <div className="mt-8 text-left md:text-lg text-sm font-folio-medium">
+        <span className="">Not a Member yet?</span>{" "}
+        <Link href="/register" className="underline">
           Register Now
         </Link>
       </div>

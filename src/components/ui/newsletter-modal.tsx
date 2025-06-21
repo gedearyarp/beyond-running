@@ -124,10 +124,10 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
           {/* Content - Right side */}
           <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
             <div className="animate-fade-in">
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">SIGN UP FOR 15% OFF</h2>
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">YOUR FIRST ORDER</h3>
+              <h2 className="text-2xl md:text-3xl font-itc-demi text-white mb-2">SIGN UP FOR 15% OFF</h2>
+              <h3 className="text-2xl md:text-3xl font-itc-demi text-white mb-4">YOUR FIRST ORDER</h3>
 
-              <p className="text-sm text-white/80 mb-6">
+              <p className="text-xs font-folio-bold text-white text-center mb-6">
                 Subscribe to the Beyond Running Community, hear about our latest releases, access exclusive offers and
                 receive updates from behind the scenes. Plus receive 15% off your first order.
               </p>
@@ -141,7 +141,7 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter Email"
-                      className="w-full bg-transparent border-b border-white/30 py-2 text-white placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors duration-200"
+                      className="w-full font-folio-light bg-transparent border-b border-white/30 py-2 text-white placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors duration-200"
                       required
                     />
                   </div>
@@ -149,7 +149,7 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`w-full bg-[#d17928] hover:bg-[#c06820] text-white py-3 font-medium transition-all duration-300 relative overflow-hidden ${
+                    className={`w-full font-itc-md bg-[#d17928] hover:bg-[#c06820] text-white py-3 font-medium transition-all duration-300 relative overflow-hidden ${
                       isSubmitting ? "cursor-not-allowed opacity-80" : ""
                     }`}
                   >
@@ -182,7 +182,7 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
                     )}
                   </button>
 
-                  <p className="text-xs text-white/60 text-center mt-4">
+                  <p className="text-[10px] font-folio-bold text-white/60 text-center mt-4">
                     By Signing Up, You Agree To Our{" "}
                     <span className="underline cursor-pointer">TERMS AND CONDITIONS</span>
                   </p>
@@ -200,8 +200,8 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                   </div>
-                  <h3 className="text-xl font-medium text-white mb-2">Thank You!</h3>
-                  <p className="text-white/80">Your 15% discount code has been sent to your email.</p>
+                  <h3 className="text-xl font-folio-bold text-white mb-2">Thank You!</h3>
+                  <p className="font-folio-medium text-white/80">Your 15% discount code has been sent to your email.</p>
                 </div>
               )}
             </div>

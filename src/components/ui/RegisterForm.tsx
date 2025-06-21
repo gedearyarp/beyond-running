@@ -70,12 +70,12 @@ export default function SignupForm() {
 
   return (
     <div className="w-full max-w-md mx-auto px-6">
-      <h1 className="md:text-4xl text-xl font-bold text-center mb-16 font-avant-garde">CREATE AN ACCOUNT</h1>
+      <h1 className="md:text-4xl text-xl font-bold text-center mb-16 font-itc-demi">CREATE AN ACCOUNT</h1>
 
       <form className="space-y-10 text" onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label htmlFor="firstName" className="block font-avant-garde text-sm md:text-lg">
+            <label htmlFor="firstName" className="block font-folio-bold text-sm md:text-lg">
               First Name
             </label>
             <div className="relative">
@@ -84,7 +84,7 @@ export default function SignupForm() {
                 type="text"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-avant-garde"
+                className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-folio-light"
                 required
                 disabled={isLoading}
                 minLength={2}
@@ -95,7 +95,7 @@ export default function SignupForm() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="lastName" className="block font-avant-garde text-sm md:text-lg">
+            <label htmlFor="lastName" className="block font-folio-bold text-sm md:text-lg">
               Last Name
             </label>
             <div className="relative">
@@ -104,7 +104,7 @@ export default function SignupForm() {
                 type="text"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-avant-garde"
+                className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-folio-light"
                 required
                 disabled={isLoading}
                 minLength={2}
@@ -116,7 +116,7 @@ export default function SignupForm() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="email" className="block font-avant-garde text-sm md:text-lg">
+          <label htmlFor="email" className="block font-folio-bold text-sm md:text-lg">
             Email
           </label>
           <div className="relative">
@@ -125,7 +125,7 @@ export default function SignupForm() {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-avant-garde"
+              className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-folio-light"
               required
               disabled={isLoading}
             />
@@ -134,7 +134,7 @@ export default function SignupForm() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="password" className="block font-avant-garde text-sm md:text-lg">
+          <label htmlFor="password" className="block font-folio-bold text-sm md:text-lg">
             Password
           </label>
           <div className="relative">
@@ -143,7 +143,7 @@ export default function SignupForm() {
               type="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-avant-garde"
+              className="w-full border-b border-gray-300 pb-2 focus:outline-none focus:border-black font-folio-light"
               required
               disabled={isLoading}
               minLength={6}
@@ -161,7 +161,7 @@ export default function SignupForm() {
             className="h-5 w-5 border-gray-300 focus:ring-black"
             disabled={isLoading}
           />
-          <label htmlFor="newsletter" className="text-sm md:text-lg font-avant-garde">
+          <label htmlFor="newsletter" className="text-sm md:text-lg text-[#292929] font-folio-bold">
             Subscribe to Our Newsletter
           </label>
         </div>
@@ -172,7 +172,7 @@ export default function SignupForm() {
 
         <button
           type="submit"
-          className={`w-full bg-black text-white py-2 md:py-4 font-medium transition-colors font-avant-garde text-sm md:text-lg ${
+          className={`w-full bg-black text-white py-2 md:py-4 transition-colors font-folio-bold text-sm md:text-lg ${
             isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-900'
           }`}
           disabled={isLoading}
@@ -181,9 +181,9 @@ export default function SignupForm() {
         </button>
       </form>
 
-      <div className="mt-8 text-left md:text-lg text-sm">
-        <span className="font-avant-garde">Already a Member?</span>{" "}
-        <Link href="/signin" className="underline font-medium font-avant-garde">
+      <div className="mt-8 text-left md:text-lg text-sm font-folio-medium">
+        <span className="">Already a Member?</span>{" "}
+        <Link href="/signin" className="underline">
           Login
         </Link>
       </div>

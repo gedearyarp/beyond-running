@@ -171,30 +171,30 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
             {/* Product Details */}
             <div className="w-full flex md:justify-end">
               <div className="md:w-2/3 md:px-0 px-4">
-                <div className="flex mb-6">
+                <div className="flex mb-12">
                   <Link
                     href="/shop"
                     className="flex items-center underline text-xs font-avant-garde group transition-all duration-300"
                   >
                     <ArrowLeft className="h-3 w-3 mr-1 transition-transform duration-300 group-hover:-translate-x-1" />
-                    <span className="group-hover:text-orange-500">BACK TO COLLECTIONS</span>
+                    <span className="font-folio-light group-hover:text-gray-500">BACK TO COLLECTIONS</span>
                   </Link>
                 </div>
-                <h1 className="text-3xl font-bold font-avant-garde mb-1 animate-fade-in">
+                <h1 className="text-3xl md:text-[36px] font-itc-demi mb-1 animate-fade-in">
                   {product?.title || "Product Name"}
                 </h1>
-                <h2 className="text-2xl font-bold font-avant-garde mb-6 animate-fade-in animation-delay-100">
+                {/* <h2 className="text-2xl font-bold font-avant-garde mb-6 animate-fade-in animation-delay-100">
                   {product?.productType || "MENS"}
-                </h2>
-                <p className="text-xl font-avant-garde mb-8 animate-fade-in animation-delay-200">{formattedPrice}</p>
+                </h2> */}
+                <p className="text-xl md:text-[24px] font-folio-bold mb-8 animate-fade-in animation-delay-200">{formattedPrice}</p>
 
                 {product?.descriptionHtml ? (
                   <div
-                    className="text-sm font-avant-garde mb-10 animate-fade-in animation-delay-300"
+                    className="text-sm md:text-[14px] font-folio-light mb-10 animate-fade-in animation-delay-300"
                     dangerouslySetInnerHTML={{ __html: extractPureDescription(product.descriptionHtml) }}
                   />
                 ) : (
-                  <p className="text-sm font-avant-garde mb-10 animate-fade-in animation-delay-300">
+                  <p className="text-sm md:text-[14px] font-folio-light mb-10 animate-fade-in animation-delay-300">
                     This product is your go-to for all your running needs. Made with high-quality materials for maximum
                     comfort and performance.
                   </p>
@@ -203,17 +203,17 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 {/* Technical Details Section */}
                 <div className="border-t border-gray-200 py-4">
                   <button
-                    className="flex items-center justify-between w-full text-left font-avant-garde font-medium group"
+                    className="flex items-center justify-between w-full text-left font-folio-bold group"
                     onClick={() => toggleSection("technical")}
                   >
-                    <span className="group-hover:text-orange-500 transition-colors duration-300">
+                    <span className="group-hover:text-gray-500 transition-colors duration-300">
                       Technical Details
                     </span>
                     <div className="transition-transform duration-300 ease-in-out">
                       {expandedSections.technical ? (
-                        <ChevronDown className="h-5 w-5 text-orange-500 transition-transform duration-300 transform rotate-0" />
+                        <ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-300 transform rotate-0" />
                       ) : (
-                        <ChevronRight className="h-5 w-5 group-hover:text-orange-500 transition-transform duration-300 transform group-hover:rotate-90" />
+                        <ChevronRight className="h-5 w-5 group-hover:text-gray-500 transition-transform duration-300 transform group-hover:rotate-90" />
                       )}
                     </div>
                   </button>
@@ -225,7 +225,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                     {expandedSections.technical && (
                       <div className="mt-4" ref={technicalRef}>
                         {product?.descriptionHtml && product.descriptionHtml.includes("Technical Details") ? (
-                          <ul className="pl-5 text-sm font-avant-garde space-y-3">
+                          <ul className="pl-5 text-sm md:text-[14px] font-folio-light space-y-3">
                             {product.descriptionHtml
                               .split("<h4><span>Technical Details</span></h4>")[1]
                               ?.split("<h4>")[0]
@@ -241,7 +241,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                               }) || []}
                           </ul>
                         ) : (
-                          <ul className="pl-5 text-sm font-avant-garde space-y-3">
+                          <ul className="pl-5 text-sm md:text-[14px] font-folio-light space-y-3">
                             <li className="flex items-start">
                               <span className="mr-2">•</span>
                               <span>Water-proof (Grade 3) fabric with 1000mm water repellent treatment</span>
@@ -280,15 +280,15 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 {/* Composition Section */}
                 <div className="border-t border-gray-200 py-4">
                   <button
-                    className="flex items-center justify-between w-full text-left font-avant-garde font-medium group"
+                    className="flex items-center justify-between w-full text-left font-folio-bold group"
                     onClick={() => toggleSection("composition")}
                   >
-                    <span className="group-hover:text-orange-500 transition-colors duration-300">Composition</span>
+                    <span className="group-hover:text-gray-500 transition-colors duration-300">Composition</span>
                     <div className="transition-transform duration-300 ease-in-out">
                       {expandedSections.composition ? (
-                        <ChevronDown className="h-5 w-5 text-orange-500 transition-transform duration-300 transform rotate-0" />
+                        <ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-300 transform rotate-0" />
                       ) : (
-                        <ChevronRight className="h-5 w-5 group-hover:text-orange-500 transition-transform duration-300 transform group-hover:rotate-90" />
+                        <ChevronRight className="h-5 w-5 group-hover:text-gray-500 transition-transform duration-300 transform group-hover:rotate-90" />
                       )}
                     </div>
                   </button>
@@ -301,7 +301,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                       <div className="mt-4" ref={compositionRef}>
                         {product?.descriptionHtml && product.descriptionHtml.includes("Composition") ? (
                           <div
-                            className="pl-5 text-sm font-avant-garde space-y-3"
+                            className="pl-5 text-sm md:text-[14px] font-folio-light space-y-3"
                             dangerouslySetInnerHTML={{
                               __html:
                                 product.descriptionHtml
@@ -347,7 +347,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
                 {/* Color Selection */}
                 <div className="mt-10 border-b pb-12">
-                  <h3 className="text-sm font-avant-garde mb-4">COLOR</h3>
+                  <h3 className="text-sm font-folio-bold mb-4">COLOR</h3>
                   <div className="flex space-x-3">
                     {availableColors.length > 0 ? (
                       availableColors.map((color) => (
@@ -372,12 +372,12 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 {/* Size Selection */}
                 <div className="mt-10">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-sm font-avant-garde">SIZE</h3>
+                    <h3 className="text-sm font-folio-bold">SIZE</h3>
                     <button
                       onClick={() => setIsSizeChartOpen(true)}
                       className="text-xs underline font-avant-garde hover:text-orange-500 transition-colors relative group"
                     >
-                      <span>SIZE GUIDE</span>
+                      <span className="text-sm font-folio-medium">SIZE GUIDE</span>
                       <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
                     </button>
                   </div>
@@ -390,14 +390,14 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                             selectedSize === size
                               ? "border border-black rounded-full font-bold transform scale-110"
                               : "border-gray-300 hover:border-black text-[#ADADAD] hover:text-black hover:scale-110"
-                          } font-avant-garde`}
+                          } font-itc-bold`}
                           onClick={() => setSelectedSize(size)}
                         >
                           {size}
                         </button>
                       ))
                     ) : (
-                      <p className="text-xs text-gray-500">No sizes available</p>
+                      <p className="text-xs font-folio-medium text-gray-500">No sizes available</p>
                     )}
                   </div>
                 </div>
@@ -411,7 +411,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 />
 
                 {/* Additional Links */}
-                <div className="flex gap-8 mt-6 text-xs w-full items-center justify-center font-avant-garde">
+                <div className="flex gap-8 mt-6 text-sm w-full font-folio-light">
                   <Link
                     href="/faq"
                     className="underline hover:text-orange-500 transition-colors duration-300 relative group"
@@ -482,7 +482,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
           {/* Related Products */}
           <div className="mt-20">
-            <h2 className="text-xl font-bold mb-8 font-avant-garde">YOU MAY ALSO LIKE</h2>
+            <h2 className="text-xl md:text-[16px] font-itc-demi mb-8">YOU MAY ALSO LIKE</h2>
             {relatedProducts.length > 0 ? (
               isMobile ? (
                 <div className="flex overflow-x-auto pb-4 gap-4 hide-scrollbar">
