@@ -11,9 +11,10 @@ interface AddToCartButtonProps {
   selectedSize: string | null
   selectedColor: string | null
   disabled?: boolean
+  buttonText?: string
 }
 
-export default function AddToCartButton({ product, selectedSize, selectedColor, disabled }: AddToCartButtonProps) {
+export default function AddToCartButton({ product, selectedSize, selectedColor, disabled, buttonText }: AddToCartButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { addItem, cartId, setCartId } = useCartStore()
@@ -106,7 +107,7 @@ export default function AddToCartButton({ product, selectedSize, selectedColor, 
             : "bg-black text-white hover:bg-gray-800"
         }`}
       >
-        {isLoading ? "ADDING..." : "ADD TO CART"}
+        {isLoading ? "ADDING..." : buttonText || "ADD TO CART"}
       </button>
       <OutOfStockModal
         isOpen={isModalOpen}

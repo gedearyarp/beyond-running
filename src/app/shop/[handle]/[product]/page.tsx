@@ -463,8 +463,8 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                   <div className="flex space-x-3">
                     {availableColors.length > 0 ? (
                       availableColors.map((color) => {
-                        // A color is available if there's at least one size available for it
-                        const isAvailable = availableSizes.some((size) => isVariantAvailable(color, size))
+                        // A color is available if there's at least one size available for it AND product has stock
+                        const isAvailable = isAnyVariantInStock && availableSizes.some((size) => isVariantAvailable(color, size))
                         return (
                           <button
                             key={color}
@@ -501,9 +501,9 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                   <div className="flex space-x-8">
                     {availableSizes.length > 0 ? (
                       availableSizes.map((size) => {
-                        // A size is available if the selected color is available with this size
-                        // If no color is selected, show all sizes as available
-                        const isAvailable = selectedColor ? isVariantAvailable(selectedColor, size) : true
+                        // A size is available if the selected color is available with this size AND product has stock
+                        // If no color is selected, show all sizes as available only if product has stock
+                        const isAvailable = isAnyVariantInStock && (selectedColor ? isVariantAvailable(selectedColor, size) : true)
                         return (
                           <button
                             key={size}
@@ -533,7 +533,6 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                   product={product}
                   selectedSize={selectedSize}
                   selectedColor={selectedColor}
-                  onAddToCart={handleCartClick}
                   disabled={!isAnyVariantInStock || (selectedColor && selectedSize ? !isVariantAvailable(selectedColor, selectedSize) : true)}
                   buttonText={!isAnyVariantInStock ? "OUT OF STOCK" : undefined}
                 />
