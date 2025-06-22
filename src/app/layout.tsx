@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import "./fonts.css"
 import Header from "@/components/ui/Header"
+import CartValidationProvider from "@/components/cart-validation-provider"
 import { getAllCollections } from "@/lib/shopify"
 import { Toaster } from "react-hot-toast"
 
@@ -30,6 +31,7 @@ export default async function RootLayout({
           <Header collections={collections} />
         </div>
         <main>{children}</main>
+        <CartValidationProvider />
         <Toaster />
       </body>
     </html>

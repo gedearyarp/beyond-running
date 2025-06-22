@@ -7,9 +7,12 @@ import { X, Minus, Plus } from "lucide-react"
 import { useCartStore } from "@/store/cart"
 import Button from "./button"
 import { useRouter } from "next/navigation"
+import OutOfStockModal from "./OutOfStockModal"
 
 export default function CartDropdown() {
   const [discountCode, setDiscountCode] = useState("")
+  const [isOutOfStockModalOpen, setIsOutOfStockModalOpen] = useState(false)
+  const [outOfStockItems, setOutOfStockItems] = useState<any[]>([])
   const { 
     items, 
     updateQuantity, 
@@ -18,7 +21,9 @@ export default function CartDropdown() {
     getTotalPrice,
     isOpen,
     closeCart,
-    checkout
+    checkout,
+    checkoutWithoutValidation,
+    validateStock
   } = useCartStore()
   const [isCheckingOut, setIsCheckingOut] = useState(false)
   const router = useRouter()
@@ -33,11 +38,63 @@ export default function CartDropdown() {
   const handleCheckout = async () => {
     try {
       setIsCheckingOut(true)
-      const checkoutUrl = await checkout()
-      router.push(checkoutUrl)
+      
+      // Validate stock before checkout
+      const stockValidation = await validateStock()
+      
+      if (!stockValidation.isValid) {
+        if (stockValidation.outOfStockItems.length > 0) {
+          setOutOfStockItems(stockValidation.outOfStockItems)
+          setIsOutOfStockModalOpen(true)
+          setIsCheckingOut(false)
+          return
+        }
+      }
+      
+      // Use checkoutWithoutValidation since we already validated
+      const checkoutUrl = await checkoutWithoutValidation()
+      if (checkoutUrl) {
+        router.push(checkoutUrl)
+      }
     } catch (error) {
       console.error("Checkout failed:", error)
       // You might want to show an error message to the user here
+    } finally {
+      setIsCheckingOut(false)
+    }
+  }
+
+  const handleOutOfStockModalClose = async () => {
+    setIsOutOfStockModalOpen(false)
+    setOutOfStockItems([])
+    
+    // Remove out of stock items from cart first
+    if (outOfStockItems.length > 0) {
+      outOfStockItems.forEach(item => {
+        removeItem(item.id)
+      })
+    }
+    
+    // Check if there are any items left in cart
+    const remainingItems = items.filter(item => 
+      !outOfStockItems.some(outOfStockItem => outOfStockItem.id === item.id)
+    )
+    
+    if (remainingItems.length === 0) {
+      // No items left, close cart
+      closeCart()
+      return
+    }
+    
+    // If there are remaining items, proceed with checkout
+    try {
+      setIsCheckingOut(true)
+      const checkoutUrl = await checkoutWithoutValidation()
+      if (checkoutUrl) {
+        router.push(checkoutUrl)
+      }
+    } catch (error) {
+      console.error("Checkout failed:", error)
     } finally {
       setIsCheckingOut(false)
     }
@@ -161,6 +218,15 @@ export default function CartDropdown() {
           </div>
         )}
       </div>
+
+      {isOutOfStockModalOpen && (
+        <OutOfStockModal
+          isOpen={isOutOfStockModalOpen}
+          onClose={handleOutOfStockModalClose}
+          outOfStockItems={outOfStockItems}
+          isCartValidation={true}
+        />
+      )}
     </>
   )
 }

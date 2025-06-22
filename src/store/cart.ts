@@ -12,6 +12,12 @@ export interface CartItem {
   image: string;
 }
 
+interface StockValidationResult {
+  isValid: boolean;
+  outOfStockItems: CartItem[];
+  lowStockItems: CartItem[];
+}
+
 interface CartState {
   items: CartItem[];
   cartId: string | null;
@@ -25,7 +31,9 @@ interface CartState {
   closeCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  validateStock: () => Promise<StockValidationResult>;
   checkout: () => Promise<string | null>;
+  checkoutWithoutValidation: () => Promise<string | null>;
 }
 
 export const useCartStore = create<CartState>()(
@@ -62,12 +70,91 @@ export const useCartStore = create<CartState>()(
       closeCart: () => set({ isOpen: false }),
       getTotalItems: () => get().items.reduce((total, item) => total + item.quantity, 0),
       getTotalPrice: () => get().items.reduce((total, item) => total + item.price * item.quantity, 0),
+      validateStock: async () => {
+        const state = get();
+        const outOfStockItems: CartItem[] = [];
+        const lowStockItems: CartItem[] = [];
+        
+        // Check stock for each item in cart
+        for (const item of state.items) {
+          try {
+            const response = await fetch('/api/cart/validate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ variantId: item.id, quantity: item.quantity })
+            });
+            
+            const result = await response.json();
+            
+            if (!result.success) {
+              if (result.error === 'OUT_OF_STOCK') {
+                outOfStockItems.push(item);
+              } else if (result.error === 'LOW_STOCK') {
+                lowStockItems.push(item);
+              }
+            }
+          } catch (error) {
+            console.error('Error validating stock for item:', item.id, error);
+            // If we can't validate, assume it's out of stock to be safe
+            outOfStockItems.push(item);
+          }
+        }
+        
+        return {
+          isValid: outOfStockItems.length === 0 && lowStockItems.length === 0,
+          outOfStockItems,
+          lowStockItems,
+        };
+      },
       checkout: async () => {
         const state = get();
         if (state.items.length === 0) {
           console.warn("Cannot checkout with an empty cart.");
           return null;
         }
+
+        try {
+          // Validate stock before checkout
+          const stockValidation = await state.validateStock();
+          
+          if (!stockValidation.isValid) {
+            // Handle out of stock items
+            if (stockValidation.outOfStockItems.length > 0) {
+              // Remove out of stock items from cart
+              stockValidation.outOfStockItems.forEach(item => {
+                state.removeItem(item.id);
+              });
+              
+              // Show notification about removed items
+              console.warn("Out of stock items removed from cart:", stockValidation.outOfStockItems);
+              
+              // If no items left, return null
+              if (state.items.length === 0) {
+                return null;
+              }
+            }
+            
+            // For low stock items, we can proceed but show warning
+            if (stockValidation.lowStockItems.length > 0) {
+              console.warn("Low stock items in cart:", stockValidation.lowStockItems);
+            }
+          }
+
+          const { checkoutUrl } = await createCheckout(state.items);
+          set({ items: [], cartId: null, isOpen: false });
+          return checkoutUrl;
+        } catch (error) {
+          console.error("Checkout failed:", error);
+          return null;
+        }
+      },
+      checkoutWithoutValidation: async () => {
+        const state = get();
+        if (state.items.length === 0) {
+          console.warn("Cannot checkout with an empty cart.");
+          return null;
+        }
+
         try {
           const { checkoutUrl } = await createCheckout(state.items);
           set({ items: [], cartId: null, isOpen: false });
