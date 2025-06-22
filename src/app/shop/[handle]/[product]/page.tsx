@@ -215,13 +215,24 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (galleryImages.length > 1) {
-        setActiveGalleryImage((prev) => (prev + 1) % galleryImages.length)
+      if (galleryImages.length > (isMobile ? 1 : 3)) {
+        setActiveGalleryImage((prev) => {
+          if (isMobile) {
+            // Mobile: scroll through individual images
+            return (prev + 1) % galleryImages.length
+          } else {
+            // Desktop: scroll through groups of 3 images
+            const currentGroup = Math.floor(prev / 3)
+            const totalGroups = Math.ceil(galleryImages.length / 3)
+            const nextGroup = (currentGroup + 1) % totalGroups
+            return nextGroup * 3
+          }
+        })
       }
     }, GALLERY_AUTO_SCROLL_INTERVAL)
 
     return () => clearInterval(interval)
-  }, [galleryImages.length])
+  }, [galleryImages.length, isMobile])
 
   // Ensure we have valid initial selections
   useEffect(() => {
@@ -538,24 +549,24 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 />
 
                 {/* Additional Links */}
-                <div className="flex gap-8 mt-6 text-sm w-full font-folio-light">
+                <div className="flex flex-row justify-center gap-4 sm:gap-8 mt-6 text-sm w-full font-folio-light">
                   <Link
                     href="/faq"
-                    className="underline hover:text-orange-500 transition-colors duration-300 relative group"
+                    className="underline hover:text-orange-500 transition-colors duration-300 relative group text-center sm:text-left"
                   >
                     <span>Delivery</span>
                     <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
                   </Link>
                   <Link
                     href="/faq"
-                    className="underline hover:text-orange-500 transition-colors duration-300 relative group"
+                    className="underline hover:text-orange-500 transition-colors duration-300 relative group text-center sm:text-left"
                   >
                     <span>Return & Exchange</span>
                     <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
                   </Link>
                   <Link
                     href="/faq"
-                    className="underline hover:text-orange-500 transition-colors duration-300 relative group"
+                    className="underline hover:text-orange-500 transition-colors duration-300 relative group text-center sm:text-left"
                   >
                     <span>Washing Guide</span>
                     <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
@@ -567,60 +578,85 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
           {/* Gallery Images */}
           <div className="mt-16 overflow-hidden">
-            <div
-              className="flex space-x-4 transition-transform duration-700 ease-in-out"
-              style={{ transform: `translateX(-${activeGalleryImage * (500 + 16)}px)` }}
-            >
-              {galleryImages.map((image, index) => (
+            <div className="flex justify-center">
+              <div className="relative" style={{ 
+                width: isMobile ? `${500}px` : `${3 * 500 + 2 * 16}px` 
+              }}>
                 <div
-                  key={image}
-                  className={`flex-shrink-0 w-[500px] h-[375px] relative transition-all duration-500 ${
-                    activeGalleryImage === index ? "scale-100 opacity-100" : "scale-95 opacity-80"
-                  }`}
-                  onClick={() => setActiveGalleryImage(index)}
+                  className="flex space-x-4 transition-transform duration-700 ease-in-out"
+                  style={{ 
+                    transform: isMobile 
+                      ? `translateX(-${activeGalleryImage * (500 + 16)}px)`
+                      : `translateX(-${Math.floor(activeGalleryImage / 3) * (3 * 500 + 2 * 16)}px)` 
+                  }}
                 >
-                  <Image
-                    src={image || "/placeholder.svg"}
-                    alt={`Product view ${index + 1}`}
-                    fill
-                    className="object-cover transition-transform duration-500 hover:scale-105"
-                    sizes="500px"
-                  />
+                  {galleryImages.map((image, index) => (
+                    <div
+                      key={image}
+                      className={`flex-shrink-0 w-[500px] h-[375px] relative transition-all duration-500 ${
+                        activeGalleryImage === index ? "scale-100 opacity-100" : "scale-95 opacity-80"
+                      }`}
+                      onClick={() => setActiveGalleryImage(index)}
+                    >
+                      <Image
+                        src={image || "/placeholder.svg"}
+                        alt={`Product view ${index + 1}`}
+                        fill
+                        className="object-cover transition-transform duration-500 hover:scale-105"
+                        sizes="500px"
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
 
             {/* Gallery Navigation Dots */}
-            {galleryImages.length > 1 && (
+            {galleryImages.length > (isMobile ? 1 : 3) && (
               <div className="flex justify-center mt-4 space-x-2">
-                {galleryImages.map((_, index) => (
-                  <button
-                    key={index}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      activeGalleryImage === index ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
-                    }`}
-                    onClick={() => setActiveGalleryImage(index)}
-                    aria-label={`View image ${index + 1}`}
-                  />
-                ))}
+                {isMobile ? (
+                  // Mobile: one dot per image
+                  galleryImages.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        activeGalleryImage === index ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
+                      }`}
+                      onClick={() => setActiveGalleryImage(index)}
+                      aria-label={`View image ${index + 1}`}
+                    />
+                  ))
+                ) : (
+                  // Desktop: one dot per group of 3 images
+                  Array.from({ length: Math.ceil(galleryImages.length / 3) }, (_, groupIndex) => (
+                    <button
+                      key={groupIndex}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        Math.floor(activeGalleryImage / 3) === groupIndex ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
+                      }`}
+                      onClick={() => setActiveGalleryImage(groupIndex * 3)}
+                      aria-label={`View image group ${groupIndex + 1}`}
+                    />
+                  ))
+                )}
               </div>
             )}
           </div>
 
           {/* Related Products */}
-          <div className="mt-20">
-            <h2 className="text-xl md:text-[16px] font-itc-demi mb-8">YOU MAY ALSO LIKE</h2>
+          <div className="mt-20 px-4 md:px-0">
+            <h2 className="text-xl md:text-[16px] font-itc-demi mb-8 text-left">YOU MAY ALSO LIKE</h2>
             {relatedProducts.length > 0 ? (
               isMobile ? (
-                <div className="flex overflow-x-auto pb-4 gap-4 hide-scrollbar">
+                <div className="flex overflow-x-auto pb-4 gap-6 hide-scrollbar -mx-4 px-4">
                   {relatedProducts.map((product) => (
-                    <div key={product.id} className="transform transition-transform duration-300 hover:scale-105">
+                    <div key={product.id} className="flex-shrink-0 min-w-[174px] transform transition-transform duration-300 hover:scale-105">
                       <ProductCard product={product} />
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                   {relatedProducts.map((product) => (
                     <div key={product.id} className="transform transition-transform duration-300 hover:scale-105">
                       <ProductCard product={product} />
@@ -638,7 +674,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 </div>
               )
             ) : (
-              <p className="text-center py-8">No related products found.</p>
+              <p className="text-center py-8 text-gray-500">No related products found.</p>
             )}
           </div>
         </div>
