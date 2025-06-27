@@ -21,8 +21,11 @@ export default function BaseModal({
   applyButtonText = "APPLY FILTERS",
 }: BaseModalProps) {
   return (
-    <div className="fixed inset-0 bg-white z-50 overflow-auto">
-      <div className="p-6 flex flex-col h-full">
+    <div className="fixed inset-0 z-50">
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/50 z-50" style={{ pointerEvents: 'auto' }} onClick={onClose} />
+      {/* Modal Content */}
+      <div className="relative z-50 p-6 flex flex-col h-full">
         {/* Header */}
         <div className="flex justify-between items-center mb-10">
           <h2 className="text-xl font-medium font-avant-garde">{title}</h2>
@@ -33,10 +36,8 @@ export default function BaseModal({
             </button>
           </div>
         </div>
-
         {/* Content */}
         <div className="flex-grow">{children}</div>
-
         {/* Footer Buttons */}
         <div className="grid grid-cols-2 gap-4 mt-auto">
           <button onClick={onReset} className="py-4 bg-[#adadad] text-black font-medium font-avant-garde">
