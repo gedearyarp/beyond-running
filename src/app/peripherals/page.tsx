@@ -590,23 +590,6 @@ export default function PeripheralsPage() {
                           Go Back
                         </button>
                       </div>
-
-                      <div className="mt-12 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-100">
-                        <h4 className="font-semibold text-gray-900 mb-2">Stay Inspired!</h4>
-                        <p className="text-sm text-gray-600 mb-4">
-                          Be the first to read our latest stories and insights.
-                        </p>
-                        <div className="flex gap-2">
-                          <input
-                            type="email"
-                            placeholder="Enter your email"
-                            className="flex-1 px-4 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                          <button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-full text-sm font-medium hover:from-blue-600 hover:to-purple-600 transition-all duration-300">
-                            Notify Me
-                          </button>
-                        </div>
-                      </div>
                     </div>
                   )
                 }
