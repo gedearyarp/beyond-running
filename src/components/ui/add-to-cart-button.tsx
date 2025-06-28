@@ -12,15 +12,21 @@ interface AddToCartButtonProps {
   selectedColor: string | null
   disabled?: boolean
   buttonText?: string
+  hasSizeOptions?: boolean
 }
 
-export default function AddToCartButton({ product, selectedSize, selectedColor, disabled, buttonText }: AddToCartButtonProps) {
+export default function AddToCartButton({ product, selectedSize, selectedColor, disabled, buttonText, hasSizeOptions = true }: AddToCartButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { addItem, cartId, setCartId } = useCartStore()
 
   const handleAddToCart = async () => {
-    if (!selectedSize || !selectedColor) {
+    if (!selectedColor) {
+      showErrorToast("Please select a color.")
+      return
+    }
+
+    if (hasSizeOptions && !selectedSize) {
       showErrorToast("Please select a size and color.")
       return
     }
@@ -29,9 +35,14 @@ export default function AddToCartButton({ product, selectedSize, selectedColor, 
     const toastId = showProcessingToast()
 
     const selectedVariant = product.variants.edges.find(
-      (edge) =>
-        edge.node.selectedOptions.some((opt) => opt.name.toLowerCase() === "size" && opt.value === selectedSize) &&
-        edge.node.selectedOptions.some((opt) => opt.name.toLowerCase() === "color" && opt.value === selectedColor),
+      (edge) => {
+        const hasColor = edge.node.selectedOptions.some((opt) => opt.name.toLowerCase() === "color" && opt.value === selectedColor)
+        if (hasSizeOptions) {
+          return hasColor && edge.node.selectedOptions.some((opt) => opt.name.toLowerCase() === "size" && opt.value === selectedSize)
+        } else {
+          return hasColor
+        }
+      }
     )?.node
 
     if (!selectedVariant) {
@@ -65,7 +76,7 @@ export default function AddToCartButton({ product, selectedSize, selectedColor, 
         addItem({
           id: selectedVariant.id,
           title: product.title,
-          size: selectedSize,
+          size: selectedSize || "One Size",
           color: selectedColor,
           price: parseFloat(selectedVariant.price.amount),
           quantity: 1,
@@ -94,7 +105,7 @@ export default function AddToCartButton({ product, selectedSize, selectedColor, 
     }
   }
 
-  const isButtonDisabled = disabled || !selectedSize || !selectedColor || isLoading
+  const isButtonDisabled = disabled || !selectedColor || (hasSizeOptions && !selectedSize) || isLoading
 
   return (
     <>

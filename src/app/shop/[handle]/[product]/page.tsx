@@ -62,23 +62,44 @@ const hasComposition = (descriptionHtml: string): boolean => {
 // Main component
 export default function ProductDetailPage({ product, relatedProducts }: ProductDetailPageProps) {
   // --- MEMOS ---
+  const hasSizeOptions = useMemo(() => {
+    return product.variants.edges.some((edge) => 
+      edge.node.selectedOptions.some((opt) => opt.name.toLowerCase() === "size")
+    )
+  }, [product.variants])
+
   const variantAvailability = useMemo(() => {
     const availability = new Map<string, boolean>()
     product.variants.edges.forEach((edge) => {
       const colorOption = edge.node.selectedOptions.find((opt) => opt.name.toLowerCase() === "color")
       const sizeOption = edge.node.selectedOptions.find((opt) => opt.name.toLowerCase() === "size")
-      if (colorOption && sizeOption) {
-        availability.set(`${colorOption.value}-${sizeOption.value}`, edge.node.availableForSale)
+      
+      if (hasSizeOptions) {
+        // Product has size options - use color-size combination
+        if (colorOption && sizeOption) {
+          availability.set(`${colorOption.value}-${sizeOption.value}`, edge.node.availableForSale)
+        }
+      } else {
+        // Product has no size options - use only color
+        if (colorOption) {
+          availability.set(colorOption.value, edge.node.availableForSale)
+        }
       }
     })
     return availability
-  }, [product.variants])
+  }, [product.variants, hasSizeOptions])
 
   const isVariantAvailable = useCallback(
-    (color: string, size: string) => {
-      return variantAvailability.get(`${color}-${size}`) ?? false
+    (color: string, size?: string) => {
+      if (hasSizeOptions) {
+        // Product has size options - check color-size combination
+        return variantAvailability.get(`${color}-${size}`) ?? false
+      } else {
+        // Product has no size options - check only color
+        return variantAvailability.get(color) ?? false
+      }
     },
-    [variantAvailability],
+    [variantAvailability, hasSizeOptions],
   )
 
   const isAnyVariantInStock = useMemo(
@@ -117,8 +138,12 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
   // --- STATE MANAGEMENT ---
   const [selectedSize, setSelectedSize] = useState<string | null>(() => {
-    const firstAvailable = product.variants.edges.find((v) => v.node.availableForSale)
-    return firstAvailable?.node.selectedOptions.find((opt) => opt.name.toLowerCase() === "size")?.value || null
+    // Only set initial size if product has size options
+    if (hasSizeOptions) {
+      const firstAvailable = product.variants.edges.find((v) => v.node.availableForSale)
+      return firstAvailable?.node.selectedOptions.find((opt) => opt.name.toLowerCase() === "size")?.value || null
+    }
+    return null
   })
   const [selectedColor, setSelectedColor] = useState<string | null>(() => {
     const firstAvailable = product.variants.edges.find((v) => v.node.availableForSale)
@@ -171,15 +196,12 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
     
     setSelectedColor(color)
     
-    // Only change size if the current size is not available with the new color
-    if (selectedSize && !isVariantAvailable(color, selectedSize)) {
+    // Only handle size logic if product has size options
+    if (hasSizeOptions && selectedSize && !isVariantAvailable(color, selectedSize)) {
       // Try to find an available size for this color
       const availableSizeForColor = availableSizes.find((size) => isVariantAvailable(color, size))
       if (availableSizeForColor) {
         setSelectedSize(availableSizeForColor)
-      } else {
-        // If no size is available for this color, keep the current size but it will be disabled
-        // Don't reset to null as it might confuse the user
       }
     }
   }
@@ -190,15 +212,12 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
     
     setSelectedSize(size)
     
-    // Only change color if the current color is not available with the new size
-    if (selectedColor && !isVariantAvailable(selectedColor, size)) {
+    // Only handle color logic if product has size options
+    if (hasSizeOptions && selectedColor && !isVariantAvailable(selectedColor, size)) {
       // Try to find an available color for this size
       const availableColorForSize = availableColors.find((color) => isVariantAvailable(color, size))
       if (availableColorForSize) {
         setSelectedColor(availableColorForSize)
-      } else {
-        // If no color is available for this size, keep the current color but it will be disabled
-        // Don't reset to null as it might confuse the user
       }
     }
   }
@@ -257,14 +276,15 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
       }
     }
     
-    if (!selectedSize && availableSizes.length > 0) {
+    // Only set initial size if product has size options
+    if (hasSizeOptions && !selectedSize && availableSizes.length > 0) {
       const firstAvailable = product.variants.edges.find((v) => v.node.availableForSale)
       const initialSize = firstAvailable?.node.selectedOptions.find((opt) => opt.name.toLowerCase() === "size")?.value
       if (initialSize) {
         setSelectedSize(initialSize)
       }
     }
-  }, [product.variants, availableColors, availableSizes, selectedColor, selectedSize])
+  }, [product.variants, availableColors, availableSizes, selectedColor, selectedSize, hasSizeOptions])
 
   // Size chart data
   const sizeChartData = [
@@ -491,8 +511,14 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                   <div className="flex space-x-3">
                     {availableColors.length > 0 ? (
                       availableColors.map((color) => {
-                        // A color is available if there's at least one size available for it AND product has stock
-                        const isAvailable = isAnyVariantInStock && availableSizes.some((size) => isVariantAvailable(color, size))
+                        // A color is available if:
+                        // - Product has size options: there's at least one size available for it AND product has stock
+                        // - Product has no size options: the color variant is available for sale
+                        const isAvailable = isAnyVariantInStock && (
+                          hasSizeOptions 
+                            ? availableSizes.some((size) => isVariantAvailable(color, size))
+                            : isVariantAvailable(color)
+                        )
                         return (
                           <button
                             key={color}
@@ -515,53 +541,59 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 </div>
 
                 {/* Size Selection */}
-                <div className="mt-10">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-sm font-folio-bold">SIZE</h3>
-                    <button
-                      onClick={() => setIsSizeChartOpen(true)}
-                      className="text-xs underline font-avant-garde hover:text-orange-500 transition-colors relative group cursor-pointer"
-                    >
-                      <span className="text-sm font-folio-medium">SIZE GUIDE</span>
-                      <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
-                    </button>
+                {hasSizeOptions && (
+                  <div className="mt-10">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-sm font-folio-bold">SIZE</h3>
+                      <button
+                        onClick={() => setIsSizeChartOpen(true)}
+                        className="text-xs underline font-avant-garde hover:text-orange-500 transition-colors relative group cursor-pointer"
+                      >
+                        <span className="text-sm font-folio-medium">SIZE GUIDE</span>
+                        <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
+                      </button>
+                    </div>
+                    <div className="flex space-x-8">
+                      {availableSizes.length > 0 ? (
+                        availableSizes.map((size) => {
+                          // A size is available if the selected color is available with this size AND product has stock
+                          const isAvailable = isAnyVariantInStock && (selectedColor ? isVariantAvailable(selectedColor, size) : true)
+                          return (
+                            <button
+                              key={size}
+                              disabled={!isAvailable}
+                              className={`w-10 h-10 flex items-center justify-center transition-all duration-300 cursor-pointer ${
+                                selectedSize === size
+                                  ? "border border-black rounded-full font-bold transform scale-110"
+                                  : "border-gray-300 hover:border-black text-[#ADADAD] hover:text-black hover:scale-110"
+                              } ${!isAvailable ? "opacity-25 cursor-not-allowed relative" : ""} font-itc-bold`}
+                              onClick={() => handleSizeSelect(size)}
+                            >
+                              {size}
+                              {!isAvailable && (
+                                <span className="absolute w-full h-0.5 bg-gray-400 transform rotate-45"></span>
+                              )}
+                            </button>
+                          )
+                        })
+                      ) : (
+                        <p className="text-xs font-folio-medium text-gray-500">No sizes available</p>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex space-x-8">
-                    {availableSizes.length > 0 ? (
-                      availableSizes.map((size) => {
-                        // A size is available if the selected color is available with this size AND product has stock
-                        // If no color is selected, show all sizes as available only if product has stock
-                        const isAvailable = isAnyVariantInStock && (selectedColor ? isVariantAvailable(selectedColor, size) : true)
-                        return (
-                          <button
-                            key={size}
-                            disabled={!isAvailable}
-                            className={`w-10 h-10 flex items-center justify-center transition-all duration-300 cursor-pointer ${
-                              selectedSize === size
-                                ? "border border-black rounded-full font-bold transform scale-110"
-                                : "border-gray-300 hover:border-black text-[#ADADAD] hover:text-black hover:scale-110"
-                            } ${!isAvailable ? "opacity-25 cursor-not-allowed relative" : ""} font-itc-bold`}
-                            onClick={() => handleSizeSelect(size)}
-                          >
-                            {size}
-                            {!isAvailable && (
-                              <span className="absolute w-full h-0.5 bg-gray-400 transform rotate-45"></span>
-                            )}
-                          </button>
-                        )
-                      })
-                    ) : (
-                      <p className="text-xs font-folio-medium text-gray-500">No sizes available</p>
-                    )}
-                  </div>
-                </div>
+                )}
 
                 {/* Add to Cart Button */}
                 <AddToCartButton
                   product={product}
                   selectedSize={selectedSize}
                   selectedColor={selectedColor}
-                  disabled={!isAnyVariantInStock || (selectedColor && selectedSize ? !isVariantAvailable(selectedColor, selectedSize) : true)}
+                  hasSizeOptions={hasSizeOptions}
+                  disabled={!isAnyVariantInStock || (
+                    hasSizeOptions 
+                      ? (selectedColor && selectedSize ? !isVariantAvailable(selectedColor, selectedSize) : true)
+                      : (selectedColor ? !isVariantAvailable(selectedColor) : true)
+                  )}
                   buttonText={!isAnyVariantInStock ? "OUT OF STOCK" : undefined}
                 />
 
