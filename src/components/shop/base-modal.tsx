@@ -28,7 +28,7 @@ export default function BaseModal({
           <h2 className="text-xl font-medium">{title}</h2>
           <div className="flex items-center">
             <span className="mr-2 text-xl">Close</span>
-            <button title="close-button" onClick={onClose} className="bg-[#d17928] p-2 flex items-center justify-center">
+            <button title="close-button" onClick={onClose} className="bg-[#d17928] p-2 flex items-center justify-center cursor-pointer">
               <X className="h-5 w-5 text-white" />
             </button>
           </div>
@@ -39,10 +39,10 @@ export default function BaseModal({
 
         {/* Footer Buttons */}
         <div className="grid grid-cols-2 gap-4 mt-auto">
-          <button onClick={onReset} className="py-4 bg-[#adadad] text-black font-medium">
+          <button onClick={onReset} className="py-4 bg-[#adadad] text-black font-medium cursor-pointer">
             RESET ALL
           </button>
-          <button onClick={onApply} className="py-4 bg-black text-white font-medium">
+          <button onClick={onApply} className="py-4 bg-black text-white font-medium cursor-pointer">
             {applyButtonText}
           </button>
         </div>

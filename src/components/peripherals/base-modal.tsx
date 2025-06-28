@@ -23,7 +23,7 @@ export default function BaseModal({
   return (
     <div className="fixed inset-0 z-50">
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50 z-50" style={{ pointerEvents: 'auto' }} onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50 z-50 cursor-pointer" style={{ pointerEvents: 'auto' }} onClick={onClose} />
       {/* Modal Content */}
       <div className="relative z-50 p-6 flex flex-col h-full">
         {/* Header */}
@@ -31,7 +31,7 @@ export default function BaseModal({
           <h2 className="text-xl font-medium font-avant-garde">{title}</h2>
           <div className="flex items-center">
             <span className="mr-2 text-xl">Close</span>
-            <button title="close-button" onClick={onClose} className="bg-[#d17928] p-2 flex items-center justify-center">
+            <button title="close-button" onClick={onClose} className="bg-[#d17928] p-2 flex items-center justify-center cursor-pointer">
               <X className="h-5 w-5 text-white" />
             </button>
           </div>
@@ -40,10 +40,10 @@ export default function BaseModal({
         <div className="flex-grow">{children}</div>
         {/* Footer Buttons */}
         <div className="grid grid-cols-2 gap-4 mt-auto">
-          <button onClick={onReset} className="py-4 bg-[#adadad] text-black font-medium font-avant-garde">
+          <button onClick={onReset} className="py-4 bg-[#adadad] text-black font-medium font-avant-garde cursor-pointer">
             RESET ALL
           </button>
-          <button onClick={onApply} className="py-4 bg-black text-white font-medium font-avant-garde">
+          <button onClick={onApply} className="py-4 bg-black text-white font-medium font-avant-garde cursor-pointer">
             {applyButtonText}
           </button>
         </div>

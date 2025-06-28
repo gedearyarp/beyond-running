@@ -34,7 +34,7 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
     <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-4">
-        <button onClick={onClose} aria-label="Close menu">
+        <button onClick={onClose} aria-label="Close menu" className="cursor-pointer">
           <X className="h-6 w-6" />
         </button>
 
@@ -43,10 +43,10 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
         </div>
 
         <div className="flex items-center space-x-4">
-          <button aria-label="Search">
+          <button aria-label="Search" className="cursor-pointer">
             <Search className="h-4 w-4" />
           </button>
-          <button onClick={handleCartClick} aria-label="Shopping cart" className="relative">
+          <button onClick={handleCartClick} aria-label="Shopping cart" className="relative cursor-pointer">
             <ShoppingBag className="h-4 w-4" />
             {cartItemCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
@@ -60,7 +60,7 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
       {/* Back to Menu link (only shown in submenus) */}
       {currentView !== "main" && (
         <div className="px-2 py-2">
-          <button onClick={goBack} className="text-sm text-gray-800 underline">
+          <button onClick={goBack} className="text-sm text-gray-800 underline cursor-pointer">
             &lt;Back to Menu
           </button>
         </div>
@@ -71,19 +71,19 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
         <div className="px-6 py-12">
           <nav className="space-y-6">
             <div>
-              <button onClick={() => navigateTo("shop")} className="block font-bold text-lg text-left">
+              <button onClick={() => navigateTo("shop")} className="block font-bold text-lg text-left cursor-pointer">
                 Shop
               </button>
             </div>
 
             <div>
-              <button onClick={() => navigateTo("peripherals")} className="block font-bold text-lg text-left">
+              <button onClick={() => navigateTo("peripherals")} className="block font-bold text-lg text-left cursor-pointer">
                 Peripherals
               </button>
             </div>
 
             <div>
-              <button onClick={() => navigateTo("community")} className="block font-bold text-lg text-left">
+              <button onClick={() => navigateTo("community")} className="block font-bold text-lg text-left cursor-pointer">
                 Community
               </button>
             </div>

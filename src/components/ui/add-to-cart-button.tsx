@@ -104,7 +104,7 @@ export default function AddToCartButton({ product, selectedSize, selectedColor, 
         className={`w-full mt-10 py-4 px-6 text-sm md:text-[21px] font-itc-md transition-all duration-300 ${
           isButtonDisabled
             ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-            : "bg-black text-white hover:bg-gray-800"
+            : "bg-black text-white hover:bg-gray-800 cursor-pointer"
         }`}
       >
         {isLoading ? "ADDING..." : buttonText || "ADD TO CART"}

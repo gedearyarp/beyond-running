@@ -93,7 +93,7 @@ export default function FilterModal({
                 onClick={() => toggleFilter("size", size.label)}
               >
                 <div
-                  className={`w-5 h-5 border border-black mr-2 flex items-center justify-center ${isFilterSelected("size", size.label) ? "bg-black" : "bg-white"}`}
+                  className={`w-5 h-5 border border-black mr-2 flex items-center justify-center cursor-pointer ${isFilterSelected("size", size.label) ? "bg-black" : "bg-white"}`}
                 >
                   {isFilterSelected("size", size.label) && <span className="text-white text-xs">✓</span>}
                 </div>
@@ -122,7 +122,7 @@ export default function FilterModal({
                 onClick={() => toggleFilter("category", category.label)}
               >
                 <div
-                  className={`w-5 h-5 border border-black mr-2 flex items-center justify-center ${isFilterSelected("category", category.label) ? "bg-black" : "bg-white"}`}
+                  className={`w-5 h-5 border border-black mr-2 flex items-center justify-center cursor-pointer ${isFilterSelected("category", category.label) ? "bg-black" : "bg-white"}`}
                 >
                   {isFilterSelected("category", category.label) && <span className="text-white text-xs">✓</span>}
                 </div>
@@ -148,7 +148,7 @@ export default function FilterModal({
                 onClick={() => toggleFilter("gender", gender.label)}
               >
                 <div
-                  className={`w-5 h-5 border border-black mr-2 flex items-center justify-center ${isFilterSelected("gender", gender.label) ? "bg-black" : "bg-white"}`}
+                  className={`w-5 h-5 border border-black mr-2 flex items-center justify-center cursor-pointer ${isFilterSelected("gender", gender.label) ? "bg-black" : "bg-white"}`}
                 >
                   {isFilterSelected("gender", gender.label) && <span className="text-white text-xs">✓</span>}
                 </div>

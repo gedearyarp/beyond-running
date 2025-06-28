@@ -117,7 +117,7 @@ export default function CartDropdown() {
           {/* Only the close button has click handler */}
           <button
             onClick={closeCart}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
             aria-label="Close cart"
           >
             <div className="w-6 h-6 bg-[#D17928] rounded flex items-center justify-center">
@@ -164,7 +164,7 @@ export default function CartDropdown() {
                     <div className="flex items-center gap-3 md:gap-4 mb-2 md:mb-4">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="w-6 h-6 md:w-6 md:h-6 flex items-center justify-center rounded-full border border-gray-300 hover:border-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-6 h-6 md:w-6 md:h-6 flex items-center justify-center rounded-full border border-gray-300 hover:border-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         disabled={item.quantity <= 1}
                       >
                         <Minus className="h-3 w-3 md:h-4 md:w-4" />
@@ -172,7 +172,7 @@ export default function CartDropdown() {
                       <span className="w-6 md:w-8 text-center text-sm md:text-sm font-itc-demi">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="w-6 h-6 md:w-6 md:h-6 flex items-center justify-center rounded-full border border-gray-300 hover:border-gray-400 transition-colors"
+                        className="w-6 h-6 md:w-6 md:h-6 flex items-center justify-center rounded-full border border-gray-300 hover:border-gray-400 transition-colors cursor-pointer"
                       >
                         <Plus className="h-3 w-3 md:h-4 md:w-4" />
                       </button>
@@ -181,7 +181,7 @@ export default function CartDropdown() {
                     {/* Remove Button */}
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="text-xs font-itc-md md:text-sm text-gray-600 hover:text-gray-900 underline transition-colors"
+                      className="text-xs font-itc-md md:text-sm text-gray-600 hover:text-gray-900 underline transition-colors cursor-pointer"
                     >
                       Remove
                     </button>
@@ -205,7 +205,7 @@ export default function CartDropdown() {
 
             {/* Checkout Button */}
             <Button
-              className="w-full bg-black text-white py-3 md:py-8 px-4 text-xs md:text-sm font-itc-md hover:bg-gray-900 transition-colors flex items-center justify-between"
+              className="w-full bg-black text-white py-3 md:py-8 px-4 text-xs md:text-sm font-itc-md hover:bg-gray-900 transition-colors flex items-center justify-between cursor-pointer"
               onClick={handleCheckout}
               disabled={isCheckingOut}
             >

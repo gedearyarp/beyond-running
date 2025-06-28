@@ -74,7 +74,7 @@ export default function Footer() {
           />
           <button 
             type="submit"
-            className="absolute right-0 bottom-2" 
+            className="absolute right-0 bottom-2 cursor-pointer" 
             title="Subscribe to newsletter"
             disabled={isSubmitting}
           >
@@ -134,10 +134,10 @@ export default function Footer() {
               {renderNewsletterForm()}
               <div className="flex flex-col md:flex-row justify-between md:items-center pt-8 border-t border-gray-200 text-sm font-itc-xl">
                 <div className="flex space-x-6 mt-4 md:mt-0">
-                  <Link href="/contact" className="hover:underline">
+                  <Link href="/contact" className="hover:underline cursor-pointer">
                     Contact Us
                   </Link>
-                  <Link href="/faq" className="hover:underline">
+                  <Link href="/faq" className="hover:underline cursor-pointer">
                     FAQ
                   </Link>
                 </div>
@@ -155,10 +155,10 @@ export default function Footer() {
               </p>
             </div>
             <div className="flex space-x-4">
-              <Link href="https://instagram.com" aria-label="Instagram" className="hover:opacity-70">
+              <Link href="https://instagram.com" aria-label="Instagram" className="hover:opacity-70 cursor-pointer">
                 <Instagram className="h-5 w-5" />
               </Link>
-              <Link href="https://twitter.com" aria-label="Twitter" className="hover:opacity-70">
+              <Link href="https://twitter.com" aria-label="Twitter" className="hover:opacity-70 cursor-pointer">
                 <Twitter className="h-5 w-5" />
               </Link>
             </div>

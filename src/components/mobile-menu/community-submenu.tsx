@@ -10,7 +10,7 @@ export default function CommunitySubmenu() {
         <div className="w-1/3 mr-8">
           <Link
             href="/community/join"
-            className="inline-block bg-gray-300 text-black rounded-full px-2 py-1 text-md font-medium"
+            className="inline-block bg-gray-300 text-black rounded-full px-2 py-1 text-md font-medium cursor-pointer"
           >
             Join Now
           </Link>
@@ -20,22 +20,22 @@ export default function CommunitySubmenu() {
         <div className="w-2/3 text-md font-bold">
           <ul className="space-y-4">
             <li>
-              <Link href="/community?view=upcoming" className="block">
+              <Link href="/community?view=upcoming" className="block cursor-pointer">
                 Upcoming Events
               </Link>
             </li>
             <li>
-              <Link href="/community?view=past" className="block">
+              <Link href="/community?view=past" className="block cursor-pointer">
                 Past Events
               </Link>
             </li>
             <li>
-              <Link href="/community?view=calendar" className="block">
+              <Link href="/community?view=calendar" className="block cursor-pointer">
                 Calendar
               </Link>
             </li>
             <li>
-              <Link href="/community/membership" className="block">
+              <Link href="/community/membership" className="block cursor-pointer">
                 Membership
               </Link>
             </li>

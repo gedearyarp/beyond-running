@@ -39,7 +39,7 @@ export default function CustomDropdown({ isSort, options, value, onChange, place
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button type="button" className="flex items-center justify-center text-sm font-avant-garde" onClick={() => setIsOpen(!isOpen)}>
+      <button type="button" className="flex items-center justify-center text-sm font-avant-garde cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
         {!isSort && <Plus className="mr-2 h-3 w-3" />} {selectedOption ? selectedOption.label : placeholder} 
       </button>
 
@@ -48,7 +48,7 @@ export default function CustomDropdown({ isSort, options, value, onChange, place
           {options.map((option) => (
             <button
               key={option.value}
-              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 font-avant-garde"
+              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 font-avant-garde cursor-pointer"
               onClick={() => {
                 onChange(option.value)
                 setIsOpen(false)

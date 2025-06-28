@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { X } from "lucide-react"
+import Link from "next/link"
 
 interface NewsletterModalProps {
   isOpen: boolean
@@ -102,7 +103,7 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 rounded-full transition-colors duration-200"
+          className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 rounded-full transition-colors duration-200 cursor-pointer"
           aria-label="Close modal"
         >
           <X className="h-5 w-5 text-white" />
@@ -150,7 +151,7 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
                     type="submit"
                     disabled={isSubmitting}
                     className={`w-full font-itc-md bg-[#d17928] hover:bg-[#c06820] text-white py-3 font-medium transition-all duration-300 relative overflow-hidden ${
-                      isSubmitting ? "cursor-not-allowed opacity-80" : ""
+                      isSubmitting ? "cursor-not-allowed opacity-80" : "cursor-pointer"
                     }`}
                   >
                     {isSubmitting ? (
@@ -184,7 +185,7 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
 
                   <p className="text-[10px] font-folio-bold text-white/60 text-center mt-4">
                     By Signing Up, You Agree To Our{" "}
-                    <span className="underline cursor-pointer">TERMS AND CONDITIONS</span>
+                    <Link href="faq" className="underline cursor-pointer">TERMS AND CONDITIONS</Link >
                   </p>
                 </form>
               ) : (

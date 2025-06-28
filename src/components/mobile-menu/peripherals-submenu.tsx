@@ -10,7 +10,7 @@ export default function PeripheralsSubmenu() {
         <div className="w-1/3 mr-8">
           <Link
             href="/peripherals"
-            className="inline-block bg-gray-300 text-black rounded-full px-2 py-1 text-md font-medium"
+            className="inline-block bg-gray-300 text-black rounded-full px-2 py-1 text-md font-medium cursor-pointer"
           >
             Read All
           </Link>
@@ -20,17 +20,17 @@ export default function PeripheralsSubmenu() {
         <div className="w-2/3 text-md font-bold">
           <ul className="space-y-4">
             <li>
-              <Link href="/peripherals/discovery" className="block">
+              <Link href="/peripherals/discovery" className="block cursor-pointer">
                 Discovery
               </Link>
             </li>
             <li>
-              <Link href="/peripherals/clarity" className="block">
+              <Link href="/peripherals/clarity" className="block cursor-pointer">
                 Clarity
               </Link>
             </li>
             <li>
-              <Link href="/peripherals/community" className="block">
+              <Link href="/peripherals/community" className="block cursor-pointer">
                 Community
               </Link>
             </li>

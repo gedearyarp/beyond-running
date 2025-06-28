@@ -49,7 +49,7 @@ export default function SortModal({ onClose, onApplySort, initialSort }: SortMod
                 onClick={() => setSelectedSort(option.value)}
               >
                 <div
-                  className={`w-5 h-5 rounded-full border border-black mr-2 flex items-center justify-center ${selectedSort === option.value ? "bg-black" : "bg-white"}`}
+                  className={`w-5 h-5 rounded-full border border-black mr-2 flex items-center justify-center cursor-pointer ${selectedSort === option.value ? "bg-black" : "bg-white"}`}
                 >
                   {selectedSort === option.value && <div className="w-2 h-2 rounded-full bg-white"></div>}
                 </div>

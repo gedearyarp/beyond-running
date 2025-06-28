@@ -326,7 +326,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 {/* Technical Details Section */}
                 <div className="border-t border-gray-200 py-4">
                   <button
-                    className="flex items-center justify-between w-full text-left font-folio-bold group"
+                    className="flex items-center justify-between w-full text-left font-folio-bold group cursor-pointer"
                     onClick={() => toggleSection("technical")}
                   >
                     <span className="group-hover:text-gray-500 transition-colors duration-300">
@@ -403,7 +403,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 {/* Composition Section */}
                 <div className="border-t border-gray-200 py-4">
                   <button
-                    className="flex items-center justify-between w-full text-left font-folio-bold group"
+                    className="flex items-center justify-between w-full text-left font-folio-bold group cursor-pointer"
                     onClick={() => toggleSection("composition")}
                   >
                     <span className="group-hover:text-gray-500 transition-colors duration-300">Composition</span>
@@ -480,7 +480,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                           <button
                             key={color}
                             disabled={!isAvailable}
-                            className={`w-10 h-10 rounded-full transition-all duration-300 transform ${
+                            className={`w-10 h-10 rounded-full transition-all duration-300 transform cursor-pointer ${
                               selectedColor === color
                                 ? "ring-2 ring-offset-4 ring-black scale-110"
                                 : "border border-gray-300 hover:scale-110"
@@ -503,7 +503,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                     <h3 className="text-sm font-folio-bold">SIZE</h3>
                     <button
                       onClick={() => setIsSizeChartOpen(true)}
-                      className="text-xs underline font-avant-garde hover:text-orange-500 transition-colors relative group"
+                      className="text-xs underline font-avant-garde hover:text-orange-500 transition-colors relative group cursor-pointer"
                     >
                       <span className="text-sm font-folio-medium">SIZE GUIDE</span>
                       <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
@@ -519,7 +519,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                           <button
                             key={size}
                             disabled={!isAvailable}
-                            className={`w-10 h-10 flex items-center justify-center transition-all duration-300 ${
+                            className={`w-10 h-10 flex items-center justify-center transition-all duration-300 cursor-pointer ${
                               selectedSize === size
                                 ? "border border-black rounded-full font-bold transform scale-110"
                                 : "border-gray-300 hover:border-black text-[#ADADAD] hover:text-black hover:scale-110"
@@ -593,7 +593,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                   {galleryImages.map((image, index) => (
                     <div
                       key={image}
-                      className={`flex-shrink-0 w-[500px] h-[375px] relative transition-all duration-500 ${
+                      className={`flex-shrink-0 w-[500px] h-[375px] relative transition-all duration-500 cursor-pointer ${
                         activeGalleryImage === index ? "scale-100 opacity-100" : "scale-95 opacity-80"
                       }`}
                       onClick={() => setActiveGalleryImage(index)}
@@ -619,7 +619,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                   galleryImages.map((_, index) => (
                     <button
                       key={index}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
                         activeGalleryImage === index ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
                       }`}
                       onClick={() => setActiveGalleryImage(index)}
@@ -631,7 +631,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                   Array.from({ length: Math.ceil(galleryImages.length / 3) }, (_, groupIndex) => (
                     <button
                       key={groupIndex}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
                         Math.floor(activeGalleryImage / 3) === groupIndex ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
                       }`}
                       onClick={() => setActiveGalleryImage(groupIndex * 3)}

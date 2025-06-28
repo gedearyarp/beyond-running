@@ -229,7 +229,7 @@ export default function CommunityPage() {
                 <div className="flex w-full justify-between items-center mb-4">
                   <button
                     onClick={() => setShowFilterModal(true)}
-                    className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-sm font-avant-garde hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
+                    className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-sm font-avant-garde hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 cursor-pointer"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -244,7 +244,7 @@ export default function CommunityPage() {
 
                   <button
                     onClick={() => setShowSortModal(true)}
-                    className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-full text-sm font-avant-garde hover:border-black transition-all duration-300"
+                    className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-full text-sm font-avant-garde hover:border-black transition-all duration-300 cursor-pointer"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -277,7 +277,7 @@ export default function CommunityPage() {
                         </div>
                         <button
                           onClick={clearCategoryFilter}
-                          className="ml-1 hover:bg-green-200 rounded-full p-0.5 transition-colors duration-200"
+                          className="ml-1 hover:bg-green-200 rounded-full p-0.5 transition-colors duration-200 cursor-pointer"
                         >
                           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                             <path
@@ -292,7 +292,7 @@ export default function CommunityPage() {
 
                     <button
                       onClick={clearAllFilters}
-                      className="flex items-center gap-2 text-orange-600 hover:text-orange-800 text-sm font-semibold transition-all duration-300 hover:scale-105"
+                      className="flex items-center gap-2 text-orange-600 hover:text-orange-800 text-sm font-semibold transition-all duration-300 hover:scale-105 cursor-pointer"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -327,7 +327,7 @@ export default function CommunityPage() {
 
                     <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-8">
                       <button
-                        className={`text-sm font-avant-garde transition-all duration-200 ${
+                        className={`text-sm font-avant-garde transition-all duration-200 cursor-pointer ${
                           viewMode === "grid"
                             ? "font-folio-bold text-black border-b-2 border-black pb-1"
                             : "font-folio-medium text-gray-500 hover:text-gray-700"
@@ -337,7 +337,7 @@ export default function CommunityPage() {
                         Grid View
                       </button>
                       <button
-                        className={`text-sm font-avant-garde transition-all duration-200 ${
+                        className={`text-sm font-avant-garde transition-all duration-200 cursor-pointer ${
                           viewMode === "list"
                             ? "font-folio-bold text-black border-b-2 border-black pb-1"
                             : "font-folio-medium text-gray-500 hover:text-gray-700"
@@ -347,7 +347,7 @@ export default function CommunityPage() {
                         List View
                       </button>
                       <button
-                        className={`text-sm font-avant-garde transition-all duration-200 ${
+                        className={`text-sm font-avant-garde transition-all duration-200 cursor-pointer ${
                           viewMode === "calendar"
                             ? "font-folio-bold text-black border-b-2 border-black pb-1"
                             : "font-folio-medium text-gray-500 hover:text-gray-700"
@@ -393,7 +393,7 @@ export default function CommunityPage() {
                             </div>
                             <button
                               onClick={clearCategoryFilter}
-                              className="ml-2 hover:bg-green-200 rounded-full p-1 transition-colors duration-200 group-hover:scale-110"
+                              className="ml-2 hover:bg-green-200 rounded-full p-1 transition-colors duration-200 group-hover:scale-110 cursor-pointer"
                             >
                               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path
@@ -409,7 +409,7 @@ export default function CommunityPage() {
 
                       <button
                         onClick={clearAllFilters}
-                        className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl cursor-pointer"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path

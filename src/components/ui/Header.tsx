@@ -303,7 +303,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                 <Search className="h-5 w-5 text-black" />
                 <button
                   onClick={handleSearchClose}
-                  className="p-1 transition-colors duration-200"
+                  className="p-1 transition-colors duration-200 cursor-pointer"
                   aria-label="Close search"
                 >
                   <X className="h-5 w-5 text-black" />
@@ -322,7 +322,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                 <div className="text-sm text-gray-500 font-folio-medium">Recent Search</div>
                 <button
                   onClick={clearAllRecentSearch}
-                  className="text-sm text-gray-500 hover:underline font-folio-medium"
+                  className="text-sm text-gray-500 hover:underline font-folio-medium cursor-pointer"
                 >
                   Clear All
                 </button>
@@ -353,7 +353,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
             <div className="text-center py-16 text-red-500">{productsError}</div>
           ) : searchQuery ? (
             filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 pb-8 px-4 md:px-8">
                 {filteredProducts.map((product, index) => (
                   <Link
                     key={product.id}
@@ -392,7 +392,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
             )
           ) : (
             allProducts.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 pb-8 px-4 md:px-8">
                 {getRandomProducts(allProducts, 4).map((product, index) => (
                   <Link
                     key={product.id}
@@ -514,7 +514,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
               <button
                 onClick={handleSearchClick}
                 aria-label="Search"
-                className="hover:text-gray-500 hover:transform hover:scale-110 hover:rotate-12 transition-all duration-300 p-2"
+                className="hover:text-gray-500 hover:transform hover:scale-110 hover:rotate-12 transition-all duration-300 p-2 cursor-pointer"
                 onMouseEnter={() => {
                   clearExistingTimeout()
                   setActiveDropdown(null)
@@ -728,6 +728,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
         onMenuClick={toggleMobileMenu}
         onCartClick={handleCartClick}
         isMenuOpen={mobileMenuOpen}
+        onSearchClick={handleSearchClick}
       />
 
       {/* Mobile Menu */}

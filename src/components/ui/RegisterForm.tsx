@@ -173,7 +173,7 @@ export default function SignupForm() {
         <button
           type="submit"
           className={`w-full bg-black text-white py-2 md:py-4 transition-colors font-folio-bold text-sm md:text-lg ${
-            isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-900'
+            isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-900 cursor-pointer'
           }`}
           disabled={isLoading}
         >
@@ -183,7 +183,7 @@ export default function SignupForm() {
 
       <div className="mt-8 text-left md:text-lg text-sm font-folio-medium">
         <span className="">Already a Member?</span>{" "}
-        <Link href="/signin" className="underline">
+        <Link href="/signin" className="underline cursor-pointer">
           Login
         </Link>
       </div>

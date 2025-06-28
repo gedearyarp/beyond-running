@@ -9,9 +9,10 @@ interface MobileHeaderProps {
   onMenuClick: () => void
   onCartClick: () => void
   isMenuOpen: boolean
+  onSearchClick: () => void
 }
 
-export default function MobileHeader({ onMenuClick, onCartClick, isMenuOpen }: MobileHeaderProps) {
+export default function MobileHeader({ onMenuClick, onCartClick, isMenuOpen, onSearchClick }: MobileHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { getTotalItems } = useCartStore()
@@ -66,7 +67,7 @@ export default function MobileHeader({ onMenuClick, onCartClick, isMenuOpen }: M
         </div>
 
         <div className="flex items-center space-x-4">
-          <button aria-label="Search">
+          <button aria-label="Search" onClick={onSearchClick}>
             <Search className="h-4 w-4" />
           </button>
           <button
