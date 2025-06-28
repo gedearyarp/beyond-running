@@ -46,6 +46,19 @@ const getColorHex = (colorName: string): string => {
   return colorMap[colorName.toLowerCase()] || "#cccccc"
 }
 
+// Helper functions to check if sections have content
+const hasTechnicalDetails = (descriptionHtml: string): boolean => {
+  if (!descriptionHtml) return false
+  return descriptionHtml.includes("Technical Details") && 
+         descriptionHtml.split("<h4><span>Technical Details</span></h4>")[1]?.split("<h4>")[0]?.match(/<li[^>]*>.*?<\/li>/g)?.length > 0
+}
+
+const hasComposition = (descriptionHtml: string): boolean => {
+  if (!descriptionHtml) return false
+  return descriptionHtml.includes("Composition") && 
+         descriptionHtml.split("<h4><span>Composition</span></h4>")[1]?.split("<h4>")[0]?.match(/<li[^>]*>.*?<\/li>/g)?.length > 0
+}
+
 // Main component
 export default function ProductDetailPage({ product, relatedProducts }: ProductDetailPageProps) {
   // --- MEMOS ---
@@ -324,149 +337,153 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 )}
 
                 {/* Technical Details Section */}
-                <div className="border-t border-gray-200 py-4">
-                  <button
-                    className="flex items-center justify-between w-full text-left font-folio-bold group cursor-pointer"
-                    onClick={() => toggleSection("technical")}
-                  >
-                    <span className="group-hover:text-gray-500 transition-colors duration-300">
-                      Technical Details
-                    </span>
-                    <div className="transition-transform duration-300 ease-in-out">
-                      {expandedSections.technical ? (
-                        <ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-300 transform rotate-0" />
-                      ) : (
-                        <ChevronRight className="h-5 w-5 group-hover:text-gray-500 transition-transform duration-300 transform group-hover:rotate-90" />
-                      )}
-                    </div>
-                  </button>
-                  <div
-                    className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                      expandedSections.technical ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-                    }`}
-                  >
-                    {expandedSections.technical && (
-                      <div className="mt-4" ref={technicalRef}>
-                        {product?.descriptionHtml && product.descriptionHtml.includes("Technical Details") ? (
-                          <ul className="pl-5 text-sm md:text-[14px] font-folio-light space-y-3">
-                            {product.descriptionHtml
-                              .split("<h4><span>Technical Details</span></h4>")[1]
-                              ?.split("<h4>")[0]
-                              ?.match(/<li[^>]*>.*?<\/li>/g)
-                              ?.map((item, index) => {
-                                const text = item.replace(/<[^>]*>/g, "").trim()
-                                return (
-                                  <li key={index} className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>{text}</span>
-                                  </li>
-                                )
-                              }) || []}
-                          </ul>
+                {hasTechnicalDetails(product?.descriptionHtml || "") && (
+                  <div className="border-t border-gray-200 py-4">
+                    <button
+                      className="flex items-center justify-between w-full text-left font-folio-bold group cursor-pointer"
+                      onClick={() => toggleSection("technical")}
+                    >
+                      <span className="group-hover:text-gray-500 transition-colors duration-300">
+                        Technical Details
+                      </span>
+                      <div className="transition-transform duration-300 ease-in-out">
+                        {expandedSections.technical ? (
+                          <ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-300 transform rotate-0" />
                         ) : (
-                          <ul className="pl-5 text-sm md:text-[14px] font-folio-light space-y-3">
-                            <li className="flex items-start">
-                              <span className="mr-2">•</span>
-                              <span>Water-proof (Grade 3) fabric with 1000mm water repellent treatment</span>
-                            </li>
-                            <li className="flex items-start">
-                              <span className="mr-2">•</span>
-                              <span>Wind-proof and down-proof for maximum protection</span>
-                            </li>
-                            <li className="flex items-start">
-                              <span className="mr-2">•</span>
-                              <span>RDS-certified white down (90% down, 10% feathers), 750 fill power</span>
-                            </li>
-                            <li className="flex items-start">
-                              <span className="mr-2">•</span>
-                              <span>Adjustable hood for a customized fit</span>
-                            </li>
-                            <li className="flex items-start">
-                              <span className="mr-2">•</span>
-                              <span>Invisible zip side chest pockets and YKK two-way front zip</span>
-                            </li>
-                            <li className="flex items-start">
-                              <span className="mr-2">•</span>
-                              <span>Elastic band cuffs and adjustable side hem</span>
-                            </li>
-                            <li className="flex items-start">
-                              <span className="mr-2">•</span>
-                              <span>Inner chest pocket with zip closure</span>
-                            </li>
-                          </ul>
+                          <ChevronRight className="h-5 w-5 group-hover:text-gray-500 transition-transform duration-300 transform group-hover:rotate-90" />
                         )}
                       </div>
-                    )}
+                    </button>
+                    <div
+                      className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                        expandedSections.technical ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                      }`}
+                    >
+                      {expandedSections.technical && (
+                        <div className="mt-4" ref={technicalRef}>
+                          {hasTechnicalDetails(product?.descriptionHtml || "") ? (
+                            <ul className="pl-5 text-sm md:text-[14px] font-folio-light space-y-3">
+                              {product?.descriptionHtml
+                                ?.split("<h4><span>Technical Details</span></h4>")[1]
+                                ?.split("<h4>")[0]
+                                ?.match(/<li[^>]*>.*?<\/li>/g)
+                                ?.map((item, index) => {
+                                  const text = item.replace(/<[^>]*>/g, "").trim()
+                                  return (
+                                    <li key={index} className="flex items-start">
+                                      <span className="mr-2">•</span>
+                                      <span>{text}</span>
+                                    </li>
+                                  )
+                                }) || []}
+                            </ul>
+                          ) : (
+                            <ul className="pl-5 text-sm md:text-[14px] font-folio-light space-y-3">
+                              <li className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>Water-proof (Grade 3) fabric with 1000mm water repellent treatment</span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>Wind-proof and down-proof for maximum protection</span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>RDS-certified white down (90% down, 10% feathers), 750 fill power</span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>Adjustable hood for a customized fit</span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>Invisible zip side chest pockets and YKK two-way front zip</span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>Elastic band cuffs and adjustable side hem</span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>Inner chest pocket with zip closure</span>
+                              </li>
+                            </ul>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Composition Section */}
-                <div className="border-t border-gray-200 py-4">
-                  <button
-                    className="flex items-center justify-between w-full text-left font-folio-bold group cursor-pointer"
-                    onClick={() => toggleSection("composition")}
-                  >
-                    <span className="group-hover:text-gray-500 transition-colors duration-300">Composition</span>
-                    <div className="transition-transform duration-300 ease-in-out">
-                      {expandedSections.composition ? (
-                        <ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-300 transform rotate-0" />
-                      ) : (
-                        <ChevronRight className="h-5 w-5 group-hover:text-gray-500 transition-transform duration-300 transform group-hover:rotate-90" />
-                      )}
-                    </div>
-                  </button>
-                  <div
-                    className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                      expandedSections.composition ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-                    }`}
-                  >
-                    {expandedSections.composition && (
-                      <div className="mt-4" ref={compositionRef}>
-                        {product?.descriptionHtml && product.descriptionHtml.includes("Composition") ? (
-                          <div
-                            className="pl-5 text-sm md:text-[14px] font-folio-light space-y-3"
-                            dangerouslySetInnerHTML={{
-                              __html:
-                                product.descriptionHtml
-                                  .split("<h4><span>Composition</span></h4>")[1]
-                                  ?.replace(/<ul[^>]*>/g, "")
-                                  ?.replace(/<\/ul>/g, "")
-                                  ?.replace(
-                                    /<li[^>]*>/g,
-                                    '<div class="flex items-start"><span class="mr-2">•</span><span>',
-                                  )
-                                  ?.replace(/<\/li>/g, "</span></div>")
-                                  ?.replace(/<span><\/span>/g, "") || "",
-                            }}
-                          />
+                {hasComposition(product?.descriptionHtml || "") && (
+                  <div className="border-t border-gray-200 py-4">
+                    <button
+                      className="flex items-center justify-between w-full text-left font-folio-bold group cursor-pointer"
+                      onClick={() => toggleSection("composition")}
+                    >
+                      <span className="group-hover:text-gray-500 transition-colors duration-300">Composition</span>
+                      <div className="transition-transform duration-300 ease-in-out">
+                        {expandedSections.composition ? (
+                          <ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-300 transform rotate-0" />
                         ) : (
-                          <ul className="pl-5 text-sm font-avant-garde space-y-3">
-                            <li className="flex items-start">
-                              <span className="mr-2">•</span>
-                              <span>Main Fabric: 100% Polyester</span>
-                            </li>
-                            <li className="flex items-start">
-                              <span className="mr-2">•</span>
-                              <span>Lining: 100% Polyester</span>
-                            </li>
-                            <li className="flex items-start">
-                              <span className="mr-2">•</span>
-                              <span>Pocket Bag: 100% Polyester</span>
-                            </li>
-                            <li className="flex items-start">
-                              <span className="mr-2">•</span>
-                              <span>Filling: 90% Duck Down, 10% Duck Feathers</span>
-                            </li>
-                            <li className="flex items-start">
-                              <span className="mr-2">•</span>
-                              <span>Made in China</span>
-                            </li>
-                          </ul>
+                          <ChevronRight className="h-5 w-5 group-hover:text-gray-500 transition-transform duration-300 transform group-hover:rotate-90" />
                         )}
                       </div>
-                    )}
+                    </button>
+                    <div
+                      className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                        expandedSections.composition ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                      }`}
+                    >
+                      {expandedSections.composition && (
+                        <div className="mt-4" ref={compositionRef}>
+                          {hasComposition(product?.descriptionHtml || "") ? (
+                            <div
+                              className="pl-5 text-sm md:text-[14px] font-folio-light space-y-3"
+                              dangerouslySetInnerHTML={{
+                                __html:
+                                  product?.descriptionHtml
+                                    ?.split("<h4><span>Composition</span></h4>")[1]
+                                    ?.replace(/<ul[^>]*>/g, "")
+                                    ?.replace(/<\/ul>/g, "")
+                                    ?.replace(
+                                      /<li[^>]*>/g,
+                                      '<div class="flex items-start"><span class="mr-2">•</span><span>',
+                                    )
+                                    ?.replace(/<\/li>/g, "</span></div>")
+                                    ?.replace(/<span><\/span>/g, "") || "",
+                              }}
+                            />
+                          ) : (
+                            <ul className="pl-5 text-sm font-avant-garde space-y-3">
+                              <li className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>Main Fabric: 100% Polyester</span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>Lining: 100% Polyester</span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>Pocket Bag: 100% Polyester</span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>Filling: 90% Duck Down, 10% Duck Feathers</span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>Made in China</span>
+                              </li>
+                            </ul>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Color Selection */}
                 <div className="mt-10 border-b pb-12">
@@ -577,71 +594,73 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
           </div>
 
           {/* Gallery Images */}
-          <div className="mt-16 overflow-hidden">
-            <div className="flex justify-center">
-              <div className="relative" style={{ 
-                width: isMobile ? `${500}px` : `${3 * 500 + 2 * 16}px` 
-              }}>
-                <div
-                  className="flex space-x-4 transition-transform duration-700 ease-in-out"
-                  style={{ 
-                    transform: isMobile 
-                      ? `translateX(-${activeGalleryImage * (500 + 16)}px)`
-                      : `translateX(-${Math.floor(activeGalleryImage / 3) * (3 * 500 + 2 * 16)}px)` 
-                  }}
-                >
-                  {galleryImages.map((image, index) => (
-                    <div
-                      key={image}
-                      className={`flex-shrink-0 w-[500px] h-[375px] relative transition-all duration-500 cursor-pointer ${
-                        activeGalleryImage === index ? "scale-100 opacity-100" : "scale-95 opacity-80"
-                      }`}
-                      onClick={() => setActiveGalleryImage(index)}
-                    >
-                      <Image
-                        src={image || "/placeholder.svg"}
-                        alt={`Product view ${index + 1}`}
-                        fill
-                        className="object-cover transition-transform duration-500 hover:scale-105"
-                        sizes="500px"
-                      />
-                    </div>
-                  ))}
+          {galleryImages.length > 1 && (
+            <div className="mt-16 overflow-hidden">
+              <div className="flex justify-center">
+                <div className="relative" style={{ 
+                  width: isMobile ? `${500}px` : `${3 * 500 + 2 * 16}px` 
+                }}>
+                  <div
+                    className="flex space-x-4 transition-transform duration-700 ease-in-out"
+                    style={{ 
+                      transform: isMobile 
+                        ? `translateX(-${activeGalleryImage * (500 + 16)}px)`
+                        : `translateX(-${Math.floor(activeGalleryImage / 3) * (3 * 500 + 2 * 16)}px)` 
+                    }}
+                  >
+                    {galleryImages.map((image, index) => (
+                      <div
+                        key={image}
+                        className={`flex-shrink-0 w-[500px] h-[375px] relative transition-all duration-500 cursor-pointer ${
+                          activeGalleryImage === index ? "scale-100 opacity-100" : "scale-95 opacity-80"
+                        }`}
+                        onClick={() => setActiveGalleryImage(index)}
+                      >
+                        <Image
+                          src={image || "/placeholder.svg"}
+                          alt={`Product view ${index + 1}`}
+                          fill
+                          className="object-cover transition-transform duration-500 hover:scale-105"
+                          sizes="500px"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Gallery Navigation Dots */}
-            {galleryImages.length > (isMobile ? 1 : 3) && (
-              <div className="flex justify-center mt-4 space-x-2">
-                {isMobile ? (
-                  // Mobile: one dot per image
-                  galleryImages.map((_, index) => (
-                    <button
-                      key={index}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                        activeGalleryImage === index ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
-                      }`}
-                      onClick={() => setActiveGalleryImage(index)}
-                      aria-label={`View image ${index + 1}`}
-                    />
-                  ))
-                ) : (
-                  // Desktop: one dot per group of 3 images
-                  Array.from({ length: Math.ceil(galleryImages.length / 3) }, (_, groupIndex) => (
-                    <button
-                      key={groupIndex}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                        Math.floor(activeGalleryImage / 3) === groupIndex ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
-                      }`}
-                      onClick={() => setActiveGalleryImage(groupIndex * 3)}
-                      aria-label={`View image group ${groupIndex + 1}`}
-                    />
-                  ))
-                )}
-              </div>
-            )}
-          </div>
+              {/* Gallery Navigation Dots */}
+              {galleryImages.length > (isMobile ? 1 : 3) && (
+                <div className="flex justify-center mt-4 space-x-2">
+                  {isMobile ? (
+                    // Mobile: one dot per image
+                    galleryImages.map((_, index) => (
+                      <button
+                        key={index}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                          activeGalleryImage === index ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
+                        }`}
+                        onClick={() => setActiveGalleryImage(index)}
+                        aria-label={`View image ${index + 1}`}
+                      />
+                    ))
+                  ) : (
+                    // Desktop: one dot per group of 3 images
+                    Array.from({ length: Math.ceil(galleryImages.length / 3) }, (_, groupIndex) => (
+                      <button
+                        key={groupIndex}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                          Math.floor(activeGalleryImage / 3) === groupIndex ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
+                        }`}
+                        onClick={() => setActiveGalleryImage(groupIndex * 3)}
+                        aria-label={`View image group ${groupIndex + 1}`}
+                      />
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Related Products */}
           <div className="mt-20 px-4 md:px-0">
