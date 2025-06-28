@@ -3,7 +3,11 @@
 import { useEffect, useState, useRef } from "react"
 import Image from "next/image"
 
-export default function IntroSection() {
+interface IntroSectionProps {
+  onRemoved?: () => void
+}
+
+export default function IntroSection({ onRemoved }: IntroSectionProps) {
   const [removed, setRemoved] = useState(false)
   const sectionRef = useRef<HTMLDivElement>(null)
 
@@ -15,6 +19,7 @@ export default function IntroSection() {
           // Tunggu sebentar untuk memastikan user benar-benar scroll ke bawah
           setTimeout(() => {
             setRemoved(true)
+            onRemoved?.() // Call the callback when removed
           }, 100)
 
           // Hapus observer setelah digunakan
@@ -35,12 +40,12 @@ export default function IntroSection() {
         observer.unobserve(sectionRef.current)
       }
     }
-  }, [])
+  }, [onRemoved])
 
   if (removed) return null
 
   return (
-    <div ref={sectionRef} className="relative h-screen w-full z-50 -mt-[88px]">
+    <div ref={sectionRef} className="relative h-screen w-full">
       {/* GIF Background */}
       <div className="absolute inset-0">
         <Image src="/images/intro.gif" alt="Nature trail" fill className="object-cover" priority />

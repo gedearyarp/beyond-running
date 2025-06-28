@@ -26,7 +26,7 @@ export default function AboutPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header collections={collections} />
-      <main className="flex-1 mb-48">
+      <main className="flex-1 mb-48 pt-[88px]">
         {/* Hero Section */}
         <div className="relative w-full h-[477px] md:h-[806px]">
           <Image

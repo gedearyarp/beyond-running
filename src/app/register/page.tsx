@@ -26,7 +26,7 @@ export default function RegisterPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header collections={collections} />
-      <main className="flex items-start justify-center py-16 md:h-screen">
+      <main className="flex items-start justify-center pt-42 pb-16 md:h-screen">
         <SignupForm />
       </main>
       <Footer />

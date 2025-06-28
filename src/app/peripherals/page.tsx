@@ -192,7 +192,7 @@ export default function PeripheralsPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header collections={collections} />
-      <main className="flex-1">
+      <main className="flex-1 pt-[88px]">
         {/* Hero Banner */}
         <div className="relative w-full h-[477px] md:h-[608px]">
           <Image src="/images/peripherals_banner.png" alt="Runner with medal" fill className="object-cover" priority />

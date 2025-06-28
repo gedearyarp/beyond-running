@@ -25,11 +25,11 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${inter.className} font-avant-garde pt-[88px]`}>
+      <body className={`${inter.className} font-avant-garde`}>
         {/* Header selalu ada */}
-        <div className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-white/90 shadow-lg border-b border-white/20">
+        {/* <div className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-white/90 shadow-lg border-b border-white/20">
           <Header collections={collections} />
-        </div>
+        </div> */}
         <main>{children}</main>
         <CartValidationProvider />
         <Toaster />

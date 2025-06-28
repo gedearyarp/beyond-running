@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 import HeroSlider from "@/components/home/hero-slider"
 import PromoCards from "@/components/home/promo-cards"
@@ -8,10 +9,16 @@ import FeaturedProducts from "@/components/home/featured-products"
 import BottomBanner from "@/components/home/bottom-banner"
 import IntroSection from "@/components/intro-section"
 import NewsletterModal from "@/components/ui/newsletter-modal"
+import { Collection } from "@/lib/shopify/types"
 
-export default function HomePage() {
+interface HomePageClientProps {
+  collections: Collection[]
+}
+
+export default function HomePageClient({ collections }: HomePageClientProps) {
   const [showNewsletterModal, setShowNewsletterModal] = useState(false)
   const [hasModalBeenShown, setHasModalBeenShown] = useState(false)
+  const [introRemoved, setIntroRemoved] = useState(false)
 
   // Handle scroll untuk newsletter modal
   useEffect(() => {
@@ -45,13 +52,20 @@ export default function HomePage() {
     localStorage.setItem("newsletterModalDismissed", new Date().getTime().toString())
   }
 
+  const handleIntroRemoved = () => {
+    setIntroRemoved(true)
+  }
+
   return (
     <div className="flex flex-col w-full min-h-screen">
-      {/* Intro Section - nutupin header dengan z-index tinggi */}
-      <IntroSection />
+      {/* Intro Section - full screen tanpa header */}
+      <IntroSection onRemoved={handleIntroRemoved} />
 
-      {/* Main Content - header udah keliatan otomatis */}
-      <div className="flex flex-col">
+      {/* Header Component - hanya muncul setelah intro hilang */}
+      {introRemoved && <Header collections={collections} />}
+
+      {/* Main Content */}
+      <div className="flex flex-col pt-[88px]">
         <HeroSlider />
         <div className="container mx-auto px-4">
           <PromoCards />
