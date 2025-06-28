@@ -1,10 +1,9 @@
 import { Suspense } from "react";
-import PeripheralsPage from "./page"; // misal komponen utama kamu
 
-export default function Page() {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <Suspense>
-      <PeripheralsPage />
+      {children}
     </Suspense>
   );
 }

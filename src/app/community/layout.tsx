@@ -1,10 +1,9 @@
 import { Suspense } from "react";
-import CommunityPage from "./page"; // misal komponen utama kamu
 
-export default function Page() {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <Suspense>
-      <CommunityPage />
+      {children}
     </Suspense>
   );
 }
