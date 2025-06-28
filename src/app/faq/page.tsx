@@ -3,11 +3,10 @@
 import { useState, useEffect, useMemo } from "react"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
-import MobileHeader from "@/components/mobile-header"
-import MobileMenu from "@/components/mobile-menu"
-import useMobile from "@/hooks/use-mobile"
 import { ChevronDown, Search } from "lucide-react"
 import type { JSX } from "react"
+import { getAllCollections } from "@/lib/shopify"
+import { Collection } from "@/lib/shopify/types"
 
 type FAQSection = "general" | "returns" | "repairs" | "products" | "care"
 
@@ -22,15 +21,23 @@ interface FAQData {
 
 export default function FAQPage() {
   const [activeSection, setActiveSection] = useState<FAQSection>("general")
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
   const [searchQuery, setSearchQuery] = useState("")
   const [isSearchFocused, setIsSearchFocused] = useState(false)
-  const isMobile = useMobile()
+  const [collections, setCollections] = useState<Collection[]>([])
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-  }
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const collectionsData = await getAllCollections()
+        setCollections(collectionsData)
+      } catch (error) {
+        console.error("Failed to fetch collections:", error)
+      }
+    }
+
+    fetchCollections()
+  }, [])
 
   const toggleExpanded = (itemKey: string) => {
     const newExpanded = new Set(expandedItems)
@@ -278,14 +285,7 @@ export default function FAQPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {isMobile ? (
-        <>
-          <MobileHeader onMenuClick={toggleMobileMenu} />
-          {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
-        </>
-      ) : (
-        <Header />
-      )}
+      <Header collections={collections} />
 
       <main className="flex-1 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-16 pb-12 md:pb-20">
@@ -314,57 +314,34 @@ export default function FAQPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-12">
             {/* Desktop Sidebar Navigation */}
-            {!isMobile && (
-              <div className="lg:col-span-1">
-                <nav className="space-y-2 sticky top-32">
-                  {Object.entries(sectionTitles).map(([key, title], index) => (
-                    <button
-                      key={key}
-                      onClick={() => handleSectionChange(key as FAQSection)}
-                      className={`block w-full text-left py-3 px-4 text-sm md:text-base font-folio-bold transition-all duration-300 rounded-lg group animate-fade-in cursor-pointer ${
-                        activeSection === key && !searchQuery
-                          ? "text-white bg-black transform scale-105"
-                          : "text-gray-600 hover:text-black hover:bg-gray-100 hover:transform hover:translate-x-2"
-                      }`}
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      <span className="relative">
-                        {title}
-                        <span
-                          className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 ${
-                            activeSection === key && !searchQuery ? "w-full" : "group-hover:w-full"
-                          }`}
-                        ></span>
-                      </span>
-                    </button>
-                  ))}
-                </nav>
-              </div>
-            )}
-
-            {/* Mobile Category Selector */}
-            {isMobile && !searchQuery && (
-              <div className="lg:hidden mb-6">
-                <div className="flex overflow-x-auto p-3 gap-4 hide-scrollbar">
-                  {Object.entries(sectionTitles).map(([key, title]) => (
-                    <button
-                      key={key}
-                      onClick={() => handleSectionChange(key as FAQSection)}
-                      className={`flex-shrink-0 px-4 py-2 text-sm font-folio-bold rounded-full transition-all duration-300 ${
-                        activeSection === key
-                          ? "bg-black text-white transform scale-105"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
-                    >
+            <div className="lg:col-span-1">
+              <nav className="space-y-2 sticky top-32">
+                {Object.entries(sectionTitles).map(([key, title], index) => (
+                  <button
+                    key={key}
+                    onClick={() => handleSectionChange(key as FAQSection)}
+                    className={`block w-full text-left py-3 px-4 text-sm md:text-base font-folio-bold transition-all duration-300 rounded-lg group animate-fade-in cursor-pointer ${
+                      activeSection === key && !searchQuery
+                        ? "text-white bg-black transform scale-105"
+                        : "text-gray-600 hover:text-black hover:bg-gray-100 hover:transform hover:translate-x-2"
+                    }`}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <span className="relative">
                       {title}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+                      <span
+                        className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 ${
+                          activeSection === key && !searchQuery ? "w-full" : "group-hover:w-full"
+                        }`}
+                      ></span>
+                    </span>
+                  </button>
+                ))}
+              </nav>
+            </div>
 
             {/* FAQ Content */}
-            <div className={`${!isMobile ? "lg:col-span-3" : ""}`}>
+            <div className="lg:col-span-3">
               {searchQuery && (
                 <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200 animate-fade-in">
                   <p className="text-sm font-folio-light text-gray-800">
@@ -423,57 +400,22 @@ export default function FAQPage() {
                   : // Regular Section View
                     faqData[activeSection]?.map((faq, index) => {
                       const itemKey = `${activeSection}-${index}`
-                      const isExpanded = isMobile ? expandedItems.has(itemKey) : true
+                      const isExpanded = true
 
-                      if (isMobile) {
-                        return (
-                          <div
-                            key={itemKey}
-                            className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-all duration-300 animate-fade-in"
-                            style={{ animationDelay: `${index * 100}ms` }}
-                          >
-                            <button
-                              onClick={() => toggleExpanded(itemKey)}
-                              className="w-full text-left p-4 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-between group"
-                            >
-                              <h3 className="text-base font-folio-bold text-black group-hover:text-orange-500 transition-colors duration-300 pr-4">
-                                {faq.question}
-                              </h3>
-                              <div
-                                className={`transform transition-transform duration-300 flex-shrink-0 ${
-                                  isExpanded ? "rotate-180" : ""
-                                }`}
-                              >
-                                <ChevronDown className="h-5 w-5 text-gray-400 group-hover:text-orange-500" />
-                              </div>
-                            </button>
-                            <div
-                              className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                                isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-                              }`}
-                            >
-                              <div className="p-4 pt-0 font-folio-medium text-sm text-gray-700 leading-relaxed">
-                                {typeof faq.answer === "string" ? <p>{faq.answer}</p> : faq.answer}
-                              </div>
-                            </div>
+                      return (
+                        <div
+                          key={itemKey}
+                          className="border-b border-gray-200 pb-8 md:pb-12 last:border-b-0 animate-fade-in hover:bg-gray-50 transition-colors duration-300 rounded-lg p-4 md:p-6 -m-4 md:-m-6 mb-4 md:mb-6 cursor-pointer"
+                          style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                          <h3 className="text-lg md:text-xl font-folio-bold text-black mb-4 md:mb-6 transition-colors duration-300">
+                            {faq.question}
+                          </h3>
+                          <div className="text-sm md:text-base font-folio-light text-gray-700 leading-relaxed">
+                            {typeof faq.answer === "string" ? <p>{faq.answer}</p> : faq.answer}
                           </div>
-                        )
-                      } else {
-                        return (
-                          <div
-                            key={itemKey}
-                            className="border-b border-gray-200 pb-8 md:pb-12 last:border-b-0 animate-fade-in hover:bg-gray-50 transition-colors duration-300 rounded-lg p-4 md:p-6 -m-4 md:-m-6 mb-4 md:mb-6 cursor-pointer"
-                            style={{ animationDelay: `${index * 100}ms` }}
-                          >
-                            <h3 className="text-lg md:text-xl font-folio-bold text-black mb-4 md:mb-6 transition-colors duration-300">
-                              {faq.question}
-                            </h3>
-                            <div className="text-sm md:text-base font-folio-light text-gray-700 leading-relaxed">
-                              {typeof faq.answer === "string" ? <p>{faq.answer}</p> : faq.answer}
-                            </div>
-                          </div>
-                        )
-                      }
+                        </div>
+                      )
                     })}
 
                 {/* No Results */}

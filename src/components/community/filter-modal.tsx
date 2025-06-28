@@ -15,7 +15,10 @@ export default function CommunityFilterModal({ onClose, onApplyViewType, initial
   const viewTypeOptions = ["Grid View", "List View", "Calendar View"]
 
   const handleReset = () => {
-    setSelectedViewType("Grid View")
+    const resetViewType = "Grid View"
+    setSelectedViewType(resetViewType)
+    onApplyViewType(resetViewType)
+    onClose()
   }
 
   const handleApply = () => {

@@ -25,7 +25,10 @@ export default function SortModal({ onClose, onApplySort, initialSort }: SortMod
   }
 
   const handleReset = () => {
-    setSelectedSort("featured")
+    const resetSort = "featured"
+    setSelectedSort(resetSort)
+    onApplySort(resetSort)
+    onClose()
   }
 
   const handleApply = () => {

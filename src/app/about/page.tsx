@@ -3,29 +3,29 @@
 import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
-import useMobile from "@/hooks/use-mobile"
-import { useState } from "react"
-import MobileHeader from "@/components/mobile-header"
-import MobileMenu from "@/components/mobile-menu"
+import { getAllCollections } from "@/lib/shopify"
+import { Collection } from "@/lib/shopify/types"
+import { useEffect, useState } from "react"
 
 export default function AboutPage() {
-  const isMobile = useMobile()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [collections, setCollections] = useState<Collection[]>([])
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-  }
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const collectionsData = await getAllCollections()
+        setCollections(collectionsData)
+      } catch (error) {
+        console.error("Failed to fetch collections:", error)
+      }
+    }
+
+    fetchCollections()
+  }, [])
 
   return (
     <div className="flex flex-col min-h-screen">
-      {isMobile ? (
-        <>
-          <MobileHeader onMenuClick={toggleMobileMenu} />
-          {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
-        </>
-      ) : (
-        <Header />
-      )}
+      <Header collections={collections} />
       <main className="flex-1 mb-48">
         {/* Hero Section */}
         <div className="relative w-full h-[477px] md:h-[806px]">

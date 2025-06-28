@@ -7,13 +7,12 @@ import { ChevronRight, ChevronDown, ArrowLeft } from "lucide-react"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 import ProductCard from "@/components/ui/ProductCard"
-import useMobile from "@/hooks/use-mobile"
-import MobileHeader from "@/components/mobile-header"
-import MobileMenu from "@/components/mobile-menu"
 import SizeChartModal from "@/components/ui/size-chart"
 import CartDropdown from "@/components/ui/cart-dropdown"
 import AddToCartButton from "@/components/ui/add-to-cart-button"
 import type { ProductDetailType, ProductCardType } from "@/lib/shopify/types"
+import { getAllCollections } from "@/lib/shopify"
+import { Collection } from "@/lib/shopify/types"
 
 // Constants
 const GALLERY_AUTO_SCROLL_INTERVAL = 5000
@@ -61,6 +60,21 @@ const hasComposition = (descriptionHtml: string): boolean => {
 
 // Main component
 export default function ProductDetailPage({ product, relatedProducts }: ProductDetailPageProps) {
+  const [collections, setCollections] = useState<Collection[]>([])
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const collectionsData = await getAllCollections()
+        setCollections(collectionsData)
+      } catch (error) {
+        console.error("Failed to fetch collections:", error)
+      }
+    }
+
+    fetchCollections()
+  }, [])
+
   // --- MEMOS ---
   const hasSizeOptions = useMemo(() => {
     return product.variants.edges.some((edge) => 
@@ -160,15 +174,11 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
   const [isSizeChartOpen, setIsSizeChartOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [addingToCart, setAddingToCart] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeGalleryImage, setActiveGalleryImage] = useState(0)
 
   // Refs
   const technicalRef = useRef<HTMLDivElement>(null)
   const compositionRef = useRef<HTMLDivElement>(null)
-
-  // Hooks
-  const isMobile = useMobile()
 
   // Callbacks
   const toggleSection = useCallback((section: string) => {
@@ -184,10 +194,6 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
       setAddingToCart(false)
       setIsCartOpen(true)
     }, 800)
-  }, [])
-
-  const toggleMobileMenu = useCallback(() => {
-    setMobileMenuOpen((prev) => !prev)
   }, [])
 
   const handleColorSelect = (color: string) => {
@@ -247,24 +253,18 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (galleryImages.length > (isMobile ? 1 : 3)) {
+      if (galleryImages.length > 1) {
         setActiveGalleryImage((prev) => {
-          if (isMobile) {
-            // Mobile: scroll through individual images
-            return (prev + 1) % galleryImages.length
-          } else {
-            // Desktop: scroll through groups of 3 images
-            const currentGroup = Math.floor(prev / 3)
-            const totalGroups = Math.ceil(galleryImages.length / 3)
-            const nextGroup = (currentGroup + 1) % totalGroups
-            return nextGroup * 3
-          }
+          const currentGroup = Math.floor(prev / 3)
+          const totalGroups = Math.ceil(galleryImages.length / 3)
+          const nextGroup = (currentGroup + 1) % totalGroups
+          return nextGroup * 3
         })
       }
     }, GALLERY_AUTO_SCROLL_INTERVAL)
 
     return () => clearInterval(interval)
-  }, [galleryImages.length, isMobile])
+  }, [galleryImages.length])
 
   // Ensure we have valid initial selections
   useEffect(() => {
@@ -297,16 +297,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
   return (
     <div className="flex flex-col min-h-screen">
-      {isMobile ? (
-        <>
-          <MobileHeader onMenuClick={toggleMobileMenu} onCartClick={() => setIsCartOpen(true)} />
-          {mobileMenuOpen && (
-            <MobileMenu onClose={() => setMobileMenuOpen(false)} onCartClick={() => setIsCartOpen(true)} />
-          )}
-        </>
-      ) : (
-        <Header />
-      )}
+      <Header collections={collections} />
       <main className="flex-1">
         <div className="container mx-auto md:px-4 md:py-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -339,9 +330,6 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 <h1 className="text-3xl md:text-[36px] font-itc-demi mb-1 animate-fade-in">
                   {product?.title || "Product Name"}
                 </h1>
-                {/* <h2 className="text-2xl font-bold font-avant-garde mb-6 animate-fade-in animation-delay-100">
-                  {product?.productType || "MENS"}
-                </h2> */}
                 <p className="text-xl md:text-[24px] font-folio-bold mb-8 animate-fade-in animation-delay-200">{formattedPrice}</p>
 
                 {product?.descriptionHtml ? (
@@ -630,14 +618,12 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
             <div className="mt-16 overflow-hidden">
               <div className="flex justify-center">
                 <div className="relative" style={{ 
-                  width: isMobile ? `${500}px` : `${3 * 500 + 2 * 16}px` 
+                  width: "500px" 
                 }}>
                   <div
                     className="flex space-x-4 transition-transform duration-700 ease-in-out"
                     style={{ 
-                      transform: isMobile 
-                        ? `translateX(-${activeGalleryImage * (500 + 16)}px)`
-                        : `translateX(-${Math.floor(activeGalleryImage / 3) * (3 * 500 + 2 * 16)}px)` 
+                      transform: `translateX(-${activeGalleryImage * (500 + 16)}px)` 
                     }}
                   >
                     {galleryImages.map((image, index) => (
@@ -662,33 +648,18 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
               </div>
 
               {/* Gallery Navigation Dots */}
-              {galleryImages.length > (isMobile ? 1 : 3) && (
+              {galleryImages.length > 1 && (
                 <div className="flex justify-center mt-4 space-x-2">
-                  {isMobile ? (
-                    // Mobile: one dot per image
-                    galleryImages.map((_, index) => (
-                      <button
-                        key={index}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                          activeGalleryImage === index ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
-                        }`}
-                        onClick={() => setActiveGalleryImage(index)}
-                        aria-label={`View image ${index + 1}`}
-                      />
-                    ))
-                  ) : (
-                    // Desktop: one dot per group of 3 images
-                    Array.from({ length: Math.ceil(galleryImages.length / 3) }, (_, groupIndex) => (
-                      <button
-                        key={groupIndex}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                          Math.floor(activeGalleryImage / 3) === groupIndex ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
-                        }`}
-                        onClick={() => setActiveGalleryImage(groupIndex * 3)}
-                        aria-label={`View image group ${groupIndex + 1}`}
-                      />
-                    ))
-                  )}
+                  {galleryImages.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                        activeGalleryImage === index ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
+                      }`}
+                      onClick={() => setActiveGalleryImage(index)}
+                      aria-label={`View image ${index + 1}`}
+                    />
+                  ))}
                 </div>
               )}
             </div>
@@ -698,32 +669,22 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
           <div className="mt-20 px-4 md:px-0">
             <h2 className="text-xl md:text-[16px] font-itc-demi mb-8 text-left">YOU MAY ALSO LIKE</h2>
             {relatedProducts.length > 0 ? (
-              isMobile ? (
-                <div className="flex overflow-x-auto pb-4 gap-6 hide-scrollbar -mx-4 px-4">
-                  {relatedProducts.map((product) => (
-                    <div key={product.id} className="flex-shrink-0 min-w-[174px] transform transition-transform duration-300 hover:scale-105">
-                      <ProductCard product={product} />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                  {relatedProducts.map((product) => (
-                    <div key={product.id} className="transform transition-transform duration-300 hover:scale-105">
-                      <ProductCard product={product} />
-                      <button
-                        className="mt-2 text-xs underline font-avant-garde relative group overflow-hidden"
-                        onClick={handleCartClick}
-                      >
-                        {/* <span className="relative z-10 group-hover:text-orange-500 transition-colors duration-300">
-                          ADD TO BAG
-                        </span>
-                        <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span> */}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {relatedProducts.map((product) => (
+                  <div key={product.id} className="transform transition-transform duration-300 hover:scale-105">
+                    <ProductCard product={product} />
+                    <button
+                      className="mt-2 text-xs underline font-avant-garde relative group overflow-hidden"
+                      onClick={handleCartClick}
+                    >
+                      {/* <span className="relative z-10 group-hover:text-orange-500 transition-colors duration-300">
+                        ADD TO BAG
+                      </span>
+                      <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span> */}
+                    </button>
+                  </div>
+                ))}
+              </div>
             ) : (
               <p className="text-center py-8 text-gray-500">No related products found.</p>
             )}

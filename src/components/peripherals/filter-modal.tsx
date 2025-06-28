@@ -32,7 +32,10 @@ export default function PeripheralsFilterModal({ onClose, onApplyFilters, initia
   const viewTypeOptions = ["Grid View", "List View"]
 
   const handleReset = () => {
-    setSelectedFilters({ category: "All Stories", viewType: "Grid View" })
+    const resetFilters = { category: "All Stories", viewType: "Grid View" }
+    setSelectedFilters(resetFilters)
+    onApplyFilters(resetFilters)
+    onClose()
   }
 
   const handleApply = () => {

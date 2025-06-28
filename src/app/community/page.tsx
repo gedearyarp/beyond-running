@@ -9,12 +9,12 @@ import ListView from "@/components/community/ListView"
 import CalendarView from "@/components/community/CalendarView"
 import CustomDropdown from "@/components/ui/dropdown"
 import useMobile from "@/hooks/use-mobile"
-import MobileHeader from "@/components/mobile-header"
-import MobileMenu from "@/components/mobile-menu"
 import CommunityFilterModal from "@/components/community/filter-modal"
 import CommunitySortModal from "@/components/community/sort-modal"
 import { supabase } from "@/lib/supabase"
 import { useSearchParams } from "next/navigation"
+import { getAllCollections } from "@/lib/shopify"
+import { Collection } from "@/lib/shopify/types"
 
 // Type definition based on Supabase table
 export type Community = {
@@ -60,9 +60,9 @@ export default function CommunityPage() {
   const [events, setEvents] = useState<Community[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [collections, setCollections] = useState<Collection[]>([])
 
   const isMobile = useMobile()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [showSortModal, setShowSortModal] = useState(false)
 
@@ -70,6 +70,19 @@ export default function CommunityPage() {
   const [appliedSort, setAppliedSort] = useState("Featured")
 
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const collectionsData = await getAllCollections()
+        setCollections(collectionsData)
+      } catch (error) {
+        console.error("Failed to fetch collections:", error)
+      }
+    }
+
+    fetchCollections()
+  }, [])
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -161,10 +174,6 @@ export default function CommunityPage() {
     return `Sort By: ${appliedSort}`
   }, [appliedSort])
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-  }
-
   const handleApplyViewType = (viewType: string) => {
     setAppliedViewType(viewType)
     setViewMode(viewType.toLowerCase().replace(" view", "") as ViewMode)
@@ -185,14 +194,7 @@ export default function CommunityPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {isMobile ? (
-        <>
-          <MobileHeader onMenuClick={toggleMobileMenu} />
-          {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
-        </>
-      ) : (
-        <Header />
-      )}
+      <Header collections={collections} />
       <main className="flex-1">
         {/* Hero Banner */}
         <div className="relative w-full h-[477px] md:h-[608px]">

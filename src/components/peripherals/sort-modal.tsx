@@ -21,7 +21,10 @@ export default function PeripheralsSortModal({ onClose, onApplySort, initialSort
   }
 
   const handleReset = () => {
-    setSelectedSort("Featured")
+    const resetSort = "Featured"
+    setSelectedSort(resetSort)
+    onApplySort(resetSort)
+    onClose()
   }
 
   const handleApply = () => {

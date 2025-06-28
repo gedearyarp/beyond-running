@@ -5,12 +5,11 @@ import { useParams } from "next/navigation"
 import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
-import useMobile from "@/hooks/use-mobile"
-import MobileHeader from "@/components/mobile-header"
-import MobileMenu from "@/components/mobile-menu"
 import RichTextViewer from "@/components/ui/RichTextViewer"
 import { supabase } from "@/lib/supabase"
 import type { Peripherals } from "@/app/peripherals/page"
+import { getAllCollections } from "@/lib/shopify"
+import { Collection } from "@/lib/shopify/types"
 
 // Extended type to include images array
 interface PeripheralWithImages extends Peripherals {
@@ -25,9 +24,20 @@ export default function PeripheralsDetailPage() {
   const id = params.slug as string
   const [peripheral, setPeripheral] = useState<PeripheralWithImages | null>(null)
   const [loading, setLoading] = useState(true)
-  const isMobile = useMobile()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [collections, setCollections] = useState([])
+  const [collections, setCollections] = useState<Collection[]>([])
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const collectionsData = await getAllCollections()
+        setCollections(collectionsData)
+      } catch (error) {
+        console.error("Failed to fetch collections:", error)
+      }
+    }
+
+    fetchCollections()
+  }, [])
 
   useEffect(() => {
     const fetchPeripheral = async () => {
@@ -69,18 +79,6 @@ export default function PeripheralsDetailPage() {
     fetchPeripheral()
   }, [id])
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-  }
-
-  const handleCartClick = () => {
-    // Handle cart click
-  }
-
-  const handleSearchClick = () => {
-    // Handle search click
-  }
-
   // Validate and format image URL
   const getValidImageUrl = (url: string | null, fallback: string = "/images/per_1.png") => {
     return url && url.trim() !== "" ? url : fallback
@@ -89,19 +87,7 @@ export default function PeripheralsDetailPage() {
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen">
-        {isMobile ? (
-          <>
-            <MobileHeader 
-              onMenuClick={toggleMobileMenu} 
-              onCartClick={handleCartClick}
-              isMenuOpen={mobileMenuOpen}
-              onSearchClick={handleSearchClick}
-            />
-            {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
-          </>
-        ) : (
-          <Header collections={collections} />
-        )}
+        <Header collections={collections} />
         <main className="flex-1">
           <div className="container mx-auto px-4 py-12">
             <p className="text-center">Loading story...</p>
@@ -115,19 +101,7 @@ export default function PeripheralsDetailPage() {
   if (!peripheral) {
     return (
       <div className="flex flex-col min-h-screen">
-        {isMobile ? (
-          <>
-            <MobileHeader 
-              onMenuClick={toggleMobileMenu} 
-              onCartClick={handleCartClick}
-              isMenuOpen={mobileMenuOpen}
-              onSearchClick={handleSearchClick}
-            />
-            {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
-          </>
-        ) : (
-          <Header collections={collections} />
-        )}
+        <Header collections={collections} />
         <main className="flex-1">
           <div className="container mx-auto px-4 py-12">
             <p className="text-center">Story not found</p>
@@ -155,19 +129,7 @@ export default function PeripheralsDetailPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {isMobile ? (
-        <>
-          <MobileHeader 
-            onMenuClick={toggleMobileMenu} 
-            onCartClick={handleCartClick}
-            isMenuOpen={mobileMenuOpen}
-            onSearchClick={handleSearchClick}
-          />
-          {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
-        </>
-      ) : (
-        <Header collections={collections} />
-      )}
+      <Header collections={collections} />
       <main className={`flex-1 ${bgColor} pb-42`}>
         <div className="relative w-full h-[477px] md:h-[705px]">
           <Image 

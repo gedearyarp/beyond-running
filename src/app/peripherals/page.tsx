@@ -8,12 +8,12 @@ import ViewList from "@/components/peripherals/ListView"
 import GridView from "@/components/peripherals/GridView"
 import CustomDropdown from "@/components/ui/dropdown"
 import useMobile from "@/hooks/use-mobile"
-import MobileHeader from "@/components/mobile-header"
-import MobileMenu from "@/components/mobile-menu"
 import PeripheralsFilterModal from "@/components/peripherals/filter-modal"
 import PeripheralsSortModal from "@/components/peripherals/sort-modal"
 import { supabase } from "@/lib/supabase"
 import { useSearchParams } from "next/navigation"
+import { getAllCollections } from "@/lib/shopify"
+import { Collection } from "@/lib/shopify/types"
 
 // Type definition based on Supabase table
 export type Peripherals = {
@@ -60,9 +60,9 @@ export default function PeripheralsPage() {
   const [peripherals, setPeripherals] = useState<Peripherals[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [collections, setCollections] = useState<Collection[]>([])
 
   const isMobile = useMobile()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [showSortModal, setShowSortModal] = useState(false)
 
@@ -73,6 +73,19 @@ export default function PeripheralsPage() {
   const [appliedSort, setAppliedSort] = useState("Featured")
 
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const collectionsData = await getAllCollections()
+        setCollections(collectionsData)
+      } catch (error) {
+        console.error("Failed to fetch collections:", error)
+      }
+    }
+
+    fetchCollections()
+  }, [])
 
   // Sync filter param from URL to state
   useEffect(() => {
@@ -176,20 +189,9 @@ export default function PeripheralsPage() {
     }
   }
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-  }
-
   return (
     <div className="flex flex-col min-h-screen">
-      {isMobile ? (
-        <>
-          <MobileHeader onMenuClick={toggleMobileMenu} />
-          {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
-        </>
-      ) : (
-        <Header />
-      )}
+      <Header collections={collections} />
       <main className="flex-1">
         {/* Hero Banner */}
         <div className="relative w-full h-[477px] md:h-[608px]">

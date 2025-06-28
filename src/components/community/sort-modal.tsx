@@ -15,7 +15,10 @@ export default function CommunitySortModal({ onClose, onApplySort, initialSort }
   const sortOptions = ["Featured", "Upcoming Events", "Past Events"]
 
   const handleReset = () => {
-    setSelectedSort("Featured")
+    const resetSort = "Featured"
+    setSelectedSort(resetSort)
+    onApplySort(resetSort)
+    onClose()
   }
 
   const handleApply = () => {

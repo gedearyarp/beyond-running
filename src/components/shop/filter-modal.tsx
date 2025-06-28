@@ -68,7 +68,10 @@ export default function FilterModal({
   }
 
   const handleReset = () => {
-    setSelectedFilters({ size: [], category: [], gender: [] })
+    const resetFilters = { size: [], category: [], gender: [] }
+    setSelectedFilters(resetFilters)
+    onApplyFilters(resetFilters)
+    onClose()
   }
 
   const handleApply = () => {
