@@ -12,13 +12,22 @@ import RichTextViewer from "@/components/ui/RichTextViewer"
 import { supabase } from "@/lib/supabase"
 import type { Peripherals } from "@/app/peripherals/page"
 
+// Extended type to include images array
+interface PeripheralWithImages extends Peripherals {
+  images: Array<{
+    src: string
+    alt: string
+  }>
+}
+
 export default function PeripheralsDetailPage() {
   const params = useParams()
   const id = params.slug as string
-  const [peripheral, setPeripheral] = useState<Peripherals | null>(null)
+  const [peripheral, setPeripheral] = useState<PeripheralWithImages | null>(null)
   const [loading, setLoading] = useState(true)
   const isMobile = useMobile()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [collections, setCollections] = useState([])
 
   useEffect(() => {
     const fetchPeripheral = async () => {
@@ -31,7 +40,25 @@ export default function PeripheralsDetailPage() {
 
         if (error) throw error
 
-        setPeripheral(data)
+        // Create images array from existing image fields
+        const images = []
+        if (data.left_img) {
+          images.push({
+            src: data.left_img,
+            alt: `${data.title} - Left image`
+          })
+        }
+        if (data.right_img) {
+          images.push({
+            src: data.right_img,
+            alt: `${data.title} - Right image`
+          })
+        }
+
+        setPeripheral({
+          ...data,
+          images
+        })
       } catch (error) {
         console.error('Error fetching peripheral:', error)
       } finally {
@@ -46,6 +73,14 @@ export default function PeripheralsDetailPage() {
     setMobileMenuOpen(!mobileMenuOpen)
   }
 
+  const handleCartClick = () => {
+    // Handle cart click
+  }
+
+  const handleSearchClick = () => {
+    // Handle search click
+  }
+
   // Validate and format image URL
   const getValidImageUrl = (url: string | null, fallback: string = "/images/per_1.png") => {
     return url && url.trim() !== "" ? url : fallback
@@ -56,11 +91,16 @@ export default function PeripheralsDetailPage() {
       <div className="flex flex-col min-h-screen">
         {isMobile ? (
           <>
-            <MobileHeader onMenuClick={toggleMobileMenu} />
+            <MobileHeader 
+              onMenuClick={toggleMobileMenu} 
+              onCartClick={handleCartClick}
+              isMenuOpen={mobileMenuOpen}
+              onSearchClick={handleSearchClick}
+            />
             {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
           </>
         ) : (
-          <Header />
+          <Header collections={collections} />
         )}
         <main className="flex-1">
           <div className="container mx-auto px-4 py-12">
@@ -77,11 +117,16 @@ export default function PeripheralsDetailPage() {
       <div className="flex flex-col min-h-screen">
         {isMobile ? (
           <>
-            <MobileHeader onMenuClick={toggleMobileMenu} />
+            <MobileHeader 
+              onMenuClick={toggleMobileMenu} 
+              onCartClick={handleCartClick}
+              isMenuOpen={mobileMenuOpen}
+              onSearchClick={handleSearchClick}
+            />
             {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
           </>
         ) : (
-          <Header />
+          <Header collections={collections} />
         )}
         <main className="flex-1">
           <div className="container mx-auto px-4 py-12">
@@ -102,10 +147,8 @@ export default function PeripheralsDetailPage() {
       })
     : '';
 
-  // Get image URLs
+  // Get banner image URL
   const bannerImageUrl = getValidImageUrl(peripheral.banner_img, "/images/per_detail_1.png")
-  const leftImageUrl = getValidImageUrl(peripheral.left_img, "/images/per_1.png")
-  const rightImageUrl = getValidImageUrl(peripheral.right_img, "/images/per_1.png")
 
   // Determine background color
   const bgColor = peripheral.background_color === 'black' ? 'bg-black text-white' : 'bg-white text-black'
@@ -114,11 +157,16 @@ export default function PeripheralsDetailPage() {
     <div className="flex flex-col min-h-screen">
       {isMobile ? (
         <>
-          <MobileHeader onMenuClick={toggleMobileMenu} />
+          <MobileHeader 
+            onMenuClick={toggleMobileMenu} 
+            onCartClick={handleCartClick}
+            isMenuOpen={mobileMenuOpen}
+            onSearchClick={handleSearchClick}
+          />
           {mobileMenuOpen && <MobileMenu onClose={() => setMobileMenuOpen(false)} />}
         </>
       ) : (
-        <Header />
+        <Header collections={collections} />
       )}
       <main className={`flex-1 ${bgColor} pb-42`}>
         <div className="relative w-full h-[477px] md:h-[705px]">
@@ -175,44 +223,50 @@ export default function PeripheralsDetailPage() {
           </div>
         </div>
 
-        {/* Images Section */}
-        {(peripheral.left_img || peripheral.right_img) && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-24 px-4 max-w-screen-xl mx-auto">
-            {peripheral.left_img && (
-              <div className="relative">
-                <Image
-                  src={leftImageUrl}
-                  alt="Story image"
-                  width={0}
-                  height={0}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="w-full h-auto"
-                  style={{
-                    maxHeight: "600px",
-                    objectFit: "contain",
-                  }}
-                  unoptimized={leftImageUrl.includes('supabase.co')}
-                />
+        {/* Images Section - Adapted from old code */}
+        {peripheral.images.length > 0 && (
+          peripheral.images.length < 2 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-24 px-4 max-w-screen-xl mx-auto">
+              {peripheral.images.map((image, index) => (
+                <div key={index} className="relative">
+                  <Image
+                    src={image.src || "/placeholder.svg"}
+                    alt={image.alt}
+                    width={0}
+                    height={0}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="w-full h-auto"
+                    style={{
+                      maxHeight: "600px",
+                      objectFit: "contain",
+                    }}
+                    unoptimized={image.src.includes('supabase.co')}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="w-full mb-24 flex flex-row overflow-x-auto hide-scrollbar">
+              <div className="flex space-x-6">
+                {peripheral.images.map((image, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-center"
+                  >
+                    <Image
+                      src={image.src || "/placeholder.svg"}
+                      alt={image.alt}
+                      width={0}
+                      height={0}
+                      sizes="500px"
+                      className="min-w-[380px] min-h-[450px] md:min-w-[880px] md:min-h-[900px] object-contain"
+                      unoptimized={image.src.includes('supabase.co')}
+                    />
+                  </div>
+                ))}
               </div>
-            )}
-            {peripheral.right_img && (
-              <div className="relative">
-                <Image
-                  src={rightImageUrl}
-                  alt="Story image"
-                  width={0}
-                  height={0}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="w-full h-auto"
-                  style={{
-                    maxHeight: "600px",
-                    objectFit: "contain",
-                  }}
-                  unoptimized={rightImageUrl.includes('supabase.co')}
-                />
-              </div>
-            )}
-          </div>
+            </div>
+          )
         )}
 
         {peripheral.paragraph_bottom && (
