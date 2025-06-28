@@ -65,29 +65,60 @@ export default function FeaturedProducts() {
 
   const productsPerView = getProductsPerView()
 
+  // Fungsi untuk mendapatkan index halaman terakhir
+  const getLastPageIndex = () => {
+    if (products.length % productsPerView === 0) {
+      return products.length - productsPerView;
+    }
+    return products.length - (products.length % productsPerView);
+  };
+
   // Navigation functions for products
   const nextProducts = () => {
     if (products.length > productsPerView) {
-      setCurrentProductIndex((prev) => Math.min(prev + productsPerView, products.length - productsPerView))
+      const lastPageIndex = getLastPageIndex();
+      if (currentProductIndex >= lastPageIndex) return;
+      const nextIndex = currentProductIndex + productsPerView;
+      if (nextIndex >= products.length) {
+        setCurrentProductIndex(lastPageIndex);
+      } else if (nextIndex > lastPageIndex) {
+        setCurrentProductIndex(lastPageIndex);
+      } else {
+        setCurrentProductIndex(nextIndex);
+      }
     }
-  }
+  };
 
   const prevProducts = () => {
-    setCurrentProductIndex((prev) => Math.max(prev - productsPerView, 0))
-  }
+    if (currentProductIndex === 0) return;
+    setCurrentProductIndex(Math.max(currentProductIndex - productsPerView, 0));
+  };
 
   // Get current products to display
   const getCurrentProducts = () => {
     if (products.length <= productsPerView) {
       return products
     }
+    // If on the last page and not a full page, show the last productsPerView items
+    if (currentProductIndex + productsPerView > products.length) {
+      return products.slice(Math.max(products.length - productsPerView, 0), products.length)
+    }
     return products.slice(currentProductIndex, currentProductIndex + productsPerView)
   }
 
   const currentProducts = getCurrentProducts()
   const showNavigation = products.length > productsPerView
+  const totalPages = Math.ceil(products.length / productsPerView)
   const canGoNext = showNavigation && currentProductIndex + productsPerView < products.length
   const canGoPrev = showNavigation && currentProductIndex > 0
+
+  // Fungsi untuk menentukan halaman aktif (dot aktif)
+  const getActivePage = () => {
+    if (currentProductIndex >= (totalPages - 1) * productsPerView) {
+      return totalPages - 1;
+    }
+    return Math.floor(currentProductIndex / productsPerView);
+  };
 
   // Determine the currently active collection
   const activeCollection = collections[activeTabIndex]
@@ -95,14 +126,96 @@ export default function FeaturedProducts() {
   if (loading && products.length === 0) {
     return (
       <div className="my-12">
-        <div className="mb-6">
-          <h2 className="text-xl md:text-[42px] font-itc-demi mb-4 md:mb-10">FEATURED ARTICLES</h2>
-          <div className="flex pb-2 gap-3 md:gap-6">
-            <div className="text-xs md:text-sm font-medium md:mr-6 font-folio-medium text-gray-500">Loading...</div>
+        <div className="mb-4 md:mb-6 px-4 md:px-6 lg:px-8">
+          <h2 className="text-2xl sm:text-3xl md:text-[42px] font-itc-demi mb-3 md:mb-4 lg:mb-10">FEATURED ARTICLES</h2>
+          <div className="flex flex-col sm:flex-row sm:items-center pb-2 gap-2 sm:gap-3 md:gap-6">
+            <div className="flex gap-3 md:gap-6 overflow-x-auto pb-2 sm:pb-0">
+              {collections.map((collection, index) => (
+                <button
+                  key={collection.id}
+                  className={`text-xs sm:text-sm md:text-base font-medium whitespace-nowrap font-folio-medium transition-colors px-1 py-1 ${
+                    activeTabIndex === index ? "font-bold text-black" : "text-gray-500 hover:text-black"
+                  } cursor-pointer opacity-50 flex items-center gap-2`}
+                  onClick={() => handleTabClick(index)}
+                  disabled
+                >
+                  {collection.title}
+                  {activeTabIndex === index && (
+                    <span className="inline-block w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin align-middle ml-1"></span>
+                  )}
+                </button>
+              ))}
+            </div>
+            <div className="sm:ml-auto">
+              <Link href="/shop" className="text-xs sm:text-sm md:text-base font-itc-md underline cursor-pointer opacity-50 pointer-events-none">
+                SHOP NOW
+              </Link>
+            </div>
           </div>
         </div>
-        <div className="flex justify-center items-center h-64">
-          <div className="text-gray-500">Loading products...</div>
+        <div className="flex flex-col justify-center items-center h-64">
+          {/* Animated 3 Dots Loading */}
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+          </div>
+          <div className="text-gray-500 text-sm font-folio-medium">Loading Products</div>
+        </div>
+        <style jsx>{`
+          @keyframes bounce {
+            0%, 80%, 100% { transform: scale(1); }
+            40% { transform: scale(1.5); }
+          }
+          .animate-bounce {
+            display: inline-block;
+            animation: bounce 1.4s infinite both;
+          }
+            .animate-bounce:nth-child(1) { animation-delay: -0.32s; }
+            .animate-bounce:nth-child(2) { animation-delay: -0.16s; }
+            .animate-bounce:nth-child(3) { animation-delay: 0s; }
+          .animate-spin {
+            animation: spin 1s linear infinite;
+          }
+          @keyframes spin {
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    )
+  }
+
+  if (!loading && products.length === 0) {
+    return (
+      <div className="my-8 md:my-12">
+        <div className="mb-4 md:mb-6 px-4 md:px-6 lg:px-8">
+          <h2 className="text-2xl sm:text-3xl md:text-[42px] font-itc-demi mb-3 md:mb-4 lg:mb-10">FEATURED ARTICLES</h2>
+          <div className="flex flex-col sm:flex-row sm:items-center pb-2 gap-2 sm:gap-3 md:gap-6">
+            <div className="flex gap-3 md:gap-6 overflow-x-auto pb-2 sm:pb-0">
+              {collections.map((collection, index) => (
+                <button
+                  key={collection.id}
+                  className={`text-xs sm:text-sm md:text-base font-medium whitespace-nowrap font-folio-medium transition-colors px-1 py-1 ${
+                    activeTabIndex === index ? "font-bold text-black" : "text-gray-500 hover:text-black"
+                  } cursor-pointer`}
+                  onClick={() => handleTabClick(index)}
+                  disabled={loading}
+                >
+                  {collection.title}
+                </button>
+              ))}
+            </div>
+            <div className="sm:ml-auto">
+              <Link href="/shop" className="text-xs sm:text-sm md:text-base font-itc-md underline cursor-pointer">
+                SHOP NOW
+              </Link>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col items-center justify-center min-h-[200px] py-12">
+          <div className="text-gray-400 text-lg font-folio-medium text-center">
+            No products found in this collection.
+          </div>
         </div>
       </div>
     )
@@ -112,15 +225,14 @@ export default function FeaturedProducts() {
     <div className="my-8 md:my-12">
       <div className="mb-4 md:mb-6 px-4 md:px-6 lg:px-8">
         <h2 className="text-2xl sm:text-3xl md:text-[42px] font-itc-demi mb-3 md:mb-4 lg:mb-10">FEATURED ARTICLES</h2>
-
-        <div className="flex flex-col sm:flex-row sm:items-center pb-2 gap-2 sm:gap-3 md:gap-6">
+        <div className="relative flex flex-col sm:flex-row sm:items-center pb-2 gap-2 sm:gap-3 md:gap-6">
           <div className="flex gap-3 md:gap-6 overflow-x-auto pb-2 sm:pb-0">
             {collections.map((collection, index) => (
               <button
                 key={collection.id}
                 className={`text-xs sm:text-sm md:text-base font-medium whitespace-nowrap font-folio-medium transition-colors px-1 py-1 ${
                   activeTabIndex === index ? "font-bold text-black" : "text-gray-500 hover:text-black"
-                }`}
+                } cursor-pointer`}
                 onClick={() => handleTabClick(index)}
                 disabled={loading}
               >
@@ -128,8 +240,9 @@ export default function FeaturedProducts() {
               </button>
             ))}
           </div>
-          <div className="sm:ml-auto">
-            <Link href="/shop" className="text-xs sm:text-sm md:text-base font-itc-md underline">
+          {/* SHOP NOW button always at far right */}
+          <div className="absolute right-0 top-0">
+            <Link href="/shop" className="text-xs sm:text-sm md:text-base font-itc-md underline cursor-pointer">
               SHOP NOW
             </Link>
           </div>
@@ -143,14 +256,14 @@ export default function FeaturedProducts() {
             <button
               onClick={prevProducts}
               disabled={!canGoPrev}
-              className="hidden md:flex absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 z-10 p-2 lg:p-3 rounded-full bg-white shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="hidden md:flex absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 z-10 p-2 lg:p-3 rounded-full bg-white shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <ChevronLeft className="h-4 w-4 lg:h-5 lg:w-5" />
             </button>
             <button
               onClick={nextProducts}
               disabled={!canGoNext}
-              className="hidden md:flex absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 z-10 p-2 lg:p-3 rounded-full bg-white shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="hidden md:flex absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 z-10 p-2 lg:p-3 rounded-full bg-white shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <ChevronRight className="h-4 w-4 lg:h-5 lg:w-5" />
             </button>
@@ -176,6 +289,11 @@ export default function FeaturedProducts() {
                 </div>
               </div>
             ))}
+            {/* Add invisible placeholders to keep the last row centered and tidy */}
+            {currentProducts.length < productsPerView &&
+              Array.from({ length: productsPerView - currentProducts.length }).map((_, idx) => (
+                <div key={`placeholder-${idx}`} className="invisible" />
+              ))}
           </div>
         </div>
 
@@ -187,15 +305,22 @@ export default function FeaturedProducts() {
 
             {/* Pagination Dots */}
             <div className="flex justify-center gap-2">
-              {Array.from({ length: Math.ceil(products.length / productsPerView) }).map((_, index) => (
+              {Array.from({ length: totalPages }).map((_, index) => (
                 <button
                   key={index}
-                  onClick={() => setCurrentProductIndex(index * productsPerView)}
+                  onClick={() => {
+                    // Calculate the correct index for the last page
+                    if (index === totalPages - 1) {
+                      setCurrentProductIndex(Math.max(products.length - productsPerView, 0))
+                    } else {
+                      setCurrentProductIndex(index * productsPerView)
+                    }
+                  }}
                   className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-colors touch-manipulation ${
-                    Math.floor(currentProductIndex / productsPerView) === index
+                    getActivePage() === index
                       ? "bg-black"
                       : "bg-gray-300 hover:bg-gray-400"
-                  }`}
+                  } cursor-pointer`}
                 />
               ))}
             </div>
@@ -208,7 +333,7 @@ export default function FeaturedProducts() {
             <button
               onClick={prevProducts}
               disabled={!canGoPrev}
-              className="flex items-center justify-center px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+              className="flex items-center justify-center px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation cursor-pointer"
             >
               <ChevronLeft className="h-4 w-4 mr-1" />
               <span className="text-sm font-medium">Prev</span>
@@ -216,7 +341,7 @@ export default function FeaturedProducts() {
             <button
               onClick={nextProducts}
               disabled={!canGoNext}
-              className="flex items-center justify-center px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+              className="flex items-center justify-center px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation cursor-pointer"
             >
               <span className="text-sm font-medium">Next</span>
               <ChevronRight className="h-4 w-4 ml-1" />
@@ -229,7 +354,7 @@ export default function FeaturedProducts() {
           <div className="text-center mt-6 md:mt-8 px-4">
             <Link
               href={`/shop/${activeCollection.handle}`}
-              className="inline-flex items-center gap-2 text-sm md:text-base font-folio-medium text-gray-600 hover:text-black transition-colors touch-manipulation"
+              className="inline-flex items-center gap-2 text-sm md:text-base font-folio-medium text-gray-600 hover:text-black transition-colors touch-manipulation cursor-pointer"
             >
               View all in {activeCollection.title}
               <ChevronRight className="h-4 w-4" />

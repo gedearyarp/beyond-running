@@ -715,10 +715,10 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                         className="mt-2 text-xs underline font-avant-garde relative group overflow-hidden"
                         onClick={handleCartClick}
                       >
-                        <span className="relative z-10 group-hover:text-orange-500 transition-colors duration-300">
+                        {/* <span className="relative z-10 group-hover:text-orange-500 transition-colors duration-300">
                           ADD TO BAG
                         </span>
-                        <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
+                        <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span> */}
                       </button>
                     </div>
                   ))}
