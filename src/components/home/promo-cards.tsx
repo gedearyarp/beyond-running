@@ -10,7 +10,7 @@ const promoCards = [
     title: "DISCOVER OUR NEW COLLECTION",
     buttonText: "Discover",
     footerText: "SHOP:PRODUCTS-COLLECTIONS",
-    link: "/collection",
+    link: "/shop",
     bgImage: "/images/featured_1.png",
     icon: "/icons/featured_1.svg",
     gifIcon: "/gif/discover-white.gif", // Animated version
@@ -20,7 +20,7 @@ const promoCards = [
     title: "STORY BEHIND FROM OUR RUNNERS",
     buttonText: "Read",
     footerText: "PERIPHERALS:STORIES-EDITORIAL-TIPS",
-    link: "/stories",
+    link: "/peripherals",
     bgImage: "/images/featured_2.png",
     icon: "/icons/featured_2.svg",
     gifIcon: "/gif/clarity-white.gif", // Animated version
@@ -30,7 +30,7 @@ const promoCards = [
     title: "BALI 140 RELAY OPEN REGISTRATION",
     buttonText: "Join",
     footerText: "COMMUNITY:EVENTS-COLLABORATION-FEATURED RUNNERS",
-    link: "/registration",
+    link: "/community",
     bgImage: "/images/featured_3.png",
     icon: "/icons/featured_3.svg",
     gifIcon: "/gif/community-white.gif", // Animated version
