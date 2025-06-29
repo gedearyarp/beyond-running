@@ -9,6 +9,7 @@ import { getAllCollections } from "@/lib/shopify"
 import { Collection } from "@/lib/shopify/types"
 import { User } from "@/types/api"
 import { supabase } from "@/lib/supabase"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface LineItem {
   id: number;
@@ -65,7 +66,7 @@ interface CompleteUser extends User {
 
 export default function ProfilePage() {
   const router = useRouter()
-  const [user, setUser] = useState<CompleteUser | null>(null)
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const [mounted, setMounted] = useState(false)
   const [collections, setCollections] = useState<Collection[]>([])
   const [orders, setOrders] = useState<Order[]>([])
@@ -76,26 +77,14 @@ export default function ProfilePage() {
   }, [])
 
   useEffect(() => {
-    if (!mounted) return
+    if (!mounted || authLoading) return
 
-    // Check if user is logged in
-    const userStr = localStorage.getItem('user')
-    const token = localStorage.getItem('accessToken')
-
-    // If no user data or token, redirect to signin
-    if (!userStr || !token) {
+    // If user is not authenticated, redirect to signin
+    if (!isAuthenticated || !user) {
       router.replace('/signin')
       return
     }
-
-    try {
-      const userData = JSON.parse(userStr)
-      setUser(userData)
-    } catch (error) {
-      console.error('Error parsing user data:', error)
-      router.replace('/signin')
-    }
-  }, [mounted, router])
+  }, [mounted, authLoading, isAuthenticated, user, router])
 
   // Fetch collections
   useEffect(() => {
@@ -135,7 +124,7 @@ export default function ProfilePage() {
   }, [user?.email])
 
   // Show a blank loading state on server-side or while loading orders
-  if (!mounted || !user || ordersLoading) {
+  if (!mounted || authLoading || !user || ordersLoading) {
     return (
       <div className="min-h-screen bg-white">
         <Header collections={collections} />
@@ -199,25 +188,18 @@ export default function ProfilePage() {
                   <div key={order.id} className="bg-gray-50 rounded-lg p-4 space-y-3">
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-medium text-black">{orderData.name || `#${order.id}`}</p>
-                        <p className="text-sm text-gray-600">{new Date(order.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                        <p className="font-folio-bold text-sm">{orderData.name}</p>
+                        <p className="text-xs text-gray-600">{new Date(order.created_at).toLocaleDateString()}</p>
                       </div>
-                      <a href={orderData.order_status_url} target="_blank" rel="noopener noreferrer" className="bg-black text-white px-4 py-2 text-xs font-medium hover:bg-gray-900 transition-colors rounded">ORDER STATUS</a>
+                      <p className="font-folio-bold text-sm">{formatPrice(orderData.total_price)}</p>
                     </div>
-                    <div className="border-t border-gray-200 pt-3 space-y-2">
-                      {lineItems.map((item: LineItem, idx: number) => (
-                        <div key={item.id || idx} className="flex justify-between items-center">
-                          <div>
-                            <p className="text-sm text-gray-700">{item.title}</p>
-                            <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
-                          </div>
-                          <p className="font-medium text-black">{formatPrice(item.price)}</p>
+                    <div className="space-y-2">
+                      {lineItems.map((item) => (
+                        <div key={item.id} className="flex justify-between text-xs">
+                          <span>{item.title} x{item.quantity}</span>
+                          <span>{formatPrice(item.price)}</span>
                         </div>
                       ))}
-                      <div className="border-t border-gray-200 pt-2 flex justify-between items-center">
-                        <p className="text-sm font-medium text-gray-700">Total:</p>
-                        <p className="font-medium text-black">{formatPrice(orderData.total_price)}</p>
-                      </div>
                     </div>
                   </div>
                 )
@@ -225,60 +207,60 @@ export default function ProfilePage() {
             </div>
 
             {/* Desktop View - Table */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-4 px-0 text-sm font-medium text-black uppercase tracking-wider">
-                      ORDER
-                    </th>
-                    <th className="text-left py-4 px-4 text-sm font-medium text-black uppercase tracking-wider">
-                      ORDER DATE
-                    </th>
-                    <th className="text-left py-4 px-4 text-sm font-medium text-black uppercase tracking-wider">
-                      ITEM(S)
-                    </th>
-                    <th className="text-left py-4 px-4 text-sm font-medium text-black uppercase tracking-wider">QTY</th>
-                    <th className="text-left py-4 px-4 text-sm font-medium text-black uppercase tracking-wider">
-                      TOTAL PRICE
-                    </th>
-                    <th className="text-right py-4 px-0 text-sm font-medium text-black uppercase tracking-wider"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {orders.length === 0 && (
-                    <tr><td colSpan={6} className="text-gray-500 text-center py-8">No orders found.</td></tr>
-                  )}
-                  {orders.map((order) => {
-                    const orderData: OrderData = typeof order.order_data === 'string' ? JSON.parse(order.order_data) : order.order_data;
-                    const lineItems: LineItem[] = orderData?.line_items || [];
-                    return (
-                      <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="py-6 px-0 text-black font-medium">{orderData.name || `#${order.id}`}</td>
-                        <td className="py-6 px-4 text-gray-700">{new Date(order.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
-                        <td className="py-6 px-4">
-                          <div className="space-y-1">
-                            {lineItems.map((item: LineItem, idx: number) => (
-                              <div key={item.id || idx} className="text-gray-700">{item.title}</div>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="py-6 px-4">
-                          <div className="space-y-1">
-                            {lineItems.map((item: LineItem, idx: number) => (
-                              <div key={item.id || idx} className="text-gray-700">x{item.quantity}</div>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="py-6 px-4 text-black font-medium">{formatPrice(orderData.total_price)}</td>
-                        <td className="py-6 px-0 text-right">
-                          <a href={orderData.order_status_url} target="_blank" rel="noopener noreferrer" className="bg-black text-white px-6 py-2 text-sm font-medium hover:bg-gray-900 transition-colors rounded">ORDER STATUS</a>
-                        </td>
+            <div className="hidden md:block">
+              {orders.length === 0 ? (
+                <div className="text-gray-500 text-center py-8">No orders found.</div>
+              ) : (
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-folio-bold text-gray-500 uppercase tracking-wider">
+                          Order
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-folio-bold text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-folio-bold text-gray-500 uppercase tracking-wider">
+                          Items
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-folio-bold text-gray-500 uppercase tracking-wider">
+                          Total
+                        </th>
                       </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {orders.map((order) => {
+                        const orderData: OrderData = typeof order.order_data === 'string' ? JSON.parse(order.order_data) : order.order_data;
+                        const lineItems: LineItem[] = orderData?.line_items || [];
+                        return (
+                          <tr key={order.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-folio-bold text-gray-900">
+                              {orderData.name}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {new Date(order.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-500">
+                              <div className="space-y-1">
+                                {lineItems.map((item) => (
+                                  <div key={item.id} className="flex justify-between">
+                                    <span>{item.title} x{item.quantity}</span>
+                                    <span>{formatPrice(item.price)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-folio-bold text-gray-900">
+                              {formatPrice(orderData.total_price)}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>

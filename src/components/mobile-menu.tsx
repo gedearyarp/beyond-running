@@ -1,11 +1,12 @@
 "use client"
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { X, Search, ShoppingBag } from "lucide-react"
+import { X, Search, ShoppingBag, User, LogOut } from "lucide-react"
 import ShopSubmenu from "./mobile-menu/shop-submenu"
 import PeripheralsSubmenu from "./mobile-menu/peripherals-submenu"
 import CommunitySubmenu from "./mobile-menu/community-submenu"
 import { useCollectionsStore } from "@/store/collections"
+import { useAuth } from "@/contexts/AuthContext"
 
 type MenuView = "main" | "shop" | "peripherals" | "community"
 
@@ -19,6 +20,7 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
   const [currentView, setCurrentView] = useState<MenuView>("main")
   const [isVisible, setIsVisible] = useState(false)
   const { refreshCollections } = useCollectionsStore()
+  const { isAuthenticated, user, logout } = useAuth()
 
   // Animation effect when component mounts
   useEffect(() => {
@@ -40,6 +42,11 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
   const handleCartClick = () => {
     onClose() // Close mobile menu first
     onCartClick?.() // Then open cart
+  }
+
+  const handleLogout = () => {
+    logout()
+    onClose()
   }
 
   const handleClose = () => {
@@ -98,13 +105,51 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
             ))}
           </nav>
 
-          <div className="mt-40 flex space-x-8 animate-fade-in" style={{ animationDelay: '600ms' }}>
-            <Link href="/signin" className="font-folio-medium text-lg underline">
-              Login
-            </Link>
-            <Link href="/register" className="font-folio-medium text-lg underline">
-              Sign Up
-            </Link>
+          {/* Authentication Section */}
+          <div className="mt-40 space-y-4 animate-fade-in" style={{ animationDelay: '600ms' }}>
+            {isAuthenticated ? (
+              <>
+                {/* User Info - Clickable to Profile */}
+                <Link 
+                  href="/profile" 
+                  onClick={handleClose}
+                  className="flex items-center space-x-4 p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200 cursor-pointer group"
+                >
+                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center group-hover:bg-gray-300 transition-colors duration-200">
+                    <User className="w-6 h-6 text-gray-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-folio-bold text-lg text-gray-900 truncate">
+                      {user?.firstName} {user?.lastName}
+                    </p>
+                    <p className="text-sm text-gray-500 truncate">View Profile</p>
+                  </div>
+                </Link>
+                
+                {/* Logout Button */}
+                <div className="pt-2">
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center space-x-4 p-4 w-full text-left hover:bg-gray-50 rounded-lg transition-colors duration-200 cursor-pointer group"
+                  >
+                    <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center group-hover:bg-gray-300 transition-colors duration-200">
+                      <LogOut className="w-6 h-6 text-gray-600" />
+                    </div>
+                    <span className="font-folio-bold text-lg text-gray-900">Logout</span>
+                  </button>
+                </div>
+              </>
+            ) : (
+              /* Unauthenticated User Options */
+              <div className="flex space-x-8">
+                <Link href="/signin" className="font-folio-medium text-lg underline">
+                  Login
+                </Link>
+                <Link href="/register" className="font-folio-medium text-lg underline">
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

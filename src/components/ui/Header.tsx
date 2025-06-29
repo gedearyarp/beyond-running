@@ -7,9 +7,11 @@ import { Search, User, ShoppingBag, X, Menu } from "lucide-react"
 import CartDropdown from "./cart-dropdown"
 import MobileHeader from "@/components/mobile-header"
 import MobileMenu from "@/components/mobile-menu"
+import UserDropdown from "./UserDropdown"
 import { Collection, getAllProductsForShopPage } from "@/lib/shopify"
 import { useCollectionsStore } from "@/store/collections"
 import { useCartStore } from "@/store/cart"
+import { useAuth } from "@/contexts/AuthContext"
 import type { ProductCardType } from "@/lib/shopify/types"
 
 interface HeaderProps {
@@ -27,11 +29,13 @@ type RecentProduct = {
 export default function Header({ collections: initialCollections }: HeaderProps) {
   const { collections, refreshCollections } = useCollectionsStore();
   const { toggleCart, getTotalItems, isOpen: isCartOpen, closeCart } = useCartStore();
+  const { isAuthenticated } = useAuth();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
@@ -57,11 +61,15 @@ export default function Header({ collections: initialCollections }: HeaderProps)
     if (mobileMenuOpen) {
       setMobileMenuOpen(false)
     }
-  }, [activeDropdown, mobileMenuOpen])
+    if (userDropdownOpen) {
+      setUserDropdownOpen(false)
+    }
+  }, [activeDropdown, mobileMenuOpen, userDropdownOpen])
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
     if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
       setActiveDropdown(null)
+      setUserDropdownOpen(false)
     }
   }, [])
 
@@ -93,14 +101,14 @@ export default function Header({ collections: initialCollections }: HeaderProps)
 
   // Click outside effect
   useEffect(() => {
-    if (activeDropdown || isCartOpen) {
+    if (activeDropdown || isCartOpen || userDropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside)
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
-  }, [activeDropdown, isCartOpen, handleClickOutside])
+  }, [activeDropdown, isCartOpen, userDropdownOpen, handleClickOutside])
 
   // Refresh collections when dropdown is opened
   useEffect(() => {
@@ -152,6 +160,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
           setSearchQuery("")
         }
         setActiveDropdown(null)
+        setUserDropdownOpen(false)
         if (isCartOpen) {
           toggleCart()
         }
@@ -159,14 +168,14 @@ export default function Header({ collections: initialCollections }: HeaderProps)
       }
     }
 
-    if (activeDropdown || isCartOpen || mobileMenuOpen || isSearchOpen) {
+    if (activeDropdown || isCartOpen || mobileMenuOpen || isSearchOpen || userDropdownOpen) {
       document.addEventListener("keydown", handleEscapeKey)
     }
 
     return () => {
       document.removeEventListener("keydown", handleEscapeKey)
     }
-  }, [activeDropdown, isCartOpen, mobileMenuOpen, isSearchOpen, toggleCart])
+  }, [activeDropdown, isCartOpen, mobileMenuOpen, isSearchOpen, userDropdownOpen, toggleCart])
 
   // Prevent body scroll when search is open
   useEffect(() => {
@@ -198,15 +207,19 @@ export default function Header({ collections: initialCollections }: HeaderProps)
         if (isCartOpen) {
           toggleCart()
         }
+        if (userDropdownOpen) {
+          setUserDropdownOpen(false)
+        }
       }
     },
-    [clearExistingTimeout, isSearchOpen, isCartOpen, toggleCart]
+    [clearExistingTimeout, isSearchOpen, isCartOpen, toggleCart, userDropdownOpen]
   )
 
   const handleCartClick = () => {
     if (!isSearchOpen) {
       toggleCart()
       setActiveDropdown(null)
+      setUserDropdownOpen(false)
       setMobileMenuOpen(false)
     }
   }
@@ -214,6 +227,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
   const handleSearchClick = () => {
     setIsSearchOpen(true)
     setActiveDropdown(null)
+    setUserDropdownOpen(false)
     if (isCartOpen) {
       toggleCart()
     }
@@ -225,6 +239,22 @@ export default function Header({ collections: initialCollections }: HeaderProps)
     setSearchQuery("")
   }
 
+  const handleUserClick = () => {
+    if (!isSearchOpen) {
+      if (isAuthenticated) {
+        setUserDropdownOpen(!userDropdownOpen)
+      } else {
+        // Redirect to signin page
+        window.location.href = '/signin'
+      }
+      setActiveDropdown(null)
+      if (isCartOpen) {
+        toggleCart()
+      }
+      setMobileMenuOpen(false)
+    }
+  }
+
   const toggleMobileMenu = () => {
     if (!isSearchOpen) {
       setMobileMenuOpen(!mobileMenuOpen)
@@ -232,6 +262,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
         toggleCart()
       }
       setActiveDropdown(null)
+      setUserDropdownOpen(false)
     }
   }
 
@@ -542,17 +573,26 @@ export default function Header({ collections: initialCollections }: HeaderProps)
               >
                 <Search className={`h-5 w-5 ${activeDropdown ? "text-[#ADADAD]" : ""}`} />
               </button>
-              <Link
-                href="/profile"
-                aria-label="Profile"
-                className="hover:text-gray-500 hover:transform hover:scale-110 hover:-rotate-12 transition-all duration-300 p-2"
-                onMouseEnter={() => {
-                  handleDropdownMouseEnter()
-                  setActiveDropdown(null)
-                }}
-              >
-                <User className="h-5 w-5" />
-              </Link>
+              
+              {/* User Icon with Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={handleUserClick}
+                  aria-label="User"
+                  className="hover:text-gray-500 hover:transform hover:scale-110 hover:-rotate-12 transition-all duration-300 p-2 cursor-pointer"
+                  onMouseEnter={() => {
+                    handleDropdownMouseEnter()
+                    setActiveDropdown(null)
+                  }}
+                >
+                  <User className="h-5 w-5" />
+                </button>
+                <UserDropdown 
+                  isOpen={userDropdownOpen} 
+                  onClose={() => setUserDropdownOpen(false)} 
+                />
+              </div>
+              
               <button
                 onClick={handleCartClick}
                 className="text-sm cursor-pointer hover:text-gray-600 transition-colors relative"

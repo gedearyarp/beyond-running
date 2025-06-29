@@ -1,11 +1,12 @@
 import Link from "next/link"
 import { useState } from "react"
-import { authApi } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import { ArrowRight } from "lucide-react"
+import { useAuth } from "@/contexts/AuthContext"
 
 export default function LoginForm() {
   const router = useRouter()
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -27,11 +28,7 @@ export default function LoginForm() {
     setIsLoading(true)
 
     try {
-      await authApi.login({
-        email: formData.email,
-        password: formData.password
-      })
-
+      await login(formData.email, formData.password)
       // Redirect to home page after successful login
       router.push('/')
     } catch (error: any) {
@@ -90,19 +87,21 @@ export default function LoginForm() {
 
         <button
           type="submit"
-          className={`w-full bg-black text-white py-2 md:py-4 transition-colors font-folio-bold text-sm md:text-lg ${
-            isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-900 cursor-pointer'
-          }`}
           disabled={isLoading}
+          className={`w-full py-2 md:py-4 font-folio-bold text-sm md:text-lg transition-all duration-300 ${
+            isLoading
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-black text-white hover:bg-gray-800 cursor-pointer"
+          }`}
         >
-          {isLoading ? 'LOGGING IN...' : 'LOGIN'}
+          {isLoading ? "LOGGING IN..." : "LOGIN"}
         </button>
       </form>
 
       <div className="mt-8 text-left md:text-lg text-sm font-folio-medium">
-        <span className="">Not a Member yet?</span>{" "}
+        <span className="">Don't have an account?</span>{" "}
         <Link href="/register" className="underline cursor-pointer">
-          Register Now
+          Sign Up
         </Link>
       </div>
     </div>
