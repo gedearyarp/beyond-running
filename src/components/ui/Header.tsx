@@ -579,7 +579,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
 
           {/* Dropdown Menus */}
           <div
-            className={`absolute left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-200 px-8 py-6 transform transition-all duration-400 ease-out shadow-2xl ${
+            className={`absolute left-0 right-0 bg-white backdrop-blur-md border-b border-gray-200 px-8 py-6 transform transition-all duration-400 ease-out shadow-2xl ${
               activeDropdown
                 ? "opacity-100 visible translate-y-0 scale-100 rotate-0"
                 : "opacity-0 invisible -translate-y-8 scale-100 -rotate-1"

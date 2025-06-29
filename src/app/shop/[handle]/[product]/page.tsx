@@ -41,8 +41,52 @@ const getColorHex = (colorName: string): string => {
     mint: "#98fb98",
     red: "#CD5656",
     blue: "#9EC6F3",
+    cream: "#ebe4dc"
   }
   return colorMap[colorName.toLowerCase()] || "#cccccc"
+}
+
+// New utility functions for color-based gallery images
+const extractColorFromUrl = (url: string): string | null => {
+  try {
+    // Extract filename from URL
+    const urlParts = url.split('/')
+    const filename = urlParts[urlParts.length - 1]
+    
+    // Remove query parameters and file extension
+    const cleanFilename = filename.split('?')[0].split('.')[0]
+    
+    // Extract color name (e.g., "black" from "black.jpg" or "black_1.jpg")
+    const colorMatch = cleanFilename.match(/^([a-zA-Z]+)(?:_\d+)?$/)
+    
+    return colorMatch ? colorMatch[1].toLowerCase() : null
+  } catch (error) {
+    console.error('Error extracting color from URL:', error)
+    return null
+  }
+}
+
+const findRelatedImagesByColor = (allImages: string[], selectedColor: string): string[] => {
+  if (!selectedColor || !allImages.length) return []
+  
+  const colorName = selectedColor.toLowerCase()
+  
+  // Find images that match the selected color
+  const relatedImages = allImages.filter(imageUrl => {
+    const extractedColor = extractColorFromUrl(imageUrl)
+    return extractedColor === colorName
+  })
+  
+  // If no exact matches found, try partial matches
+  if (relatedImages.length === 0) {
+    const partialMatches = allImages.filter(imageUrl => {
+      const extractedColor = extractColorFromUrl(imageUrl)
+      return extractedColor && extractedColor.includes(colorName) || colorName.includes(extractedColor || '')
+    })
+    return partialMatches
+  }
+  
+  return relatedImages
 }
 
 // Helper functions to check if sections have content
@@ -122,7 +166,10 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
   )
 
   // --- DATA EXTRACTION ---
-  const galleryImages = product?.images?.edges?.map((edge) => edge.node.url) || []
+  const allGalleryImages = useMemo(() => 
+    product?.images?.edges?.map((edge) => edge.node.url) || [], 
+    [product?.images?.edges]
+  )
   const formattedPrice = product?.priceRange?.minVariantPrice
     ? `${product.priceRange.minVariantPrice.currencyCode} ${product.priceRange.minVariantPrice.amount}`
     : "Price not available"
@@ -175,6 +222,24 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [addingToCart, setAddingToCart] = useState(false)
   const [activeGalleryImage, setActiveGalleryImage] = useState(0)
+  const [hoveredImageIndex, setHoveredImageIndex] = useState<number | null>(null)
+
+  // Create color-based gallery images (after state declarations)
+  const galleryImages = useMemo(() => {
+    if (!selectedColor || allGalleryImages.length === 0) {
+      return allGalleryImages
+    }
+    
+    const colorSpecificImages = findRelatedImagesByColor(allGalleryImages, selectedColor)
+    
+    // If we found color-specific images, use them
+    if (colorSpecificImages.length > 0) {
+      return colorSpecificImages
+    }
+    
+    // Fallback to all images if no color-specific images found
+    return allGalleryImages
+  }, [allGalleryImages, selectedColor])
 
   // Refs
   const technicalRef = useRef<HTMLDivElement>(null)
@@ -230,40 +295,69 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
   // Effects
   useEffect(() => {
-    if (selectedColor && product.variants) {
+    if (selectedColor && product?.variants) {
+      // First, try to get the variant image
       const variant = product.variants.edges.find((edge) =>
         edge.node.selectedOptions.some(
           (option) => option.name.toLowerCase() === "color" && option.value === selectedColor,
         ),
       )
+      
       if (variant?.node.image) {
         setDisplayImage({
           url: variant.node.image.url,
           altText: variant.node.image.altText || product.title,
         })
       } else {
-        // Fallback to the first product image if variant has no image or no color is selected
-        setDisplayImage({
-          url: product?.images?.edges?.[0]?.node?.url || "/placeholder.svg",
-          altText: product?.images?.edges?.[0]?.node?.altText || product?.title || "Product image",
-        })
+        // If no variant image, try to find color-specific gallery images
+        const colorSpecificImages = findRelatedImagesByColor(allGalleryImages, selectedColor)
+        if (colorSpecificImages.length > 0) {
+          setDisplayImage({
+            url: colorSpecificImages[0],
+            altText: `${product?.title || "Product"} - ${selectedColor}`,
+          })
+        } else {
+          // Fallback to the first product image
+          setDisplayImage({
+            url: product?.images?.edges?.[0]?.node?.url || "/placeholder.svg",
+            altText: product?.images?.edges?.[0]?.node?.altText || product?.title || "Product image",
+          })
+        }
       }
     }
-  }, [selectedColor, product])
+  }, [selectedColor, product?.images?.edges])
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (galleryImages.length > 1) {
+      if (galleryImages.length >= 2) {
         setActiveGalleryImage((prev) => {
-          const currentGroup = Math.floor(prev / 3)
-          const totalGroups = Math.ceil(galleryImages.length / 3)
-          const nextGroup = (currentGroup + 1) % totalGroups
-          return nextGroup * 3
+          return (prev + 1) % galleryImages.length
         })
       }
     }, GALLERY_AUTO_SCROLL_INTERVAL)
 
     return () => clearInterval(interval)
+  }, [galleryImages.length])
+
+  // Reset active gallery image when gallery images change
+  useEffect(() => {
+    if (galleryImages.length >= 2) {
+      setActiveGalleryImage(0)
+    }
+  }, [galleryImages])
+
+  // Auto-hover animation for desktop simple grid layout (less than 4 images)
+  useEffect(() => {
+    if (galleryImages.length > 1 && galleryImages.length < 4) {
+      const interval = setInterval(() => {
+        setHoveredImageIndex((prev) => {
+          if (prev === null) return 0
+          return (prev + 1) % galleryImages.length
+        })
+      }, 3000) // Change hover every 3 seconds
+
+      return () => clearInterval(interval)
+    }
   }, [galleryImages.length])
 
   // Ensure we have valid initial selections
@@ -615,53 +709,138 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
           {/* Gallery Images */}
           {galleryImages.length > 1 && (
-            <div className="mt-16 overflow-hidden">
-              <div className="flex justify-center">
-                <div className="relative" style={{ 
-                  width: "500px" 
-                }}>
-                  <div
-                    className="flex space-x-4 transition-transform duration-700 ease-in-out"
-                    style={{ 
-                      transform: `translateX(-${activeGalleryImage * (500 + 16)}px)` 
-                    }}
-                  >
-                    {galleryImages.map((image, index) => (
+            <div className="mt-16 px-4 md:px-0">
+              {/* Mobile Layout - Always show one image at a time */}
+              <div className="md:hidden">
+                <div className="overflow-hidden">
+                  <div className="flex justify-center">
+                    <div className="relative w-full max-w-[300px]">
                       <div
-                        key={image}
-                        className={`flex-shrink-0 w-[500px] h-[375px] relative transition-all duration-500 cursor-pointer ${
-                          activeGalleryImage === index ? "scale-100 opacity-100" : "scale-95 opacity-80"
+                        className="flex space-x-4 transition-transform duration-700 ease-in-out"
+                        style={{ 
+                          transform: `translateX(-${activeGalleryImage * (300 + 16)}px)` 
+                        }}
+                      >
+                        {galleryImages.map((image, index) => (
+                          <div
+                            key={image}
+                            className={`flex-shrink-0 w-[300px] h-[225px] relative transition-all duration-500 cursor-pointer ${
+                              activeGalleryImage === index ? "scale-100 opacity-100" : "scale-95 opacity-80"
+                            }`}
+                            onClick={() => setActiveGalleryImage(index)}
+                          >
+                            <Image
+                              src={image || "/placeholder.svg"}
+                              alt={`Product view ${index + 1}`}
+                              fill
+                              className="object-cover transition-transform duration-500 hover:scale-105"
+                              sizes="300px"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mobile Navigation Dots */}
+                  <div className="flex justify-center mt-4 space-x-2">
+                    {galleryImages.map((_, index) => (
+                      <button
+                        key={index}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                          activeGalleryImage === index ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
                         }`}
                         onClick={() => setActiveGalleryImage(index)}
-                      >
-                        <Image
-                          src={image || "/placeholder.svg"}
-                          alt={`Product view ${index + 1}`}
-                          fill
-                          className="object-cover transition-transform duration-500 hover:scale-105"
-                          sizes="500px"
-                        />
-                      </div>
+                        aria-label={`View image ${index + 1}`}
+                      />
                     ))}
                   </div>
                 </div>
               </div>
 
-              {/* Gallery Navigation Dots */}
-              {galleryImages.length > 1 && (
-                <div className="flex justify-center mt-4 space-x-2">
-                  {galleryImages.map((_, index) => (
-                    <button
-                      key={index}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                        activeGalleryImage === index ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
-                      }`}
-                      onClick={() => setActiveGalleryImage(index)}
-                      aria-label={`View image ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              )}
+              {/* Desktop Layout - Original rules */}
+              <div className="hidden md:block">
+                {galleryImages.length < 4 ? (
+                  // Simple grid layout for less than 4 images
+                  <div className="flex justify-center overflow-hidden">
+                    <div className="flex space-x-4 max-w-full">
+                      {galleryImages.map((image, index) => (
+                        <div
+                          key={image}
+                          className="relative w-[400px] h-[300px] lg:w-[500px] lg:h-[375px] flex-shrink-0 transition-all duration-500 cursor-pointer"
+                          onMouseEnter={() => setHoveredImageIndex(index)}
+                          onMouseLeave={() => setHoveredImageIndex(null)}
+                        >
+                          <Image
+                            src={image || "/placeholder.svg"}
+                            alt={`Product view ${index + 1}`}
+                            fill
+                            className={`object-cover transition-transform duration-500 ${
+                              hoveredImageIndex === index ? "scale-105" : "scale-100"
+                            }`}
+                            sizes="(max-width: 1024px) 400px, 500px"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  // Pagination layout for 4 or more images
+                  <div className="overflow-hidden">
+                    <div className="flex justify-center">
+                      <div className="relative w-full max-w-[500px]">
+                        <div
+                          className="flex space-x-4 transition-transform duration-700 ease-in-out"
+                          style={{ 
+                            transform: `translateX(-${activeGalleryImage * (500 + 16)}px)` 
+                          }}
+                        >
+                          {galleryImages.map((image, index) => (
+                            <div
+                              key={image}
+                              className={`flex-shrink-0 w-[500px] h-[375px] relative transition-all duration-500 cursor-pointer ${
+                                activeGalleryImage === index ? "scale-100 opacity-100" : "scale-95 opacity-80"
+                              }`}
+                              onClick={() => setActiveGalleryImage(index)}
+                            >
+                              <Image
+                                src={image || "/placeholder.svg"}
+                                alt={`Product view ${index + 1}`}
+                                fill
+                                className="object-cover transition-transform duration-500 hover:scale-105"
+                                sizes="500px"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Desktop Navigation Dots - only for 4+ images */}
+                    <div className="flex justify-center mt-4 space-x-2">
+                      {galleryImages.map((_, index) => (
+                        <button
+                          key={index}
+                          className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                            activeGalleryImage === index ? "bg-orange-500 w-4" : "bg-gray-300 hover:bg-gray-400"
+                          }`}
+                          onClick={() => setActiveGalleryImage(index)}
+                          aria-label={`View image ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Show message when no color-specific images found */}
+          {selectedColor && galleryImages.length === 0 && allGalleryImages.length > 0 && (
+            <div className="mt-16 text-center">
+              <p className="text-gray-500 text-sm">
+                No additional images available for {selectedColor} color variant.
+              </p>
             </div>
           )}
 
