@@ -179,11 +179,6 @@ export default function ProfilePage() {
               <div className="space-y-2 text-left lg:text-right">
                 <p className="text-base md:text-lg font-medium text-black">{user.firstName} {user.lastName}</p>
                 <p className="text-sm md:text-base text-gray-600">{user.email}</p>
-                <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                  {user.address || 'No address provided'}
-                  <br />
-                  {user.phone || 'No phone number provided'}
-                </p>
               </div>
             </div>
           </div>
