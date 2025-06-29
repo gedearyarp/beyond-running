@@ -277,49 +277,6 @@ function CommunityPageContent() {
                   </button>
                 </div>
 
-                {/* Active Filters Chips - Mobile */}
-                {category !== "all" && (
-                  <div className="mb-4">
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      <div className="animate-slideIn group flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-800 px-3 py-2 rounded-lg text-xs font-itc-md shadow-sm">
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-1.5 h-1.5 bg-gray-600 rounded-full"></div>
-                          <span className="font-itc-demi">Category</span>
-                          <span className="text-gray-500">•</span>
-                          <span>{categoryOptions.find((opt) => opt.value === category)?.label}</span>
-                        </div>
-                        <button
-                          onClick={clearCategoryFilter}
-                          className="ml-1 hover:bg-gray-200 rounded-full p-0.5 transition-colors duration-200 cursor-pointer"
-                        >
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                              fillRule="evenodd"
-                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={clearAllFilters}
-                      className="flex items-center gap-2 text-gray-600 hover:text-gray-800 text-sm font-itc-demi transition-all duration-300 hover:scale-105 cursor-pointer"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                      Clear All Filters
-                    </button>
-                  </div>
-                )}
-
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-itc-md text-gray-500">{filteredEvents.length} STORIES</span>
                 </div>
