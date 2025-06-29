@@ -99,7 +99,7 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
           </nav>
 
           <div className="mt-40 flex space-x-8 animate-fade-in" style={{ animationDelay: '600ms' }}>
-            <Link href="/login" className="font-folio-medium text-lg underline">
+            <Link href="/signin" className="font-folio-medium text-lg underline">
               Login
             </Link>
             <Link href="/register" className="font-folio-medium text-lg underline">
