@@ -430,10 +430,12 @@ export default function Header({ collections: initialCollections }: HeaderProps)
       {/* Desktop Header */}
       <header
         ref={headerRef}
-        className={`w-full fixed top-0 left-0 right-0 z-50 transition-shadow hidden md:block ${isScrolled ? "shadow-md" : ""}`}
+        className={`w-full fixed top-0 left-0 right-0 z-50 transition-all hidden md:block duration-500 ease-in-out transform ${
+          isScrolled ? "shadow-md" : ""
+        } animate-slide-down`}
       >
         {/* Announcement Bar */}
-        <div className="w-full bg-black text-white text-center py-2 text-xs">
+        <div className="w-full bg-black text-white text-center py-2 text-xs animate-slide-down">
           Free Shipping On All Orders Above Rp 599,999
         </div>
 

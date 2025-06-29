@@ -41,14 +41,14 @@ export default function MobileHeader({ onMenuClick, onCartClick, isMenuOpen, onS
   return (
     <>
       {/* Announcement Bar */}
-      <div className="w-full bg-black text-white text-center py-2 text-xs fixed top-0 left-0 right-0 z-50">
+      <div className="w-full bg-black text-white text-center py-2 text-xs fixed top-0 left-0 right-0 z-50 animate-slide-down">
         Free Shipping On All Orders Above Rp 599,999
       </div>
 
       <header
-        className={`fixed top-8 left-0 right-0 flex items-center justify-between px-4 py-4 bg-white z-50 md:hidden transition-shadow ${
+        className={`fixed top-8 left-0 right-0 flex items-center justify-between px-4 py-4 bg-white z-50 md:hidden transition-all duration-500 ease-in-out transform ${
           isScrolled ? "shadow-md" : ""
-        }`}
+        } animate-slide-down`}
       >
         <button
           onClick={onMenuClick}

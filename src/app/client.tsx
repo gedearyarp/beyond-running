@@ -65,7 +65,7 @@ export default function HomePageClient({ collections }: HomePageClientProps) {
       {introRemoved && <Header collections={collections} />}
 
       {/* Main Content */}
-      <div className="flex flex-col pt-[88px]">
+      <div className={`flex flex-col transition-all duration-500 ease-in-out ${introRemoved ? 'pt-[88px]' : 'pt-0'}`}>
         <HeroSlider />
         <div className="container mx-auto px-4">
           <PromoCards />
