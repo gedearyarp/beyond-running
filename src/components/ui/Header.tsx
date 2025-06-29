@@ -664,7 +664,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
               <div className="flex">
                 <div className="mr-16">
                   <Link
-                    href="/community/join"
+                    href="/community"
                     className="inline-block bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-full px-6 py-3 text-sm font-folio-bold mb-6 hover:from-gray-500 hover:to-gray-600 hover:transform hover:scale-105 hover:shadow-lg transition-all duration-300"
                   >
                     Join Now

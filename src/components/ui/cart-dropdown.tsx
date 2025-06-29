@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { X, Minus, Plus } from "lucide-react"
@@ -13,6 +13,8 @@ export default function CartDropdown() {
   const [discountCode, setDiscountCode] = useState("")
   const [isOutOfStockModalOpen, setIsOutOfStockModalOpen] = useState(false)
   const [outOfStockItems, setOutOfStockItems] = useState<any[]>([])
+  const [isClosing, setIsClosing] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
   const { 
     items, 
     updateQuantity, 
@@ -27,6 +29,25 @@ export default function CartDropdown() {
   } = useCartStore()
   const [isCheckingOut, setIsCheckingOut] = useState(false)
   const router = useRouter()
+
+  // Handle close animation
+  const handleClose = () => {
+    setIsClosing(true)
+    setTimeout(() => {
+      closeCart()
+      setIsClosing(false)
+    }, 300) // Wait for animation to complete
+  }
+
+  // Reset closing state when cart opens and trigger open animation
+  useEffect(() => {
+    if (isOpen) {
+      setIsClosing(false)
+      setIsVisible(true)
+    } else {
+      setIsVisible(false)
+    }
+  }, [isOpen])
 
   if (!isOpen) return null
 
@@ -103,20 +124,26 @@ export default function CartDropdown() {
   return (
     <>
       {/* Backdrop - No click handler */}
-      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 animate-fade-in" />
+      <div className={`fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-all duration-300 ${
+        isClosing ? 'opacity-0' : isVisible ? 'opacity-100' : 'opacity-0'
+      }`} />
 
       {/* Cart Dropdown - Responsive */}
       <div 
-        className="fixed top-[100px] md:top-[100px] right-0 w-full md:max-w-md bg-white shadow-2xl z-50 h-[calc(100vh-100px)] md:h-[calc(100vh-100px)] flex flex-col animate-slide-up"
+        className={`fixed top-[100px] md:top-[100px] right-0 w-full md:max-w-md bg-white shadow-2xl z-50 h-[calc(100vh-100px)] md:h-[calc(100vh-100px)] flex flex-col transition-all duration-300 ${
+          isClosing ? 'translate-y-full opacity-0' : isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200 flex-shrink-0 animate-fade-in">
+        <div className={`flex items-center justify-between p-4 md:p-6 border-b border-gray-200 flex-shrink-0 transition-all duration-300 ${
+          isVisible && !isClosing ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+        }`}>
           <h2 className="text-base md:text-lg font-folio-bold">
             {getTotalItems()} Product{getTotalItems() !== 1 ? "s" : ""}
           </h2>
           {/* Only the close button has click handler */}
           <button
-            onClick={closeCart}
+            onClick={handleClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
             aria-label="Close cart"
           >
@@ -127,10 +154,12 @@ export default function CartDropdown() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className={`flex-1 overflow-y-auto transition-all duration-300 ${
+          isVisible && !isClosing ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+        }`}>
           {items.length === 0 ? (
             /* Empty Cart State */
-            <div className="flex flex-col items-center justify-center h-full px-4 md:px-6 animate-fade-in">
+            <div className="flex flex-col items-center justify-center h-full px-4 md:px-6">
               <div className="text-center mb-8 font-folio-bold">
                 <h3 className="text-xl md:text-2xl text-gray-900 mb-6 md:mb-8">Your Cart is Empty</h3>
                 <Link
@@ -194,7 +223,9 @@ export default function CartDropdown() {
 
         {/* Checkout Section - Only show when cart has items */}
         {items.length > 0 && (
-          <div className="border-t border-gray-200 p-4 md:p-6 flex-shrink-0 animate-fade-in" style={{ animationDelay: '200ms' }}>
+          <div className={`border-t border-gray-200 p-4 md:p-6 flex-shrink-0 transition-all duration-300 ${
+            isVisible && !isClosing ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`} style={{ transitionDelay: '100ms' }}>
             {/* Discount Code */}
             {/* <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 md:mb-6 gap-2">
               <span className="text-xs md:text-sm font-medium">Got a gift card or discount code?</span>

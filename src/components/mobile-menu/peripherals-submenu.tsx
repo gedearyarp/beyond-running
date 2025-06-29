@@ -22,11 +22,12 @@ export default function PeripheralsSubmenu() {
         <div className="w-2/3 text-md font-folio-bold">
           <ul className="space-y-4">
             {[
-              { href: "/peripherals/discovery", text: "Discovery" },
-              { href: "/peripherals/clarity", text: "Clarity" },
-              { href: "/peripherals/community", text: "Community" }
+              { href: { pathname: "/peripherals", query: { filter: "discovery" } }, text: "Discovery" },
+              { href: { pathname: "/peripherals", query: { filter: "clarity" } }, text: "Clarity" },
+              { href: { pathname: "/peripherals", query: { filter: "community" } }, text: "Community" },
+              { href: { pathname: "/peripherals", query: { filter: "all" } }, text: "All" }
             ].map((item, index) => (
-              <li key={item.href} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 150}ms` }}>
+              <li key={item.text} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 150}ms` }}>
                 <Link href={item.href} className="block cursor-pointer">
                   {item.text}
                 </Link>
