@@ -10,6 +10,7 @@ import BottomBanner from "@/components/home/bottom-banner"
 import IntroSection from "@/components/intro-section"
 import NewsletterModal from "@/components/ui/newsletter-modal"
 import { Collection } from "@/lib/shopify/types"
+import { useCollectionsStore } from "@/store/collections"
 
 interface HomePageClientProps {
   collections: Collection[]
@@ -19,6 +20,15 @@ export default function HomePageClient({ collections }: HomePageClientProps) {
   const [showNewsletterModal, setShowNewsletterModal] = useState(false)
   const [hasModalBeenShown, setHasModalBeenShown] = useState(false)
   const [introRemoved, setIntroRemoved] = useState(false)
+  const { collections: storeCollections, fetchCollections } = useCollectionsStore()
+
+  // Initialize collections store with server data
+  useEffect(() => {
+    if (collections.length > 0 && storeCollections.length === 0) {
+      // Set collections directly to store if they're not already loaded
+      useCollectionsStore.setState({ collections, isLoading: false, error: null })
+    }
+  }, [collections, storeCollections.length])
 
   // Handle scroll untuk newsletter modal
   useEffect(() => {

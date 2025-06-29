@@ -103,14 +103,14 @@ export default function CartDropdown() {
   return (
     <>
       {/* Backdrop - No click handler */}
-      <div className="fixed inset-0 bg-black/20 z-40" />
+      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 animate-fade-in" />
 
       {/* Cart Dropdown - Responsive */}
       <div 
-        className="fixed top-[100px] md:top-[100px] right-0 w-full md:max-w-md bg-white shadow-2xl z-50 h-[calc(100vh-100px)] md:h-[calc(100vh-100px)] flex flex-col"
+        className="fixed top-[100px] md:top-[100px] right-0 w-full md:max-w-md bg-white shadow-2xl z-50 h-[calc(100vh-100px)] md:h-[calc(100vh-100px)] flex flex-col animate-slide-up"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200 flex-shrink-0 animate-fade-in">
           <h2 className="text-base md:text-lg font-folio-bold">
             {getTotalItems()} Product{getTotalItems() !== 1 ? "s" : ""}
           </h2>
@@ -130,7 +130,7 @@ export default function CartDropdown() {
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
             /* Empty Cart State */
-            <div className="flex flex-col items-center justify-center h-full px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center h-full px-4 md:px-6 animate-fade-in">
               <div className="text-center mb-8 font-folio-bold">
                 <h3 className="text-xl md:text-2xl text-gray-900 mb-6 md:mb-8">Your Cart is Empty</h3>
                 <Link
@@ -144,8 +144,8 @@ export default function CartDropdown() {
           ) : (
             /* Cart Items */
             <div className="p-4 md:p-6 space-y-4 md:space-y-6">
-              {items.map((item) => (
-                <div key={item.id} className="flex gap-3 md:gap-4">
+              {items.map((item, index) => (
+                <div key={item.id} className="flex gap-3 md:gap-4 animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                   {/* Product Image */}
                   <div className="w-20 h-24 md:w-[185px] md:h-[250px] flex-shrink-0 relative">
                     <Image src={item.image || "/placeholder.svg"} alt={item.title || 'Product image'} fill className="object-contain" />
@@ -194,7 +194,7 @@ export default function CartDropdown() {
 
         {/* Checkout Section - Only show when cart has items */}
         {items.length > 0 && (
-          <div className="border-t border-gray-200 p-4 md:p-6 flex-shrink-0">
+          <div className="border-t border-gray-200 p-4 md:p-6 flex-shrink-0 animate-fade-in" style={{ animationDelay: '200ms' }}>
             {/* Discount Code */}
             {/* <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 md:mb-6 gap-2">
               <span className="text-xs md:text-sm font-medium">Got a gift card or discount code?</span>
