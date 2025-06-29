@@ -2,6 +2,18 @@
 
 import React from 'react';
 
+const sizeClasses = {
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-lg'
+};
+
+const dotSizeClasses = {
+  sm: 'w-1 h-1',
+  md: 'w-1.5 h-1.5',
+  lg: 'w-2 h-2'
+};
+
 interface LoadingProps {
   size?: 'sm' | 'md' | 'lg';
   text?: string;
@@ -13,18 +25,6 @@ const Loading: React.FC<LoadingProps> = ({
   text = 'Loading...', 
   className = '' 
 }) => {
-  const sizeClasses = {
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg'
-  };
-
-  const dotSizeClasses = {
-    sm: 'w-1 h-1',
-    md: 'w-1.5 h-1.5',
-    lg: 'w-2 h-2'
-  };
-
   return (
     <div className={`flex flex-col items-center justify-center space-y-3 ${className}`}>
       {/* Loading text */}

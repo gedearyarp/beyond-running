@@ -23,7 +23,6 @@ export default function CartDropdown() {
     getTotalPrice,
     isOpen,
     closeCart,
-    checkout,
     checkoutWithoutValidation,
     validateStock
   } = useCartStore()
