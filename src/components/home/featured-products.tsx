@@ -224,7 +224,14 @@ export default function FeaturedProducts() {
   return (
     <div className="my-8 md:my-12">
       <div className="mb-4 md:mb-6 px-4 md:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl md:text-[42px] font-itc-demi mb-3 md:mb-4 lg:mb-10">FEATURED ARTICLES</h2>
+        <div className="flex flex-row items-center justify-between mb-3 md:mb-4 lg:mb-10">
+          <h2 className="text-2xl sm:text-3xl md:text-[42px] font-itc-demi ">FEATURED ARTICLES</h2>
+          <div className="block sm:hidden px-4">
+            <Link href="/shop" className="text-xs font-itc-md underline cursor-pointer">
+              SHOP NOW
+            </Link>
+          </div>
+        </div>
         <div className="relative flex flex-col sm:flex-row sm:items-center pb-2 gap-2 sm:gap-3 md:gap-6">
           <div className="flex gap-3 md:gap-6 overflow-x-auto pb-2 sm:pb-0">
             {collections.map((collection, index) => (
@@ -240,8 +247,8 @@ export default function FeaturedProducts() {
               </button>
             ))}
           </div>
-          {/* SHOP NOW button always at far right */}
-          <div className="absolute right-0 top-0">
+          {/* SHOP NOW for desktop */}
+          <div className="hidden sm:block absolute right-0 top-0">
             <Link href="/shop" className="text-xs sm:text-sm md:text-base font-itc-md underline cursor-pointer">
               SHOP NOW
             </Link>
