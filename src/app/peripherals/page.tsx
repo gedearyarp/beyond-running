@@ -15,6 +15,7 @@ import { supabase } from "@/lib/supabase"
 import { useSearchParams } from "next/navigation"
 import { getAllCollections } from "@/lib/shopify"
 import { Collection } from "@/lib/shopify/types"
+import { Suspense } from "react"
 
 // Type definition based on Supabase table
 export type Peripherals = {
@@ -55,17 +56,16 @@ const filterOptions = [
 
 type ViewMode = "list" | "grid"
 
-export default function PeripheralsPage() {
-  const [viewMode, setViewMode] = useState<ViewMode>("grid")
-  const [sortBy, setSortBy] = useState("featured")
-  const [filter, setFilter] = useState("all")
-  const [peripherals, setPeripherals] = useState<Peripherals[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [collections, setCollections] = useState<Collection[]>([])
-  const [isInitialLoading, setIsInitialLoading] = useState(true)
-
+function PeripheralsPageContent() {
   const isMobile = useMobile()
+  const [peripherals, setPeripherals] = useState<Peripherals[]>([])
+  const [collections, setCollections] = useState<Collection[]>([])
+  const [loading, setLoading] = useState(false)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [filter, setFilter] = useState("all")
+  const [sortBy, setSortBy] = useState("featured")
+  const [viewMode, setViewMode] = useState<ViewMode>("grid")
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [showSortModal, setShowSortModal] = useState(false)
 
@@ -239,7 +239,7 @@ export default function PeripheralsPage() {
                 <div className="flex w-full justify-between items-center mb-4">
                   <button
                     onClick={() => setShowFilterModal(true)}
-                    className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-sm font-avant-garde hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
+                    className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-sm font-itc-md hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -254,7 +254,7 @@ export default function PeripheralsPage() {
 
                   <button
                     onClick={() => setShowSortModal(true)}
-                    className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-full text-sm font-avant-garde hover:border-black transition-all duration-300"
+                    className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-full text-sm font-itc-md hover:border-black transition-all duration-300"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -278,16 +278,16 @@ export default function PeripheralsPage() {
                 {filter !== "all" && (
                   <div className="mb-4">
                     <div className="flex flex-wrap gap-2 mb-4">
-                      <div className="animate-slideIn group flex items-center gap-2 bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 text-purple-800 px-3 py-2 rounded-lg text-xs font-medium shadow-sm">
+                      <div className="animate-slideIn group flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-800 px-3 py-2 rounded-lg text-xs font-itc-md shadow-sm">
                         <div className="flex items-center gap-1.5">
-                          <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                          <span className="font-semibold">Category</span>
-                          <span className="text-purple-600">•</span>
+                          <div className="w-1.5 h-1.5 bg-gray-600 rounded-full"></div>
+                          <span className="font-itc-demi">Category</span>
+                          <span className="text-gray-500">•</span>
                           <span>{filterOptions.find((opt) => opt.value === filter)?.label}</span>
                         </div>
                         <button
                           onClick={clearCategoryFilter}
-                          className="ml-1 hover:bg-purple-200 rounded-full p-0.5 transition-colors duration-200"
+                          className="ml-1 hover:bg-gray-200 rounded-full p-0.5 transition-colors duration-200"
                         >
                           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                             <path
@@ -302,7 +302,7 @@ export default function PeripheralsPage() {
 
                     <button
                       onClick={clearAllFilters}
-                      className="flex items-center gap-2 text-red-600 hover:text-red-800 text-sm font-semibold transition-all duration-300 hover:scale-105"
+                      className="flex items-center gap-2 text-gray-600 hover:text-gray-800 text-sm font-itc-demi transition-all duration-300 hover:scale-105"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -318,7 +318,7 @@ export default function PeripheralsPage() {
                 )}
 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-avant-garde text-gray-500">{peripherals.length} STORIES</span>
+                  <span className="text-sm font-itc-md text-gray-500">{peripherals.length} STORIES</span>
                 </div>
               </>
             ) : (
@@ -326,7 +326,7 @@ export default function PeripheralsPage() {
                 {/* Desktop Filter Controls */}
                 <div className="flex justify-between items-start">
                   <div className="flex items-center space-x-8 mb-4 md:mb-0">
-                    <div className="font-folio-medium">
+                    <div className="font-folio-medium z-30">
                       <CustomDropdown
                         options={filterOptions}
                         value={filter}
@@ -384,16 +384,16 @@ export default function PeripheralsPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-start gap-4">
                         <div className="flex flex-wrap gap-3">
-                          <div className="animate-slideIn group flex items-center gap-2 bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200">
+                          <div className="animate-slideIn group flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200">
                             <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                              <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
                               <span className="font-medium">Category</span>
-                              <span className="text-purple-600">•</span>
+                              <span className="text-gray-500">•</span>
                               <span>{filterOptions.find((opt) => opt.value === filter)?.label}</span>
                             </div>
                             <button
                               onClick={clearCategoryFilter}
-                              className="ml-2 hover:bg-purple-200 rounded-full p-1 transition-colors duration-200 group-hover:scale-110"
+                              className="ml-2 hover:bg-gray-200 rounded-full p-1 transition-colors duration-200 group-hover:scale-110"
                             >
                               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path
@@ -409,7 +409,7 @@ export default function PeripheralsPage() {
 
                       <button
                         onClick={clearAllFilters}
-                        className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        className="flex items-center gap-2 bg-black text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -488,16 +488,16 @@ export default function PeripheralsPage() {
                         </div>
                       </div>
 
-                      <h3 className="text-2xl font-bold text-gray-900 mb-3 font-avant-garde">No Stories Found</h3>
-                      <p className="text-gray-600 mb-6 leading-relaxed">
+                      <h3 className="text-2xl font-itc-bold text-gray-900 mb-3">No Stories Found</h3>
+                      <p className="text-gray-600 mb-6 leading-relaxed font-itc-md">
                         We couldn't find any stories matching your current filter. Try exploring different categories or
                         browse all our stories.
                       </p>
 
                       <div className="space-y-3 mb-8">
                         <div className="flex flex-wrap justify-center gap-2 text-sm">
-                          <span className="text-gray-500">Current filter:</span>
-                          <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">
+                          <span className="text-gray-500 font-itc-md">Current filter:</span>
+                          <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-itc-md">
                             {filterOptions.find((opt) => opt.value === filter)?.label}
                           </span>
                         </div>
@@ -506,7 +506,7 @@ export default function PeripheralsPage() {
                       <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <button
                           onClick={clearAllFilters}
-                          className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-full text-sm font-semibold hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                          className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3 rounded-full text-sm font-itc-demi hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
@@ -520,7 +520,7 @@ export default function PeripheralsPage() {
                         </button>
                         <button
                           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                          className="flex items-center justify-center gap-2 border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-full text-sm font-semibold hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
+                          className="flex items-center justify-center gap-2 border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-full text-sm font-itc-demi hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
@@ -568,8 +568,8 @@ export default function PeripheralsPage() {
                         ></div>
                       </div>
 
-                      <h3 className="text-3xl font-bold text-gray-900 mb-4 font-avant-garde">No Stories Available</h3>
-                      <p className="text-gray-600 mb-8 text-lg leading-relaxed">
+                      <h3 className="text-3xl font-itc-bold text-gray-900 mb-4">No Stories Available</h3>
+                      <p className="text-gray-600 mb-8 text-lg leading-relaxed font-itc-md">
                         We're currently crafting amazing new stories about running, culture, and community. Check back
                         soon for inspiring content!
                       </p>
@@ -577,7 +577,7 @@ export default function PeripheralsPage() {
                       <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button
                           onClick={() => window.location.reload()}
-                          className="flex items-center justify-center gap-2 bg-black text-white px-8 py-4 rounded-full text-sm font-semibold hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                          className="flex items-center justify-center gap-2 bg-black text-white px-8 py-4 rounded-full text-sm font-itc-demi hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
@@ -591,7 +591,7 @@ export default function PeripheralsPage() {
                         </button>
                         <button
                           onClick={() => window.history.back()}
-                          className="flex items-center justify-center gap-2 border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full text-sm font-semibold hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
+                          className="flex items-center justify-center gap-2 border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full text-sm font-itc-demi hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
@@ -663,5 +663,13 @@ export default function PeripheralsPage() {
         }
       `}</style>
     </div>
+  )
+}
+
+export default function PeripheralsPage() {
+  return (
+    <Suspense fallback={<Loading text="Loading stories..." />}>
+      <PeripheralsPageContent />
+    </Suspense>
   )
 }

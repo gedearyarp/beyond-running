@@ -27,8 +27,15 @@ export default function FAQPage() {
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [collections, setCollections] = useState<Collection[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     const fetchCollections = async () => {
       try {
         setIsLoading(true)
@@ -42,7 +49,7 @@ export default function FAQPage() {
     }
 
     fetchCollections()
-  }, [])
+  }, [mounted])
 
   const toggleExpanded = (itemKey: string) => {
     const newExpanded = new Set(expandedItems)
@@ -199,77 +206,70 @@ export default function FAQPage() {
         {
           question: "Are your products suitable for all weather conditions?",
           answer:
-            "Our product range includes items designed for various weather conditions. Check the product descriptions for specific weather ratings and recommended use conditions.",
+            "Our product range includes items designed for various weather conditions. We offer lightweight options for warm weather, insulated pieces for cold conditions, and versatile layers for changing weather.",
         },
         {
-          question: "Do you offer customization or personalization?",
+          question: "How do I care for my BEYOND:RUNNING products?",
           answer:
-            "Currently, we don't offer customization services. However, we're always exploring new ways to enhance our products and services based on customer feedback.",
+            "We recommend following the care instructions on each product's label. Generally, our technical fabrics perform best when washed in cold water and air-dried to maintain their performance properties.",
         },
         {
-          question: "What's the difference between your product collections?",
+          question: "Do you offer international shipping?",
           answer:
-            "Each collection is designed for specific running needs and conditions. Visit our collections page for detailed information about the unique features and intended use of each range.",
+            "Yes, we ship to most countries worldwide. Shipping costs and delivery times vary by location. You can check shipping options and costs during checkout.",
         },
       ],
       care: [
         {
-          question: "How should I wash my BEYOND:RUNNING products?",
+          question: "How should I wash my running gear?",
           answer:
-            "Machine wash cold (30°C or below) with like colors. Use a gentle cycle and avoid fabric softeners which can affect the technical properties of the fabric.",
+            "For best results, wash your running gear in cold water with a mild detergent. Avoid fabric softeners as they can reduce the performance properties of technical fabrics.",
         },
         {
-          question: "Can I tumble dry my running gear?",
+          question: "Can I use fabric softener on BEYOND:RUNNING products?",
           answer:
-            "We recommend air drying for best results. If you must use a dryer, use low heat settings. High heat can damage technical fabrics and affect their performance properties.",
+            "No, we recommend avoiding fabric softeners as they can coat the technical fibers and reduce their moisture-wicking and breathability properties.",
         },
         {
-          question: "How do I remove stains from technical fabrics?",
+          question: "How do I remove odors from my running gear?",
           answer:
-            "For most stains, pre-treat with cold water and a small amount of gentle detergent. Avoid bleach or harsh chemicals. For stubborn stains, contact our care team for specific advice.",
+            "Technical fabrics can develop odors over time. We recommend using sports-specific detergents and occasionally adding a cup of white vinegar to the wash cycle to help remove odors.",
         },
         {
-          question: "How often should I wash my running clothes?",
+          question: "Should I iron my running gear?",
           answer:
-            "Wash after each use to maintain hygiene and fabric performance. Technical fabrics are designed to handle frequent washing while maintaining their properties.",
-        },
-        {
-          question: "What should I avoid when caring for my products?",
-          answer:
-            "Avoid fabric softeners, bleach, dry cleaning, and high heat. These can damage technical fabrics and reduce their moisture-wicking and breathability properties.",
+            "Most of our technical fabrics don't require ironing. If needed, use a low heat setting and avoid ironing directly on any printed graphics or reflective elements.",
         },
       ],
     }),
     [],
-  ) // Empty dependency array since this data is static
-
-  // Memoize section titles to prevent recreation on every render
-  const sectionTitles = useMemo(
-    () => ({
-      general: "General Enquiries",
-      returns: "Returns/Exchanges/Refunds",
-      repairs: "Repairs",
-      products: "Question About Products",
-      care: "Product Care",
-    }),
-    [],
   )
 
-  // Filter FAQ items based on search query (memoized to prevent infinite loops)
+  const sectionTitles: Record<FAQSection, string> = {
+    general: "General",
+    returns: "Returns & Exchanges",
+    repairs: "Repairs & Maintenance",
+    products: "Products & Sizing",
+    care: "Care & Maintenance",
+  }
+
+  // Filter FAQ data based on search query
   const filteredFAQData = useMemo(() => {
-    return searchQuery
-      ? Object.entries(faqData).reduce((acc, [section, items]) => {
-          const filteredItems = items.filter(
-            (item) =>
-              item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              (typeof item.answer === "string" && item.answer.toLowerCase().includes(searchQuery.toLowerCase())),
-          )
-          if (filteredItems.length > 0) {
-            acc[section] = filteredItems
-          }
-          return acc
-        }, {} as FAQData)
-      : { [activeSection]: faqData[activeSection] }
+    if (!searchQuery.trim()) {
+      return { [activeSection]: faqData[activeSection] }
+    }
+
+    return Object.entries(faqData).reduce((acc, [section, items]) => {
+      const filteredItems = items.filter(
+        (item) =>
+          item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (typeof item.answer === "string" && item.answer.toLowerCase().includes(searchQuery.toLowerCase())),
+      )
+      if (filteredItems.length > 0) {
+        acc[section] = filteredItems
+      }
+      return acc
+    }, {} as FAQData)
   }, [searchQuery, activeSection, faqData])
 
   // Auto-expand search results
@@ -288,7 +288,7 @@ export default function FAQPage() {
     setExpandedItems(new Set())
   }
 
-  if (isLoading) {
+  if (!mounted || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loading text="Loading FAQ..." />

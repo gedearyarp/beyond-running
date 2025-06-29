@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import { Suspense } from "react"
 import "./globals.css"
 import "./fonts.css"
 import Header from "@/components/ui/Header"
@@ -29,7 +30,9 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${inter.className} font-avant-garde`}>
         <LoadingProvider>
-          <NavigationLoading />
+          <Suspense fallback={null}>
+            <NavigationLoading />
+          </Suspense>
           {/* Header selalu ada */}
           {/* <div className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-white/90 shadow-lg border-b border-white/20">
             <Header collections={collections} />

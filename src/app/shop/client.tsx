@@ -331,7 +331,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                 <div className="flex w-full justify-between items-center mb-4">
                   <button
                     onClick={() => setShowFilter(true)}
-                    className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-sm font-avant-garde hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
+                    className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-sm font-itc-md hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -346,7 +346,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
 
                   <button
                     onClick={() => setShowSort(true)}
-                    className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-full text-sm font-avant-garde hover:border-black transition-all duration-300"
+                    className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-full text-sm font-itc-md hover:border-black transition-all duration-300"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -375,17 +375,17 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                       {appliedFilters.size.map((size, index) => (
                         <div
                           key={`size-${index}`}
-                          className="animate-slideIn group flex items-center gap-2 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 text-blue-800 px-3 py-2 rounded-lg text-xs font-medium shadow-sm"
+                          className="animate-slideIn group flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-800 px-3 py-2 rounded-lg text-xs font-itc-md shadow-sm"
                         >
                           <div className="flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                            <span className="font-semibold">Size</span>
-                            <span className="text-blue-600">•</span>
+                            <div className="w-1.5 h-1.5 bg-gray-600 rounded-full"></div>
+                            <span className="font-itc-demi">Size</span>
+                            <span className="text-gray-500">•</span>
                             <span>{size}</span>
                           </div>
                           <button
                             onClick={clearSizeFilter}
-                            className="ml-1 hover:bg-blue-200 rounded-full p-0.5 transition-colors duration-200"
+                            className="ml-1 hover:bg-gray-200 rounded-full p-0.5 transition-colors duration-200"
                           >
                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                               <path
@@ -401,17 +401,17 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                       {appliedFilters.category.map((category, index) => (
                         <div
                           key={`category-${index}`}
-                          className="animate-slideIn group flex items-center gap-2 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 text-green-800 px-3 py-2 rounded-lg text-xs font-medium shadow-sm"
+                          className="animate-slideIn group flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-800 px-3 py-2 rounded-lg text-xs font-itc-md shadow-sm"
                         >
                           <div className="flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                            <span className="font-semibold">Category</span>
-                            <span className="text-green-600">•</span>
+                            <div className="w-1.5 h-1.5 bg-gray-600 rounded-full"></div>
+                            <span className="font-itc-demi">Category</span>
+                            <span className="text-gray-500">•</span>
                             <span>{category}</span>
                           </div>
                           <button
                             onClick={clearCategoryFilter}
-                            className="ml-1 hover:bg-green-200 rounded-full p-0.5 transition-colors duration-200"
+                            className="ml-1 hover:bg-gray-200 rounded-full p-0.5 transition-colors duration-200"
                           >
                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                               <path
@@ -427,17 +427,17 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                       {appliedFilters.gender.map((gender, index) => (
                         <div
                           key={`gender-${index}`}
-                          className="animate-slideIn group flex items-center gap-2 bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 text-purple-800 px-3 py-2 rounded-lg text-xs font-medium shadow-sm"
+                          className="animate-slideIn group flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-800 px-3 py-2 rounded-lg text-xs font-itc-md shadow-sm"
                         >
                           <div className="flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                            <span className="font-semibold">Gender</span>
-                            <span className="text-purple-600">•</span>
+                            <div className="w-1.5 h-1.5 bg-gray-600 rounded-full"></div>
+                            <span className="font-itc-demi">Gender</span>
+                            <span className="text-gray-500">•</span>
                             <span>{gender}</span>
                           </div>
                           <button
                             onClick={clearGenderFilter}
-                            className="ml-1 hover:bg-purple-200 rounded-full p-0.5 transition-colors duration-200"
+                            className="ml-1 hover:bg-gray-200 rounded-full p-0.5 transition-colors duration-200"
                           >
                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                               <path
@@ -453,7 +453,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
 
                     <button
                       onClick={clearAllFilters}
-                      className="flex items-center gap-2 text-red-600 hover:text-red-800 text-sm font-semibold transition-all duration-300 hover:scale-105"
+                      className="flex items-center gap-2 text-gray-600 hover:text-gray-800 text-sm font-itc-demi transition-all duration-300 hover:scale-105"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -469,7 +469,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                 )}
 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-avant-garde text-gray-500">{displayedProducts.length} ITEMS</span>
+                  <span className="text-sm font-itc-md text-gray-500">{displayedProducts.length} ITEMS</span>
                 </div>
               </>
             ) : (
@@ -525,16 +525,16 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                       <div className="flex items-start gap-4">
                         <div className="flex flex-wrap gap-3">
                           {size && (
-                            <div className="animate-slideIn group flex items-center gap-2 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 text-blue-800 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200">
+                            <div className="animate-slideIn group flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200">
                               <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
                                 <span className="font-medium">Size</span>
-                                <span className="text-blue-600">•</span>
+                                <span className="text-gray-500">•</span>
                                 <span>{sizeOptions.find((opt) => opt.value === size)?.label}</span>
                               </div>
                               <button
                                 onClick={clearSizeFilter}
-                                className="ml-2 hover:bg-blue-200 rounded-full p-1 transition-colors duration-200 group-hover:scale-110"
+                                className="ml-2 hover:bg-gray-200 rounded-full p-1 transition-colors duration-200 group-hover:scale-110"
                               >
                                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                   <path
@@ -548,16 +548,16 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                           )}
 
                           {category && (
-                            <div className="animate-slideIn group flex items-center gap-2 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 text-green-800 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200">
+                            <div className="animate-slideIn group flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200">
                               <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
                                 <span className="font-medium">Category</span>
-                                <span className="text-green-600">•</span>
+                                <span className="text-gray-500">•</span>
                                 <span>{categoryOptions.find((opt) => opt.value === category)?.label}</span>
                               </div>
                               <button
                                 onClick={clearCategoryFilter}
-                                className="ml-2 hover:bg-green-200 rounded-full p-1 transition-colors duration-200 group-hover:scale-110"
+                                className="ml-2 hover:bg-gray-200 rounded-full p-1 transition-colors duration-200 group-hover:scale-110"
                               >
                                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                   <path
@@ -571,17 +571,17 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                           )}
 
                           {gender && gender !== "all" && (
-                            <div className="animate-slideIn group flex items-center gap-2 bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200">
+                            <div className="animate-slideIn group flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200">
                               <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
                                 <span className="font-medium">Gender</span>
-                                <span className="text-purple-600">•</span>
+                                <span className="text-gray-500">•</span>
                                 <span>{genderOptions.find((opt) => opt.value === gender)?.label}</span>
                               </div>
                               <button
                                 onClick={clearGenderFilter}
                                 title="Clear"
-                                className="ml-2 hover:bg-purple-200 rounded-full p-1 transition-colors duration-200 group-hover:scale-110"
+                                className="ml-2 hover:bg-gray-200 rounded-full p-1 transition-colors duration-200 group-hover:scale-110"
                               >
                                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                   <path
@@ -598,7 +598,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
 
                       <button
                         onClick={clearAllFilters}
-                        className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        className="flex items-center gap-2 bg-black text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -677,24 +677,24 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                         </div>
                       </div>
 
-                      <h3 className="text-2xl font-bold text-gray-900 mb-3 font-avant-garde">No Products Found</h3>
-                      <p className="text-gray-600 mb-6 leading-relaxed">
+                      <h3 className="text-2xl font-itc-bold text-gray-900 mb-3">No Products Found</h3>
+                      <p className="text-gray-600 mb-6 leading-relaxed font-itc-md">
                         We couldn't find any products matching your current filters. Try adjusting your search criteria
                         or explore our full collection.
                       </p>
 
                       <div className="space-y-3 mb-8">
                         <div className="flex flex-wrap justify-center gap-2 text-sm">
-                          <span className="text-gray-500">Current filters:</span>
+                          <span className="text-gray-500 font-itc-md">Current filters:</span>
                           {activeFilters.size.map((size, index) => (
-                            <span key={`size-${index}`} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                            <span key={`size-${index}`} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-itc-md">
                               {size}
                             </span>
                           ))}
                           {activeFilters.category.map((category, index) => (
                             <span
                               key={`category-${index}`}
-                              className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs"
+                              className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-itc-md"
                             >
                               {category}
                             </span>
@@ -702,7 +702,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                           {activeFilters.gender.map((gender, index) => (
                             <span
                               key={`gender-${index}`}
-                              className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs"
+                              className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-itc-md"
                             >
                               {gender}
                             </span>
@@ -713,7 +713,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                       <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <button
                           onClick={clearAllFilters}
-                          className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-500 text-white px-6 py-3 rounded-full text-sm font-semibold hover:from-orange-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                          className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3 rounded-full text-sm font-itc-demi hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
@@ -727,7 +727,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                         </button>
                         <button
                           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                          className="flex items-center justify-center gap-2 border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-full text-sm font-semibold hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
+                          className="flex items-center justify-center gap-2 border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-full text-sm font-itc-demi hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
@@ -775,8 +775,8 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                         ></div>
                       </div>
 
-                      <h3 className="text-3xl font-bold text-gray-900 mb-4 font-avant-garde">No Products Available</h3>
-                      <p className="text-gray-600 mb-8 text-lg leading-relaxed">
+                      <h3 className="text-3xl font-itc-bold text-gray-900 mb-4">No Products Available</h3>
+                      <p className="text-gray-600 mb-8 text-lg leading-relaxed font-itc-md">
                         We're currently updating our inventory. Check back soon for amazing new products, or explore our
                         other collections!
                       </p>
@@ -784,7 +784,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                       <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button
                           onClick={() => window.location.reload()}
-                          className="flex items-center justify-center gap-2 bg-black text-white px-8 py-4 rounded-full text-sm font-semibold hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                          className="flex items-center justify-center gap-2 bg-black text-white px-8 py-4 rounded-full text-sm font-itc-demi hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
@@ -798,7 +798,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                         </button>
                         <button
                           onClick={() => window.history.back()}
-                          className="flex items-center justify-center gap-2 border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full text-sm font-semibold hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
+                          className="flex items-center justify-center gap-2 border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full text-sm font-itc-demi hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
@@ -813,15 +813,15 @@ export default function ShopPageClient({ initialProducts, collections, collectio
                       </div>
 
                       <div className="mt-12 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-100">
-                        <h4 className="font-semibold text-gray-900 mb-2">Stay Updated!</h4>
-                        <p className="text-sm text-gray-600 mb-4">Be the first to know when new products arrive.</p>
+                        <h4 className="font-itc-demi text-gray-900 mb-2">Stay Updated!</h4>
+                        <p className="text-sm text-gray-600 mb-4 font-itc-md">Be the first to know when new products arrive.</p>
                         <div className="flex gap-2">
                           <input
                             type="email"
                             placeholder="Enter your email"
-                            className="flex-1 px-4 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="flex-1 px-4 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-itc-md"
                           />
-                          <button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-full text-sm font-medium hover:from-blue-600 hover:to-purple-600 transition-all duration-300">
+                          <button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-full text-sm font-itc-demi hover:from-blue-600 hover:to-purple-600 transition-all duration-300">
                             Notify Me
                           </button>
                         </div>
