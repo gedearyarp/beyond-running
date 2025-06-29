@@ -65,6 +65,24 @@ export default function Header({ collections: initialCollections }: HeaderProps)
     }
   }, [])
 
+  // Handle mouse leave for dropdown area
+  const handleDropdownMouseLeave = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    timeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null)
+    }, 150) // Small delay to allow moving to submenu
+  }, [])
+
+  // Handle mouse enter for dropdown area
+  const handleDropdownMouseEnter = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+  }, [])
+
   // Scroll effect
   useEffect(() => {
     window.addEventListener("scroll", handleScroll)
@@ -440,7 +458,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
         </div>
 
         {/* Main Navigation Container */}
-        <div className="relative bg-white" onMouseEnter={clearExistingTimeout}>
+        <div className="relative bg-white" onMouseEnter={handleDropdownMouseEnter} onMouseLeave={handleDropdownMouseLeave}>
           {/* Navigation Bar */}
           <div className="flex items-center justify-between px-8 py-4 border-b border-gray-200">
             {/* Left Navigation */}
@@ -483,12 +501,12 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                   Community
                 </Link>
               </div>
-              <div className="relative py-2">
+              <div className="relative py-2 px-2 -mx-2">
                 <Link
                   href="/about"
                   className="text-[14px] font-medium hover:text-gray-500 hover:transform hover:scale-105 transition-all duration-300"
                   onMouseEnter={() => {
-                    clearExistingTimeout()
+                    handleDropdownMouseLeave()
                     setActiveDropdown(null)
                   }}
                 >
@@ -503,7 +521,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                 href="/"
                 className={`hover:transform hover:scale-105 transition-all duration-300 ${activeDropdown ? "text-[#ADADAD]" : ""}`}
                 onMouseEnter={() => {
-                  clearExistingTimeout()
+                  handleDropdownMouseLeave()
                   setActiveDropdown(null)
                 }}
               >
@@ -518,7 +536,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                 aria-label="Search"
                 className="hover:text-gray-500 hover:transform hover:scale-110 hover:rotate-12 transition-all duration-300 p-2 cursor-pointer"
                 onMouseEnter={() => {
-                  clearExistingTimeout()
+                  handleDropdownMouseEnter()
                   setActiveDropdown(null)
                 }}
               >
@@ -529,7 +547,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                 aria-label="Profile"
                 className="hover:text-gray-500 hover:transform hover:scale-110 hover:-rotate-12 transition-all duration-300 p-2"
                 onMouseEnter={() => {
-                  clearExistingTimeout()
+                  handleDropdownMouseEnter()
                   setActiveDropdown(null)
                 }}
               >
@@ -549,13 +567,14 @@ export default function Header({ collections: initialCollections }: HeaderProps)
             </div>
           </div>
 
-          {/* Backdrop Blur Overlay */}
+          {/* Backdrop Blur Overlay - Now used for hover area */}
           <div
             className={`fixed inset-0 bg-black/5 backdrop-blur-sm transition-all duration-300 ${
               activeDropdown ? "opacity-100 visible" : "opacity-0 invisible"
             }`}
             style={{ top: "110px" }}
-            onClick={() => setActiveDropdown(null)}
+            onMouseEnter={handleDropdownMouseEnter}
+            onMouseLeave={handleDropdownMouseLeave}
           />
 
           {/* Dropdown Menus */}
@@ -565,10 +584,22 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                 ? "opacity-100 visible translate-y-0 scale-100 rotate-0"
                 : "opacity-0 invisible -translate-y-8 scale-100 -rotate-1"
             }`}
+            onMouseEnter={handleDropdownMouseEnter}
+            onMouseLeave={handleDropdownMouseLeave}
           >
+            {/* Invisible bridge area to connect menu with dropdown */}
+            <div className="absolute -top-4 left-0 right-0 h-4 bg-transparent" />
+            
+            {/* Invisible area at bottom to prevent accidental closing */}
+            <div className="absolute -bottom-4 left-0 right-0 h-4 bg-transparent" />
+            
             {/* Shop Dropdown */}
             {activeDropdown === "shop" && (
-              <div className="flex">
+              <div className="flex relative">
+                {/* Invisible hover areas for better navigation */}
+                <div className="absolute -left-4 top-0 bottom-0 w-4 bg-transparent" />
+                <div className="absolute -right-4 top-0 bottom-0 w-4 bg-transparent" />
+                
                 <div className="mr-16">
                   <Link
                     href="/shop"
@@ -623,7 +654,11 @@ export default function Header({ collections: initialCollections }: HeaderProps)
 
             {/* Peripherals Dropdown */}
             {activeDropdown === "peripherals" && (
-              <div className="flex">
+              <div className="flex relative">
+                {/* Invisible hover areas for better navigation */}
+                <div className="absolute -left-4 top-0 bottom-0 w-4 bg-transparent" />
+                <div className="absolute -right-4 top-0 bottom-0 w-4 bg-transparent" />
+                
                 <div className="mr-16">
                   <Link
                     href="/peripherals"
@@ -661,7 +696,11 @@ export default function Header({ collections: initialCollections }: HeaderProps)
 
             {/* Community Dropdown */}
             {activeDropdown === "community" && (
-              <div className="flex">
+              <div className="flex relative">
+                {/* Invisible hover areas for better navigation */}
+                <div className="absolute -left-4 top-0 bottom-0 w-4 bg-transparent" />
+                <div className="absolute -right-4 top-0 bottom-0 w-4 bg-transparent" />
+                
                 <div className="mr-16">
                   <Link
                     href="/community"

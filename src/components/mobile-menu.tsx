@@ -63,19 +63,6 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
           <Link href="/">BEYOND:RUNNING</Link>
         </div>
 
-        <div className="flex items-center space-x-4">
-          <button aria-label="Search" className="cursor-pointer">
-            <Search className="h-4 w-4" />
-          </button>
-          <button onClick={handleCartClick} aria-label="Shopping cart" className="relative cursor-pointer">
-            <ShoppingBag className="h-4 w-4" />
-            {cartItemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
-                {cartItemCount}
-              </span>
-            )}
-          </button>
-        </div>
       </div>
 
       {/* Back to Menu link (only shown in submenus) */}
