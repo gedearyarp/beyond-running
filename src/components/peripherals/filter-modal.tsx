@@ -44,7 +44,13 @@ export default function PeripheralsFilterModal({ onClose, onApplyFilters, initia
   }
 
   return (
-    <BaseModal title="+ Filter" onClose={onClose} onReset={handleReset} onApply={handleApply}>
+    <BaseModal 
+      title="+ Filter" 
+      onClose={onClose} 
+      onReset={handleReset} 
+      onApply={handleApply}
+      slideDirection="left"
+    >
       {/* Category Section */}
       <div className="mb-8">
         <div

@@ -242,7 +242,7 @@ function CommunityPageContent() {
                 <div className="flex w-full justify-between items-center mb-4">
                   <button
                     onClick={() => setShowFilterModal(true)}
-                    className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-sm font-itc-md hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                    className="button-ripple flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-sm font-itc-md hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -257,7 +257,7 @@ function CommunityPageContent() {
 
                   <button
                     onClick={() => setShowSortModal(true)}
-                    className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-full text-sm font-itc-md hover:border-black transition-all duration-300 cursor-pointer"
+                    className="button-ripple flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-full text-sm font-itc-md hover:border-black transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -676,6 +676,107 @@ function CommunityPageContent() {
         
         .animate-pulse-slow {
           animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes slideInFromLeft {
+          from {
+            transform: translateX(-100%);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideInFromRight {
+          from {
+            transform: translateX(100%);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideOutToLeft {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(-100%);
+          }
+        }
+
+        @keyframes slideOutToRight {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(100%);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes fadeOut {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+
+        .modal-backdrop {
+          animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-backdrop.closing {
+          animation: fadeOut 0.3s ease-out;
+        }
+
+        .filter-modal-slide-in {
+          animation: slideInFromLeft 0.3s ease-out;
+        }
+
+        .filter-modal-slide-out {
+          animation: slideOutToLeft 0.3s ease-out;
+        }
+
+        .sort-modal-slide-in {
+          animation: slideInFromRight 0.3s ease-out;
+        }
+
+        .sort-modal-slide-out {
+          animation: slideOutToRight 0.3s ease-out;
+        }
+
+        .button-ripple {
+          position: relative;
+          overflow: hidden;
+        }
+
+        .button-ripple::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.3);
+          transform: translate(-50%, -50%);
+          transition: width 0.6s, height 0.6s;
+        }
+
+        .button-ripple:active::after {
+          width: 300px;
+          height: 300px;
         }
       `}</style>
     </div>

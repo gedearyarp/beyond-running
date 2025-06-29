@@ -27,7 +27,13 @@ export default function CommunityFilterModal({ onClose, onApplyViewType, initial
   }
 
   return (
-    <BaseModal title="+ Filter" onClose={onClose} onReset={handleReset} onApply={handleApply}>
+    <BaseModal 
+      title="+ Filter" 
+      onClose={onClose} 
+      onReset={handleReset} 
+      onApply={handleApply}
+      slideDirection="left"
+    >
       {/* View Type Section */}
       <div className="mb-8">
         <h3 className="text-2xl font-medium font-avant-garde mb-4">View Type:</h3>

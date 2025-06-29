@@ -37,7 +37,13 @@ export default function SortModal({ onClose, onApplySort, initialSort }: SortMod
   }
 
   return (
-    <BaseModal title="+ Sort by:" onClose={onClose} onReset={handleReset} onApply={handleApply}>
+    <BaseModal 
+      title="+ Sort by:" 
+      onClose={onClose} 
+      onReset={handleReset} 
+      onApply={handleApply}
+      slideDirection="right"
+    >
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4 cursor-pointer" onClick={toggleExpanded}>
           <h3 className="text-2xl font-medium">Sort By:</h3>

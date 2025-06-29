@@ -27,7 +27,13 @@ export default function CommunitySortModal({ onClose, onApplySort, initialSort }
   }
 
   return (
-    <BaseModal title="+ Filter" onClose={onClose} onReset={handleReset} onApply={handleApply}>
+    <BaseModal 
+      title="+ Filter" 
+      onClose={onClose} 
+      onReset={handleReset} 
+      onApply={handleApply}
+      slideDirection="right"
+    >
       <div className="mb-8">
         <h3 className="text-2xl font-medium font-avant-garde mb-4">Sort By:</h3>
         <div className="space-y-4">

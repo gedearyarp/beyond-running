@@ -80,7 +80,13 @@ export default function FilterModal({
   }
 
   return (
-    <BaseModal title="+ Filter" onClose={onClose} onReset={handleReset} onApply={handleApply}>
+    <BaseModal 
+      title="+ Filter" 
+      onClose={onClose} 
+      onReset={handleReset} 
+      onApply={handleApply}
+      slideDirection="left"
+    >
       {/* Size Section */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4 cursor-pointer" onClick={() => toggleSection("size")}>

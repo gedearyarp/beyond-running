@@ -52,7 +52,7 @@ export default function MobileHeader({ onMenuClick, onCartClick, isMenuOpen, onS
       >
         <button
           onClick={onMenuClick}
-          className="p-2 -m-2 text-gray-400 hover:text-gray-500"
+          className="p-2 -m-2"
           aria-label="Toggle menu"
         >
           {isMenuOpen ? (
@@ -72,7 +72,7 @@ export default function MobileHeader({ onMenuClick, onCartClick, isMenuOpen, onS
           </button>
           <button
             onClick={onCartClick}
-            className="relative p-2 -m-2 text-gray-400 hover:text-gray-500"
+            className="relative p-2 -m-2"
             aria-label="Shopping cart"
           >
             <ShoppingBag className="h-4 w-4" />
