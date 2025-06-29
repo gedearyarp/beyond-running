@@ -4,6 +4,7 @@ import { useState } from "react"
 import { authApi } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
+import Button from "./button"
 
 export default function SignupForm() {
   const router = useRouter()
@@ -170,15 +171,14 @@ export default function SignupForm() {
           <p className="text-red-500 text-sm">{error}</p>
         )}
 
-        <button
+        <Button
           type="submit"
-          className={`w-full bg-black text-white py-2 md:py-4 transition-colors font-folio-bold text-sm md:text-lg ${
-            isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-900 cursor-pointer'
-          }`}
-          disabled={isLoading}
+          className="w-full py-2 md:py-4 font-folio-bold text-sm md:text-lg"
+          loading={isLoading}
+          loadingText="CREATING ACCOUNT..."
         >
-          {isLoading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}
-        </button>
+          CREATE ACCOUNT
+        </Button>
       </form>
 
       <div className="mt-8 text-left md:text-lg text-sm font-folio-medium">

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
+import Loading from "@/components/ui/loading"
 import GridView from "@/components/community/GridView"
 import ListView from "@/components/community/ListView"
 import CalendarView from "@/components/community/CalendarView"
@@ -61,6 +62,7 @@ export default function CommunityPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [collections, setCollections] = useState<Collection[]>([])
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
 
   const isMobile = useMobile()
   const [showFilterModal, setShowFilterModal] = useState(false)
@@ -108,6 +110,7 @@ export default function CommunityPage() {
         setError(error.message)
       } finally {
         setLoading(false)
+        setIsInitialLoading(false)
       }
     }
 
@@ -190,6 +193,14 @@ export default function CommunityPage() {
     } else if (sort === "Past Events") {
       setSortBy("past")
     }
+  }
+
+  if (isInitialLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading text="Loading community events..." />
+      </div>
+    )
   }
 
   return (

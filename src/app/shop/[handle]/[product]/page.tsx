@@ -8,7 +8,6 @@ import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 import ProductCard from "@/components/ui/ProductCard"
 import SizeChartModal from "@/components/ui/size-chart"
-import CartDropdown from "@/components/ui/cart-dropdown"
 import AddToCartButton from "@/components/ui/add-to-cart-button"
 import type { ProductDetailType, ProductCardType } from "@/lib/shopify/types"
 import { getAllCollections } from "@/lib/shopify"
@@ -219,7 +218,6 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
     composition: false,
   })
   const [isSizeChartOpen, setIsSizeChartOpen] = useState(false)
-  const [isCartOpen, setIsCartOpen] = useState(false)
   const [addingToCart, setAddingToCart] = useState(false)
   const [activeGalleryImage, setActiveGalleryImage] = useState(0)
   const [hoveredImageIndex, setHoveredImageIndex] = useState<number | null>(null)
@@ -257,7 +255,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
     setAddingToCart(true)
     setTimeout(() => {
       setAddingToCart(false)
-      setIsCartOpen(true)
+      // Cart will be opened by the Header component when items are added
     }, 800)
   }, [])
 
@@ -877,31 +875,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
         isOpen={isSizeChartOpen}
         onClose={() => setIsSizeChartOpen(false)}
         sizeData={sizeChartData}
-        productName={`${product?.title || "Product"} ${product?.productType || ""}`}
-      />
-
-      {/* Cart Dropdown */}
-      <CartDropdown
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cartItems={[
-          {
-            id: "1",
-            name: "BEATER LONGSLEEVE",
-            size: "2",
-            color: "Olive",
-            price: "Rp480.000",
-            priceNumber: 480000,
-            quantity: 1,
-            image: "/placeholder.svg?height=200&width=160",
-          },
-        ]}
-        onUpdateQuantity={(id, quantity) => {
-          // TODO: Implement cart update logic
-        }}
-        onRemoveItem={(id) => {
-          // TODO: Implement cart remove logic
-        }}
+        productName={`${product?.title || "Product"}`}
       />
     </div>
   )

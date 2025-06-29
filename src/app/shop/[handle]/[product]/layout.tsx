@@ -2,7 +2,9 @@ import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { getProductDetailByHandle, getAllProductsForShopPage } from "@/lib/shopify"
 import type { ProductDetailType, ProductCardType } from "@/lib/shopify/types"
+import Loading from "@/components/ui/loading"
 import ProductDetailPage from "./page"
+import { Suspense } from "react"
 
 export const dynamic = "force-dynamic"
 
@@ -22,12 +24,17 @@ export async function generateMetadata({
       }
     }
 
+    // Extract plain text from HTML description
+    const plainDescription = product.descriptionHtml 
+      ? product.descriptionHtml.replace(/<[^>]*>/g, '').substring(0, 160)
+      : "Product description not available"
+
     return {
       title: product.title,
-      description: product.description,
+      description: plainDescription,
       openGraph: {
         title: product.title,
-        description: product.description,
+        description: plainDescription,
         images: product.images.edges.map((edge) => edge.node.url),
       },
     }
@@ -61,7 +68,15 @@ export default async function ProductLayout({
       .filter((p) => p.handle !== params.product)
       .slice(0, 4)
 
-    return <ProductDetailPage product={product} relatedProducts={relatedProducts} />
+    return (
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <Loading text="Loading product..." />
+        </div>
+      }>
+        <ProductDetailPage product={product} relatedProducts={relatedProducts} />
+      </Suspense>
+    )
   } catch (error) {
     console.error('Error in ProductLayout:', error)
     notFound()

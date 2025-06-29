@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
+import Loading from "@/components/ui/loading"
 import { ChevronDown, Search } from "lucide-react"
 import type { JSX } from "react"
 import { getAllCollections } from "@/lib/shopify"
@@ -25,14 +26,18 @@ export default function FAQPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [collections, setCollections] = useState<Collection[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchCollections = async () => {
       try {
+        setIsLoading(true)
         const collectionsData = await getAllCollections()
         setCollections(collectionsData)
       } catch (error) {
         console.error("Failed to fetch collections:", error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -281,6 +286,14 @@ export default function FAQPage() {
     setActiveSection(section)
     setSearchQuery("")
     setExpandedItems(new Set())
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading text="Loading FAQ..." />
+      </div>
+    )
   }
 
   return (

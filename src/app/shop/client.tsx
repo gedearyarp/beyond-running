@@ -6,6 +6,7 @@ import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 import ProductCard from "@/components/ui/ProductCard"
 import CustomDropdown from "@/components/ui/dropdown"
+import Loading from "@/components/ui/loading"
 import useMobile from "@/hooks/use-mobile"
 import FilterModal, { type FilterSelections } from "@/components/shop/filter-modal"
 import SortModal from "@/components/shop/sort-modal"
@@ -35,6 +36,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
   const [products, setProducts] = useState<ProductCardType[]>(initialProducts)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
 
   // Load more states
   const [displayedProducts, setDisplayedProducts] = useState<ProductCardType[]>([])
@@ -162,6 +164,7 @@ export default function ShopPageClient({ initialProducts, collections, collectio
     if (initialProducts.length > 0 && displayedProducts.length === 0) {
       setDisplayedProducts(initialProducts.slice(0, productsPerPage))
       setHasMore(initialProducts.length > productsPerPage)
+      setIsInitialLoading(false)
     }
   }, [initialProducts, displayedProducts.length])
 
@@ -271,6 +274,14 @@ export default function ShopPageClient({ initialProducts, collections, collectio
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen)
+  }
+
+  if (isInitialLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading text="Loading products..." />
+      </div>
+    )
   }
 
   return (

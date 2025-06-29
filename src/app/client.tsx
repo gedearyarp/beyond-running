@@ -9,6 +9,7 @@ import FeaturedProducts from "@/components/home/featured-products"
 import BottomBanner from "@/components/home/bottom-banner"
 import IntroSection from "@/components/intro-section"
 import NewsletterModal from "@/components/ui/newsletter-modal"
+import Loading from "@/components/ui/loading"
 import { Collection } from "@/lib/shopify/types"
 import { useCollectionsStore } from "@/store/collections"
 
@@ -20,6 +21,7 @@ export default function HomePageClient({ collections }: HomePageClientProps) {
   const [showNewsletterModal, setShowNewsletterModal] = useState(false)
   const [hasModalBeenShown, setHasModalBeenShown] = useState(false)
   const [introRemoved, setIntroRemoved] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const { collections: storeCollections, fetchCollections } = useCollectionsStore()
 
   // Initialize collections store with server data
@@ -28,6 +30,8 @@ export default function HomePageClient({ collections }: HomePageClientProps) {
       // Set collections directly to store if they're not already loaded
       useCollectionsStore.setState({ collections, isLoading: false, error: null })
     }
+    // Set loading to false after initialization
+    setIsLoading(false)
   }, [collections, storeCollections.length])
 
   // Handle scroll untuk newsletter modal
@@ -64,6 +68,14 @@ export default function HomePageClient({ collections }: HomePageClientProps) {
 
   const handleIntroRemoved = () => {
     setIntroRemoved(true)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading text="Loading..." />
+      </div>
+    )
   }
 
   return (

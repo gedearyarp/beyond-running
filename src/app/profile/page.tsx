@@ -4,6 +4,9 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
+import Loading from "@/components/ui/loading"
+import { getAllCollections } from "@/lib/shopify"
+import { Collection } from "@/lib/shopify/types"
 import { User } from "@/types/api"
 
 interface Order {
@@ -23,6 +26,7 @@ export default function ProfilePage() {
   const router = useRouter()
   const [user, setUser] = useState<CompleteUser | null>(null)
   const [mounted, setMounted] = useState(false)
+  const [collections, setCollections] = useState<Collection[]>([])
 
   useEffect(() => {
     setMounted(true)
@@ -50,14 +54,28 @@ export default function ProfilePage() {
     }
   }, [mounted, router])
 
+  // Fetch collections
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const collectionsData = await getAllCollections()
+        setCollections(collectionsData)
+      } catch (error) {
+        console.error("Failed to fetch collections:", error)
+      }
+    }
+
+    fetchCollections()
+  }, [])
+
   // Show a blank loading state on server-side
   if (!mounted || !user) {
     return (
       <div className="min-h-screen bg-white">
-        <Header />
+        <Header collections={collections} />
         <main className="pt-32 md:pt-36 pb-12 md:pb-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p>Loading...</p>
+            <Loading text="Loading profile..." />
           </div>
         </main>
         <Footer />
@@ -88,7 +106,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+      <Header collections={collections} />
 
       <main className="pt-24 md:pt-32 pb-12 md:pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

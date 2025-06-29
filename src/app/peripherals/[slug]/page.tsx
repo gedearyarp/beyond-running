@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
+import Loading from "@/components/ui/loading"
 import RichTextViewer from "@/components/ui/RichTextViewer"
 import { supabase } from "@/lib/supabase"
 import type { Peripherals } from "@/app/peripherals/page"
@@ -25,6 +26,7 @@ export default function PeripheralsDetailPage() {
   const [peripheral, setPeripheral] = useState<PeripheralWithImages | null>(null)
   const [loading, setLoading] = useState(true)
   const [collections, setCollections] = useState<Collection[]>([])
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -73,6 +75,7 @@ export default function PeripheralsDetailPage() {
         console.error('Error fetching peripheral:', error)
       } finally {
         setLoading(false)
+        setIsInitialLoading(false)
       }
     }
 
@@ -84,13 +87,21 @@ export default function PeripheralsDetailPage() {
     return url && url.trim() !== "" ? url : fallback
   }
 
+  if (isInitialLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading text="Loading story..." />
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen">
         <Header collections={collections} />
         <main className="flex-1 pt-[88px]">
           <div className="container mx-auto px-4 py-12">
-            <p className="text-center">Loading story...</p>
+            <Loading text="Loading story..." />
           </div>
         </main>
         <Footer />

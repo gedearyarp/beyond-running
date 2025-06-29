@@ -1,13 +1,16 @@
 import React from 'react'
 import { cn } from "@/lib/utils"
+import { LoadingInline } from './loading'
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'outline' | 'ghost'
   size?: 'default' | 'sm' | 'lg'
+  loading?: boolean
+  loadingText?: string
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'default', size = 'default', ...props }, ref) => {
+  ({ className, variant = 'default', size = 'default', loading = false, loadingText = 'Loading...', children, disabled, ...props }, ref) => {
     return (
       <button
         className={cn(
@@ -23,8 +26,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           className
         )}
         ref={ref}
+        disabled={disabled || loading}
         {...props}
-      />
+      >
+        {loading ? (
+          <LoadingInline text={loadingText} />
+        ) : (
+          children
+        )}
+      </button>
     )
   }
 )

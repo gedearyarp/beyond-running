@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
+import Loading from "@/components/ui/loading"
 import ViewList from "@/components/peripherals/ListView"
 import GridView from "@/components/peripherals/GridView"
 import CustomDropdown from "@/components/ui/dropdown"
@@ -25,6 +26,7 @@ export type Peripherals = {
   updated_at: string | null
   credits: string | null
   event_overview: string | null
+  short_overview: string | null
   event_date: string | null
   highlight_quote: string | null
   paragraph_1: string | null
@@ -61,6 +63,7 @@ export default function PeripheralsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [collections, setCollections] = useState<Collection[]>([])
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
 
   const isMobile = useMobile()
   const [showFilterModal, setShowFilterModal] = useState(false)
@@ -128,6 +131,7 @@ export default function PeripheralsPage() {
         setError(error.message)
       } finally {
         setLoading(false)
+        setIsInitialLoading(false)
       }
     }
 
@@ -187,6 +191,14 @@ export default function PeripheralsPage() {
     } else if (sort === "Oldest to Newest") {
       setSortBy("oldest")
     }
+  }
+
+  if (isInitialLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading text="Loading stories..." />
+      </div>
+    )
   }
 
   return (

@@ -39,6 +39,14 @@ export default function CartDropdown() {
     }, 300) // Wait for animation to complete
   }
 
+  // Handle backdrop click
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    // Only close if clicking the backdrop itself, not its children
+    if (e.target === e.currentTarget) {
+      handleClose()
+    }
+  }
+
   // Reset closing state when cart opens and trigger open animation
   useEffect(() => {
     if (isOpen) {
@@ -46,6 +54,27 @@ export default function CartDropdown() {
       setIsVisible(true)
     } else {
       setIsVisible(false)
+    }
+  }, [isOpen])
+
+  // Handle keyboard events
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        handleClose()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown)
+      // Prevent body scroll when cart is open
+      document.body.style.overflow = 'hidden'
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      // Restore body scroll when cart closes
+      document.body.style.overflow = ''
     }
   }, [isOpen])
 
@@ -123,16 +152,23 @@ export default function CartDropdown() {
 
   return (
     <>
-      {/* Backdrop - No click handler */}
-      <div className={`fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-all duration-300 ${
-        isClosing ? 'opacity-0' : isVisible ? 'opacity-100' : 'opacity-0'
-      }`} />
+      {/* Backdrop with click handler */}
+      <div 
+        className={`fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-all duration-300 ${
+          isClosing ? 'opacity-0' : isVisible ? 'opacity-100' : 'opacity-0'
+        }`} 
+        onClick={handleBackdropClick}
+      />
 
       {/* Cart Dropdown - Responsive */}
       <div 
         className={`fixed top-[100px] md:top-[100px] right-0 w-full md:max-w-md bg-white shadow-2xl z-50 h-[calc(100vh-100px)] md:h-[calc(100vh-100px)] flex flex-col transition-all duration-300 ${
           isClosing ? 'translate-y-full opacity-0' : isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
         }`}
+        style={{ 
+          transform: isClosing ? 'translateY(100%)' : isVisible ? 'translateY(0)' : 'translateY(100%)',
+          opacity: isClosing ? 0 : isVisible ? 1 : 0
+        }}
       >
         {/* Header */}
         <div className={`flex items-center justify-between p-4 md:p-6 border-b border-gray-200 flex-shrink-0 transition-all duration-300 ${
@@ -141,7 +177,7 @@ export default function CartDropdown() {
           <h2 className="text-base md:text-lg font-folio-bold">
             {getTotalItems()} Product{getTotalItems() !== 1 ? "s" : ""}
           </h2>
-          {/* Only the close button has click handler */}
+          {/* Close button */}
           <button
             onClick={handleClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
