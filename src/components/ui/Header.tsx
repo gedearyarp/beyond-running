@@ -454,7 +454,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
       >
         {/* Announcement Bar */}
         <div className="w-full bg-black text-white text-center py-2 text-xs animate-slide-down">
-          Free Shipping On All Orders Above Rp 599,999
+          Free Shipping On All Orders Above Rp 999,999
         </div>
 
         {/* Main Navigation Container */}
