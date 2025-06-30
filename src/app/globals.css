@@ -1,293 +1,294 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600&display=swap");
 
 @font-face {
-  font-family: 'itc-bk';
-  src: url('../assets/fonts/primary/ITCAvantGardePro-Bk.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+    font-family: "itc-bk";
+    src: url("../assets/fonts/primary/ITCAvantGardePro-Bk.otf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'itc-bk-obl';
-  src: url('../assets/fonts/primary/ITCAvantGardePro-BkObl.otf') format('opentype');
-  font-weight: 400;
-  font-style: oblique;
-  font-display: swap;
+    font-family: "itc-bk-obl";
+    src: url("../assets/fonts/primary/ITCAvantGardePro-BkObl.otf") format("opentype");
+    font-weight: 400;
+    font-style: oblique;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'itc-bold';
-  src: url('../assets/fonts/primary/ITCAvantGardePro-Bold.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+    font-family: "itc-bold";
+    src: url("../assets/fonts/primary/ITCAvantGardePro-Bold.otf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'itc-bold-obl';
-  src: url('../assets/fonts/primary/ITCAvantGardePro-BoldObl.otf') format('opentype');
-  font-weight: 700;
-  font-style: oblique;
-  font-display: swap;
+    font-family: "itc-bold-obl";
+    src: url("../assets/fonts/primary/ITCAvantGardePro-BoldObl.otf") format("opentype");
+    font-weight: 700;
+    font-style: oblique;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'itc-demi';
-  src: url('../assets/fonts/primary/ITCAvantGardePro-Demi.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
+    font-family: "itc-demi";
+    src: url("../assets/fonts/primary/ITCAvantGardePro-Demi.otf") format("opentype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'itc-demi-obl';
-  src: url('../assets/fonts/primary/ITCAvantGardePro-DemiObl.otf') format('opentype');
-  font-weight: 600;
-  font-style: oblique;
-  font-display: swap;
+    font-family: "itc-demi-obl";
+    src: url("../assets/fonts/primary/ITCAvantGardePro-DemiObl.otf") format("opentype");
+    font-weight: 600;
+    font-style: oblique;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'itc-md';
-  src: url('../assets/fonts/primary/ITCAvantGardePro-Md.otf') format('opentype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+    font-family: "itc-md";
+    src: url("../assets/fonts/primary/ITCAvantGardePro-Md.otf") format("opentype");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'itc-md-obl';
-  src: url('../assets/fonts/primary/ITCAvantGardePro-MdObl.otf') format('opentype');
-  font-weight: 500;
-  font-style: oblique;
-  font-display: swap;
+    font-family: "itc-md-obl";
+    src: url("../assets/fonts/primary/ITCAvantGardePro-MdObl.otf") format("opentype");
+    font-weight: 500;
+    font-style: oblique;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'itc-xl';
-  src: url('../assets/fonts/primary/ITCAvantGardePro-XLt.otf') format('opentype');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
+    font-family: "itc-xl";
+    src: url("../assets/fonts/primary/ITCAvantGardePro-XLt.otf") format("opentype");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'itc-xl-obl';
-  src: url('../assets/fonts/primary/ITCAvantGardePro-XLtObl.otf') format('opentype');
-  font-weight: 300;
-  font-style: oblique;
-  font-display: swap;
+    font-family: "itc-xl-obl";
+    src: url("../assets/fonts/primary/ITCAvantGardePro-XLtObl.otf") format("opentype");
+    font-weight: 300;
+    font-style: oblique;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'folio-bold';
-  src: url('../assets/fonts/secondary/FolioStd-Bold.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+    font-family: "folio-bold";
+    src: url("../assets/fonts/secondary/FolioStd-Bold.otf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'folio-bold-condensed';
-  src: url('../assets/fonts/secondary/FolioStd-BoldCondensed.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-stretch: condensed;
-  font-display: swap;
+    font-family: "folio-bold-condensed";
+    src: url("../assets/fonts/secondary/FolioStd-BoldCondensed.otf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+    font-stretch: condensed;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'folio-extra-bold';
-  src: url('../assets/fonts/secondary/FolioStd-ExtraBold.otf') format('opentype');
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
+    font-family: "folio-extra-bold";
+    src: url("../assets/fonts/secondary/FolioStd-ExtraBold.otf") format("opentype");
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'folio-light';
-  src: url('../assets/fonts/secondary/FolioStd-Light.otf') format('opentype');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
+    font-family: "folio-light";
+    src: url("../assets/fonts/secondary/FolioStd-Light.otf") format("opentype");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
 }
 @font-face {
-  font-family: 'folio-medium';
-  src: url('../assets/fonts/secondary/FolioStd-Medium.otf') format('opentype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+    font-family: "folio-medium";
+    src: url("../assets/fonts/secondary/FolioStd-Medium.otf") format("opentype");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
 }
 
 @theme {
-  --font-itc-bk: 'itc-bk', sans-serif;
-  --font-itc-bk-obl: 'itc-bk-obl', sans-serif;
-  --font-itc-bold: 'itc-bold', sans-serif;
-  --font-itc-bold-obl: 'itc-bold-obl', sans-serif;
-  --font-itc-demi: 'itc-demi', sans-serif;
-  --font-itc-demi-obl: 'itc-demi-obl', sans-serif;
-  --font-itc-md: 'itc-md', sans-serif;
-  --font-itc-md-obl: 'itc-md-obl', sans-serif;
-  --font-itc-xl: 'itc-xl', sans-serif;
-  --font-itc-xl-obl: 'itc-xl-obl', sans-serif;
-  --font-folio-bold: 'folio-bold', sans-serif;
-  --font-folio-bold-condensed: 'folio-bold-condensed', sans-serif;
-  --font-folio-extra-bold: 'folio-extra-bold', sans-serif;
-  --font-folio-light: 'folio-light', sans-serif;
-  --font-folio-medium: 'folio-medium', sans-serif;
+    --font-itc-bk: "itc-bk", sans-serif;
+    --font-itc-bk-obl: "itc-bk-obl", sans-serif;
+    --font-itc-bold: "itc-bold", sans-serif;
+    --font-itc-bold-obl: "itc-bold-obl", sans-serif;
+    --font-itc-demi: "itc-demi", sans-serif;
+    --font-itc-demi-obl: "itc-demi-obl", sans-serif;
+    --font-itc-md: "itc-md", sans-serif;
+    --font-itc-md-obl: "itc-md-obl", sans-serif;
+    --font-itc-xl: "itc-xl", sans-serif;
+    --font-itc-xl-obl: "itc-xl-obl", sans-serif;
+    --font-folio-bold: "folio-bold", sans-serif;
+    --font-folio-bold-condensed: "folio-bold-condensed", sans-serif;
+    --font-folio-extra-bold: "folio-extra-bold", sans-serif;
+    --font-folio-light: "folio-light", sans-serif;
+    --font-folio-medium: "folio-medium", sans-serif;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-  height: 4px;
-  width: 4px;
+    height: 4px;
+    width: 4px;
 }
 
 .hide-scrollbar::-webkit-scrollbar-track {
-  background: transparent; /* Transparent track */
+    background: transparent; /* Transparent track */
 }
 
 .hide-scrollbar::-webkit-scrollbar-thumb {
-  background: #000000;
-  border-radius: 2px;
+    background: #000000;
+    border-radius: 2px;
 }
 
 .hide-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #333333;
+    background: #333333;
 }
 
 /* Hide scrollbar buttons */
 .hide-scrollbar::-webkit-scrollbar-button {
-  display: none; /* Hide the arrow buttons */
+    display: none; /* Hide the arrow buttons */
 }
 
 /* For Firefox */
 .hide-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #000000 transparent; /* Black thumb, transparent track */
+    scrollbar-width: thin;
+    scrollbar-color: #000000 transparent; /* Black thumb, transparent track */
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+    display: none; /* Chrome, Safari and Opera */
 }
 
 /* Animation utilities */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
+    animation: fadeIn 0.6s ease-out forwards;
 }
 
 .animate-slide-down {
-  animation: slideDown 0.4s ease-out forwards;
+    animation: slideDown 0.4s ease-out forwards;
 }
 
 .animate-slide-in {
-  animation: slideIn 0.4s ease-out forwards;
+    animation: slideIn 0.4s ease-out forwards;
 }
 
 .animate-slide-up {
-  animation: slideUp 0.4s ease-out forwards;
+    animation: slideUp 0.4s ease-out forwards;
 }
 
 .animation-delay-100 {
-  animation-delay: 100ms;
+    animation-delay: 100ms;
 }
 
 .animation-delay-200 {
-  animation-delay: 200ms;
+    animation-delay: 200ms;
 }
 
 .animation-delay-300 {
-  animation-delay: 300ms;
+    animation-delay: 300ms;
 }
 
 .animation-delay-400 {
-  animation-delay: 400ms;
+    animation-delay: 400ms;
 }
 
 .animation-delay-500 {
-  animation-delay: 500ms;
+    animation-delay: 500ms;
 }
 
 /* Line clamp utilities */
 .line-clamp-1 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
 }
 
 .line-clamp-2 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }
 
 .line-clamp-3 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
 }
 
 /* Custom pulse animation for skeleton loading */
 @keyframes customPulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -200px 0;
-  }
-  100% {
-    background-position: calc(200px + 100%) 0;
-  }
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
 }
 
 .animate-pulse {
-  animation: customPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: customPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200px 100%;
-  animation: shimmer 1.5s infinite;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200px 100%;
+    animation: shimmer 1.5s infinite;
 }
