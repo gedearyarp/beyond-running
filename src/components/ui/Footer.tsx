@@ -6,7 +6,6 @@ import Image from "next/image";
 import useMobile from "@/hooks/use-mobile";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import NewsletterModal from "./newsletter-modal";
 import { X } from "lucide-react";
 import { images } from "@/assets/images";
 

@@ -3,20 +3,16 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, User, ShoppingBag, X, Menu } from "lucide-react";
+import { Search, User, ShoppingBag, X } from "lucide-react";
 import CartDropdown from "./cart-dropdown";
 import MobileHeader from "@/components/mobile-header";
 import MobileMenu from "@/components/mobile-menu";
 import UserDropdown from "./UserDropdown";
-import { Collection, getAllProductsForShopPage } from "@/lib/shopify";
+import { getAllProductsForShopPage } from "@/lib/shopify";
 import { useCollectionsStore } from "@/store/collections";
 import { useCartStore } from "@/store/cart";
 import { useAuth } from "@/contexts/AuthContext";
 import type { ProductCardType } from "@/lib/shopify/types";
-
-interface HeaderProps {
-    collections: Collection[];
-}
 
 // Ubah recent search: simpan array of produk (id, title, handle, image)
 type RecentProduct = {
@@ -26,9 +22,9 @@ type RecentProduct = {
     image?: string;
 };
 
-export default function Header({ collections: initialCollections }: HeaderProps) {
+export default function Header() {
     const { collections, refreshCollections } = useCollectionsStore();
-    const { toggleCart, getTotalItems, isOpen: isCartOpen, closeCart } = useCartStore();
+    const { toggleCart, getTotalItems, isOpen: isCartOpen } = useCartStore();
     const { isAuthenticated } = useAuth();
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -126,7 +122,7 @@ export default function Header({ collections: initialCollections }: HeaderProps)
                     setAllProducts(data);
                     setProductsLoading(false);
                 })
-                .catch((err) => {
+                .catch(() => {
                     setProductsError("Failed to load products");
                     setProductsLoading(false);
                 });

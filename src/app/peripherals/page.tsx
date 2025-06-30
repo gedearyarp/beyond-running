@@ -127,9 +127,10 @@ function PeripheralsPageContent() {
                 if (error) throw error;
 
                 setPeripherals(data || []);
-            } catch (error: any) {
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : "Unknown error";
                 console.error("Error fetching peripherals:", error);
-                setError(error.message);
+                setError(errorMessage);
             } finally {
                 setLoading(false);
                 setIsInitialLoading(false);
@@ -204,7 +205,7 @@ function PeripheralsPageContent() {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <Header collections={collections} />
+            <Header />
             <main className="flex-1 pt-[88px]">
                 {/* Hero Banner */}
                 <div className="relative w-full h-[477px] md:h-[608px]">
@@ -502,9 +503,9 @@ function PeripheralsPageContent() {
                                                 No Stories Found
                                             </h3>
                                             <p className="text-gray-600 mb-6 leading-relaxed font-itc-md">
-                                                We couldn't find any stories matching your current
-                                                filter. Try exploring different categories or browse
-                                                all our stories.
+                                                We couldn&apos;t find any stories matching your
+                                                current filter. Try exploring different categories
+                                                or browse all our stories.
                                             </p>
 
                                             <div className="space-y-3 mb-8">
@@ -606,9 +607,9 @@ function PeripheralsPageContent() {
                                                 No Stories Available
                                             </h3>
                                             <p className="text-gray-600 mb-8 text-lg leading-relaxed font-itc-md">
-                                                We're currently crafting amazing new stories about
-                                                running, culture, and community. Check back soon for
-                                                inspiring content!
+                                                We&apos;re currently crafting amazing new stories
+                                                about running, culture, and community. Check back
+                                                soon for inspiring content!
                                             </p>
 
                                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
