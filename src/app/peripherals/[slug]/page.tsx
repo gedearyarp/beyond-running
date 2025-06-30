@@ -11,6 +11,7 @@ import { supabase } from "@/lib/supabase"
 import type { Peripherals } from "@/app/peripherals/page"
 import { getAllCollections } from "@/lib/shopify"
 import { Collection } from "@/lib/shopify/types"
+import { images } from "@/assets/images"
 
 // Extended type to include images array
 interface PeripheralWithImages extends Peripherals {
@@ -83,7 +84,7 @@ export default function PeripheralsDetailPage() {
   }, [id])
 
   // Validate and format image URL
-  const getValidImageUrl = (url: string | null, fallback: string = "/images/per_1.png") => {
+  const getValidImageUrl = (url: string | null, fallback: string = images.peripheralImage) => {
     return url && url.trim() !== "" ? url : fallback
   }
 

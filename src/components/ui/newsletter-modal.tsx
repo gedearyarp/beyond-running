@@ -7,6 +7,7 @@ import Image from "next/image"
 import { X } from "lucide-react"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
+import { images } from "@/assets/images"
 
 interface NewsletterModalProps {
   isOpen: boolean
@@ -125,7 +126,7 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
           {/* Image - Left side */}
           <div className="w-full md:w-1/2 relative h-64 md:h-auto">
             <Image
-              src="/images/per_1.png"
+              src={images.peripheralImage}
               alt="Beyond Running Community"
               fill
               className="object-cover"

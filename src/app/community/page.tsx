@@ -17,6 +17,7 @@ import { useSearchParams } from "next/navigation"
 import { getAllCollections } from "@/lib/shopify"
 import { Collection } from "@/lib/shopify/types"
 import { Suspense } from "react"
+import { images } from "@/assets/images"
 
 // Type definition based on Supabase table
 export type Community = {
@@ -209,7 +210,7 @@ function CommunityPageContent() {
       <main className="flex-1 pt-[88px]">
         {/* Hero Banner */}
         <div className="relative w-full h-[477px] md:h-[608px]">
-          <Image src="/images/com_banner.png" alt="Community Banner" fill className="object-cover" priority />
+          <Image src={images.communityBanner} alt="Community Banner" fill className="object-cover" priority />
           <div className="absolute inset-0 bg-black/10" />
           {isMobile ? (
             <div className="absolute w-full flex justify-center bottom-14 text-center items-center">

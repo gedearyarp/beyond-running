@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import type { Community } from "@/app/community/page"
+import { images } from "@/assets/images"
 
 interface GridViewProps {
   events: Community[]
@@ -45,7 +46,7 @@ export default function GridView({ events }: GridViewProps) {
     }).replace(/\//g, '.')
 
     // Validate and format image URL
-    const imageUrl = event.main_img && event.main_img.trim() !== "" ? event.main_img : '/images/per_1.png'
+    const imageUrl = event.main_img && event.main_img.trim() !== "" ? event.main_img : images.peripheralImage
     
     // Debug logging
     if (event.main_img) {

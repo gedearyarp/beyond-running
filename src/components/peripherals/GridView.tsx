@@ -1,6 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import type { Peripherals } from "./ListViewItem"
+import { images } from "@/assets/images"
 
 interface PeripheralGridProps {
   peripherals: Peripherals[]
@@ -22,7 +23,7 @@ export default function StoryGrid({ peripherals }: PeripheralGridProps) {
         // Get image URL with fallback
         const imageUrl = peripheral.main_img && peripheral.main_img.trim() !== "" 
           ? peripheral.main_img 
-          : '/images/per_1.png';
+          : images.peripheralImage;
 
         return (
           <Link key={peripheral.id} href={`/peripherals/${peripheral.id}`} className="group">

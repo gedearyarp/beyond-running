@@ -11,6 +11,7 @@ import { supabase } from "@/lib/supabase"
 import type { Community } from "@/app/community/page"
 import { getAllCollections } from "@/lib/shopify"
 import { Collection } from "@/lib/shopify/types"
+import { images } from "@/assets/images"
 
 export default function CommunityDetailPage() {
   const params = useParams()
@@ -57,7 +58,7 @@ export default function CommunityDetailPage() {
   }, [id])
 
   // Validate and format image URL
-  const getValidImageUrl = (url: string | null, fallback: string = "/images/per_1.png") => {
+  const getValidImageUrl = (url: string | null, fallback: string = images.peripheralImage) => {
     return url && url.trim() !== "" ? url : fallback
   }
 
@@ -97,8 +98,8 @@ export default function CommunityDetailPage() {
     )
   }
 
-  const bannerImageUrl = getValidImageUrl(event.banner_img, "/images/com_banner.png")
-  const communityImageUrl = getValidImageUrl(event.community_img, "/images/per_1.png")
+  const bannerImageUrl = getValidImageUrl(event.banner_img, images.communityBanner)
+  const communityImageUrl = getValidImageUrl(event.community_img, images.peripheralImage)
 
   return (
     <div className="flex flex-col min-h-screen">

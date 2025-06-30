@@ -7,6 +7,7 @@ import Loading from "@/components/ui/loading"
 import { getAllCollections } from "@/lib/shopify"
 import { Collection } from "@/lib/shopify/types"
 import { useEffect, useState } from "react"
+import { images } from "@/assets/images"
 
 export default function AboutPage() {
   const [collections, setCollections] = useState<Collection[]>([])
@@ -43,7 +44,7 @@ export default function AboutPage() {
         {/* Hero Section */}
         <div className="relative w-full h-[477px] md:h-[806px]">
           <Image
-            src="/images/About.png"
+            src={images.aboutBanner}
             alt="Beyond Running Team"
             fill
             className="object-cover brightness-75"
@@ -72,7 +73,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             {/* Motion Image */}
             <div className="relative h-[464px] md:h-[851px]">
-              <Image src="/images/about_1.png" alt="Runners in motion" fill />
+              <Image src={images.aboutImage} alt="Runners in motion" fill />
             </div>
 
             {/* Brand Story Text */}
