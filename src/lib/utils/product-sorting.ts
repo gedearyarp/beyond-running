@@ -94,9 +94,7 @@ export const extractGenderOptions = (products: ProductCardType[]) => {
                                 ? "Men"
                                 : node.handle === "female"
                                     ? "Women"
-                                    : node.handle === "unisex"
-                                        ? "Unisex"
-                                        : node.handle;
+                                    : node.handle;
                         genderSet.add(gender);
                     }
                 });
@@ -161,9 +159,7 @@ export const productMatchesGender = (product: ProductCardType, selectedGenders: 
                     ? "Men"
                     : node.handle === "female"
                         ? "Women"
-                        : node.handle === "unisex"
-                            ? "Unisex"
-                            : node.handle;
+                        : node.handle;
             return gender;
         });
 
