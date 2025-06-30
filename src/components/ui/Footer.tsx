@@ -8,6 +8,7 @@ import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import NewsletterModal from "./newsletter-modal"
 import { X } from "lucide-react"
+import { images } from "@/assets/images"
 
 export default function Footer() {
   const isMobile = useMobile();
@@ -119,7 +120,7 @@ export default function Footer() {
             {/* Image - Left side */}
             <div className="w-full md:w-1/2 relative h-48 md:h-auto">
               <Image
-                src="/images/contact.png"
+                src={images.contactImage}
                 alt="Contact Us - Runners"
                 fill
                 className="object-cover"

@@ -1,9 +1,10 @@
+import { images } from "@/assets/images"
 import Image from "next/image"
 
 export default function BottomBanner() {
   return (
     <div className="relative w-full h-[488px] md:h-[719px] mt-12 overflow-hidden">
-      <Image src="/images/bottom_banner.png" alt="Beyond Running" fill className="object-cover h-[488px]" priority />
+      <Image src={images.bottomBanner} alt="Beyond Running" fill className="object-cover h-[488px]" priority />
       <div className="absolute inset-0 bg-black/10" />
       <div className="absolute inset-0 flex items-center justify-center">
         <h2 className="text-4xl md:text-7xl font-itc-bold text-white tracking-wide">BEYOND : RUNNING</h2>

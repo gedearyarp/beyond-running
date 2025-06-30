@@ -134,7 +134,7 @@ export default function PeripheralsDetailPage() {
     : '';
 
   // Get banner image URL
-  const bannerImageUrl = getValidImageUrl(peripheral.banner_img, "/images/per_detail_1.png")
+  const bannerImageUrl = getValidImageUrl(peripheral.banner_img, images.peripheralImage)
 
   // Determine background color
   const bgColor = peripheral.background_color === 'black' ? 'bg-black text-white' : 'bg-white text-black'

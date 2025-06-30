@@ -3,6 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useState } from "react"
+import { images } from "@/assets/images"
 
 const promoCards = [
   {
@@ -11,7 +12,7 @@ const promoCards = [
     buttonText: "Discover",
     footerText: "SHOP:PRODUCTS-COLLECTIONS",
     link: "/shop",
-    bgImage: "/images/featured_1.png",
+    bgImage: images.featured1Image,
     icon: "/icons/featured_1.svg",
     gifIcon: "/gif/discover-white.gif", // Animated version
   },
@@ -21,7 +22,7 @@ const promoCards = [
     buttonText: "Read",
     footerText: "PERIPHERALS:STORIES-EDITORIAL-TIPS",
     link: "/peripherals",
-    bgImage: "/images/featured_2.png",
+    bgImage: images.featured2Image,
     icon: "/icons/featured_2.svg",
     gifIcon: "/gif/clarity-white.gif", // Animated version
   },
@@ -31,7 +32,7 @@ const promoCards = [
     buttonText: "More",
     footerText: "COMMUNITY:EVENTS-COLLABORATION-FEATURED RUNNERS",
     link: "/community",
-    bgImage: "/images/featured_3.png",
+    bgImage: images.featured3Image,
     icon: "/icons/featured_3.svg",
     gifIcon: "/gif/community-white.gif", // Animated version
   },
