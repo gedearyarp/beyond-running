@@ -93,10 +93,10 @@ export const extractGenderOptions = (products: ProductCardType[]) => {
                             node.handle === "male"
                                 ? "Men"
                                 : node.handle === "female"
-                                  ? "Women"
-                                  : node.handle === "unisex"
-                                    ? "Unisex"
-                                    : node.handle;
+                                    ? "Women"
+                                    : node.handle === "unisex"
+                                        ? "Unisex"
+                                        : node.handle;
                         genderSet.add(gender);
                     }
                 });
@@ -115,18 +115,21 @@ export const extractGenderOptions = (products: ProductCardType[]) => {
 // Utility function to check if product matches size filter
 export const productMatchesSize = (product: ProductCardType, selectedSizes: string[]) => {
     if (selectedSizes.length === 0) return true;
+    if (!product.variants || !product.variants.edges) return false;
 
-    if (!product.metafields || !Array.isArray(product.metafields)) return false;
-
-    const sizeMetafield = product.metafields.find((m) => m && m.key === "size");
-    if (!sizeMetafield || !sizeMetafield.references || !sizeMetafield.references.nodes)
-        return false;
-
-    const productSizes = sizeMetafield.references.nodes
-        .filter((node) => node && node.handle)
-        .map((node) => node.handle.toUpperCase());
-
-    return selectedSizes.some((selectedSize) => productSizes.includes(selectedSize.toUpperCase()));
+    // Untuk setiap size yang dipilih user, cek apakah ada variant dengan size tsb dan availableForSale
+    return selectedSizes.some((selectedSize) => {
+        return product.variants.edges.some(({ node: variant }) => {
+            const sizeOption = variant.selectedOptions.find(
+                (opt) => opt.name.toLowerCase() === "size"
+            );
+            return (
+                sizeOption &&
+                sizeOption.value.toUpperCase() === selectedSize.toUpperCase() &&
+                variant.availableForSale
+            );
+        });
+    });
 };
 
 // Utility function to check if product matches category filter
@@ -157,10 +160,10 @@ export const productMatchesGender = (product: ProductCardType, selectedGenders: 
                 node.handle === "male"
                     ? "Men"
                     : node.handle === "female"
-                      ? "Women"
-                      : node.handle === "unisex"
-                        ? "Unisex"
-                        : node.handle;
+                        ? "Women"
+                        : node.handle === "unisex"
+                            ? "Unisex"
+                            : node.handle;
             return gender;
         });
 

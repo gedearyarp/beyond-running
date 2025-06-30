@@ -41,6 +41,19 @@ export const PRODUCT_CARD_FRAGMENT = gql`
                 }
             }
         }
+        variants(first: 50) {
+            edges {
+                node {
+                    id
+                    title
+                    availableForSale
+                    selectedOptions {
+                        name
+                        value
+                    }
+                }
+            }
+        }
     }
 `;
 
