@@ -22,6 +22,7 @@ export type Peripherals = {
     id: string;
     title: string | null;
     category: string | null;
+    category_type: string | null;
     is_active: boolean | null;
     created_at: string | null;
     updated_at: string | null;
@@ -102,9 +103,9 @@ function PeripheralsPageContent() {
                     query = query.order("created_at", { ascending: false });
                 }
 
-                // Apply category filter
+                // Apply category_type filter
                 if (filter !== "all") {
-                    query = query.ilike("category", `%${filter}%`);
+                    query = query.ilike("category_type", `%${filter}%`);
                 }
 
                 const { data, error } = await query;

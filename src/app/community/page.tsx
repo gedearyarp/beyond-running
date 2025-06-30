@@ -14,8 +14,6 @@ import CommunityFilterModal from "@/components/community/filter-modal";
 import CommunitySortModal from "@/components/community/sort-modal";
 import { supabase } from "@/lib/supabase";
 import { useSearchParams } from "next/navigation";
-import { getAllCollections } from "@/lib/shopify";
-import { Collection } from "@/lib/shopify/types";
 import { Suspense } from "react";
 import { images } from "@/assets/images";
 import GifIcon from "../../../public/gif/community-white.gif"
@@ -25,6 +23,7 @@ export type Community = {
     id: string;
     title: string;
     category: string;
+    category_type: string;
     event_date: string;
     event_location: string;
     event_overview: string;
@@ -60,7 +59,6 @@ type ViewMode = "grid" | "list" | "calendar";
 function CommunityPageContent() {
     const isMobile = useMobile();
     const [events, setEvents] = useState<Community[]>([]);
-    const [collections, setCollections] = useState<Collection[]>([]);
     const [loading, setLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -74,19 +72,6 @@ function CommunityPageContent() {
     const [appliedSort, setAppliedSort] = useState("Featured");
 
     const searchParams = useSearchParams();
-
-    useEffect(() => {
-        const fetchCollections = async () => {
-            try {
-                const collectionsData = await getAllCollections();
-                setCollections(collectionsData);
-            } catch (error) {
-                console.error("Failed to fetch collections:", error);
-            }
-        };
-
-        fetchCollections();
-    }, []);
 
     useEffect(() => {
         const fetchCommunities = async () => {
@@ -106,6 +91,11 @@ function CommunityPageContent() {
                         .order("event_date", { ascending: false });
                 }
 
+                // Apply category_type filter
+                if (category !== "all") {
+                    query = query.ilike("category_type", `%${category}%`);
+                }
+
                 const { data, error } = await query;
 
                 if (error) throw error;
@@ -121,7 +111,7 @@ function CommunityPageContent() {
         };
 
         fetchCommunities();
-    }, [sortBy]);
+    }, [sortBy, category]);
 
     // Sync view param from URL to state
     useEffect(() => {
@@ -143,16 +133,10 @@ function CommunityPageContent() {
         // If view param is not present, do not override user selection
     }, [searchParams]);
 
-    // Filter events by category
-    const filteredEvents = useMemo(() => {
-        if (category === "all") return events;
-        return events.filter((event) => event.category?.toLowerCase() === category.toLowerCase());
-    }, [events, category]);
-
     // Clear all filters
     const clearAllFilters = () => {
         setCategory("all");
-        // Remove view mode clearing from here
+        // Optionally, you can also reset other related filter states here if any
     };
 
     // Format filter button label
@@ -320,7 +304,7 @@ function CommunityPageContent() {
 
                                 <div className="flex justify-between items-center">
                                     <span className="text-sm font-itc-md text-gray-500">
-                                        {filteredEvents.length} STORIES
+                                        {events.length} STORIES
                                     </span>
                                 </div>
                             </>
@@ -371,7 +355,7 @@ function CommunityPageContent() {
 
                                     <div className="flex items-center space-x-6">
                                         <span className="text-sm font-folio-medium">
-                                            {filteredEvents.length} STORIES
+                                            {events.length} STORIES
                                         </span>
                                         <span className="text-sm font-folio-medium">|</span>
 
@@ -442,7 +426,7 @@ function CommunityPageContent() {
                     )}
 
                     {/* Enhanced Empty State */}
-                    {!loading && !error && filteredEvents.length === 0 && (
+                    {!loading && !error && events.length === 0 && (
                         <div className="flex flex-col items-center justify-center py-20">
                             {(() => {
                                 const hasActiveFilters = category !== "all"; // Remove viewMode check
@@ -577,7 +561,7 @@ function CommunityPageContent() {
                                                 No Events Available
                                             </h3>
                                             <p className="text-gray-600 mb-8 text-lg leading-relaxed font-itc-md">
-                                                We're currently planning exciting new community
+                                                We&apos;re currently planning exciting new community
                                                 events. Check back soon for amazing experiences, or
                                                 explore our other content!
                                             </p>
@@ -630,11 +614,11 @@ function CommunityPageContent() {
                     )}
 
                     {/* Events Display */}
-                    {!loading && !error && filteredEvents.length > 0 && (
+                    {!loading && !error && events.length > 0 && (
                         <>
-                            {viewMode === "grid" && <GridView events={filteredEvents} />}
-                            {viewMode === "list" && <ListView events={filteredEvents} />}
-                            {viewMode === "calendar" && <CalendarView events={filteredEvents} />}
+                            {viewMode === "grid" && <GridView events={events} />}
+                            {viewMode === "list" && <ListView events={events} />}
+                            {viewMode === "calendar" && <CalendarView events={events} />}
                         </>
                     )}
                 </div>
