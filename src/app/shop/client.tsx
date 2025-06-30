@@ -20,6 +20,7 @@ import {
     productMatchesGender,
 } from "@/lib/utils/product-sorting";
 import { images } from "@/assets/images";
+import GifIcon from "../../../public/gif/discover-white.gif"
 
 const sortOptions = [
     { value: "featured", label: "Featured" },
@@ -319,17 +320,38 @@ export default function ShopPageClient({
                     />
                     <div className="absolute inset-0 bg-black/20" />
                     {isMobile ? (
-                        <div className="absolute w-full flex justify-center bottom-14 text-center items-center">
-                            <h1 className="flex flex-col gap-2 text-4xl font-bold font-avant-garde tracking-wide text-white">
-                                <p>{collection ? "COLLECTION:" : "BEYOND:RUNNING"}</p>
-                                <p>
-                                    {collection?.title || ""}{" "}
-                                </p>
-                            </h1>
-                        </div>
+                        <>
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+                                <Image
+                                    src={GifIcon}
+                                    alt="Animated Icon"
+                                    width={200}
+                                    height={200}
+                                    className="drop-shadow-2xl mb-6"
+                                    unoptimized // Important for GIFs
+                                />
+                            </div>
+                            <div className="absolute w-full flex justify-center bottom-14 text-center items-center">
+                                <h1 className="flex flex-col gap-2 text-4xl font-bold font-avant-garde tracking-wide text-white">
+                                    <p>{collection ? "COLLECTION:" : "BEYOND:RUNNING"}</p>
+                                    <p>
+                                        {collection?.title || ""}{" "}
+                                    </p>
+                                </h1>
+                            </div>
+                        </>
+                        
                     ) : (
-                        <div className="absolute inset-y-0 right-0 flex items-center pr-12">
-                            <h1 className="text-4xl font-itc-demi tracking-wide text-white uppercase">
+                        <div className="absolute top-1/2 -translate-y-1/2 z-20 w-full justify-between flex flex-row items-center gap-6 pr-12">
+                            <Image
+                                src={GifIcon}
+                                alt="Animated Icon"
+                                width={200}
+                                height={200}
+                                className="w-[200px] h-[200px] drop-shadow-2xl"
+                                unoptimized // Important for GIFs
+                            />
+                            <h1 className="text-4xl font-itc-demi tracking-wide text-white uppercase whitespace-nowrap">
                                 {collection ? "COLLECTIONS " : "BEYOND:RUNNING"}{" "}
                                 {collection?.title || " "}
                             </h1>
