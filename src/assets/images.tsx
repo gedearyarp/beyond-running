@@ -10,5 +10,6 @@ export const images = {
   featured3Image: "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//8c12f0bf52c85623b4e01c2177dd74190a8aae7c.jpg",
   peripheralsBanner: "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//f460b3f0916d76cbaece06c52e88a65cf444e58b.jpg",
   contactImage: "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//contact.png",
-  shopImage: "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//shop.png"
+  shopImage: "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//shop.png",
+  introGif: "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//intro.gif"
 }

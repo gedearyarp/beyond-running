@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react"
 import Image from "next/image"
+import { images } from "@/assets/images"
 
 interface IntroSectionProps {
   onRemoved?: () => void
@@ -48,7 +49,7 @@ export default function IntroSection({ onRemoved }: IntroSectionProps) {
     <div ref={sectionRef} className="relative h-screen w-full">
       {/* GIF Background */}
       <div className="absolute inset-0">
-        <Image src="/images/intro.gif" alt="Nature trail" fill className="object-cover" priority />
+        <Image src={images.introGif} alt="Nature trail" fill className="object-cover" priority />
       </div>
 
       {/* Gradient overlay for better text readability */}
