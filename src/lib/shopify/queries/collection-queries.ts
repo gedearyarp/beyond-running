@@ -68,6 +68,11 @@ export const GET_COLLECTION_PRODUCTS = gql`
                                         amount
                                         currencyCode
                                     }
+                                    availableForSale
+                                    selectedOptions {
+                                        name
+                                        value
+                                    }
                                 }
                             }
                         }
