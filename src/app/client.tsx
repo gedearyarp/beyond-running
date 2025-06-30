@@ -22,7 +22,7 @@ export default function HomePageClient({ collections }: HomePageClientProps) {
     const [hasModalBeenShown, setHasModalBeenShown] = useState(false);
     const [introRemoved, setIntroRemoved] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const { collections: storeCollections, fetchCollections } = useCollectionsStore();
+    const { collections: storeCollections } = useCollectionsStore();
 
     // Initialize collections store with server data
     useEffect(() => {
@@ -86,7 +86,7 @@ export default function HomePageClient({ collections }: HomePageClientProps) {
             <IntroSection onRemoved={handleIntroRemoved} />
 
             {/* Header Component - hanya muncul setelah intro hilang */}
-            {introRemoved && <Header collections={collections} />}
+            {introRemoved && <Header />}
 
             {/* Main Content */}
             <div

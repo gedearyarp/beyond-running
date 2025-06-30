@@ -13,8 +13,6 @@ import PeripheralsFilterModal from "@/components/peripherals/filter-modal";
 import PeripheralsSortModal from "@/components/peripherals/sort-modal";
 import { supabase } from "@/lib/supabase";
 import { useSearchParams } from "next/navigation";
-import { getAllCollections } from "@/lib/shopify";
-import { Collection } from "@/lib/shopify/types";
 import { Suspense } from "react";
 import { images } from "@/assets/images";
 import GifIcon from "../../../public/gif/clarity-white.gif"
@@ -61,7 +59,6 @@ type ViewMode = "list" | "grid";
 function PeripheralsPageContent() {
     const isMobile = useMobile();
     const [peripherals, setPeripherals] = useState<Peripherals[]>([]);
-    const [collections, setCollections] = useState<Collection[]>([]);
     const [loading, setLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -78,19 +75,6 @@ function PeripheralsPageContent() {
     const [appliedSort, setAppliedSort] = useState("Featured");
 
     const searchParams = useSearchParams();
-
-    useEffect(() => {
-        const fetchCollections = async () => {
-            try {
-                const collectionsData = await getAllCollections();
-                setCollections(collectionsData);
-            } catch (error) {
-                console.error("Failed to fetch collections:", error);
-            }
-        };
-
-        fetchCollections();
-    }, []);
 
     // Sync filter param from URL to state
     useEffect(() => {
@@ -143,11 +127,6 @@ function PeripheralsPageContent() {
 
     // Clear all filters
     const clearAllFilters = () => {
-        setFilter("all");
-    };
-
-    // Clear category filter
-    const clearCategoryFilter = () => {
         setFilter("all");
     };
 

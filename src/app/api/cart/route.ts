@@ -26,7 +26,8 @@ export async function POST(request: Request) {
         }
 
         return NextResponse.json(cartItems);
-    } catch (error) {
+    } catch {
+        // handle error if needed
         return NextResponse.json({ error: "Failed to add item to cart" }, { status: 400 });
     }
 }
@@ -43,7 +44,8 @@ export async function PATCH(request: Request) {
         cartItems[itemIndex].quantity = Math.max(0, quantity);
 
         return NextResponse.json(cartItems);
-    } catch (error) {
+    } catch {
+        // handle error if needed
         return NextResponse.json({ error: "Failed to update cart item" }, { status: 400 });
     }
 }
@@ -55,7 +57,8 @@ export async function DELETE(request: Request) {
         cartItems = cartItems.filter((item) => item.id !== id);
 
         return NextResponse.json(cartItems);
-    } catch (error) {
+    } catch {
+        // handle error if needed
         return NextResponse.json({ error: "Failed to remove item from cart" }, { status: 400 });
     }
 }

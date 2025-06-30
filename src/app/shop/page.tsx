@@ -1,9 +1,8 @@
 // app/shop/page.tsx (server component)
 import { getAllProductsForShopPage, getAllCollections } from "@/lib/shopify";
 import { ProductCardType, Collection } from "@/lib/shopify/types";
-import ShopPageClient from "./client"; // <--- Rename file lama kamu
+import ShopPageClient from "@/app/shop/client";
 import { sortProductsByCategory } from "@/lib/utils/product-sorting";
-import ProductCard from "@/components/ui/ProductCard";
 
 export const dynamic = "force-dynamic";
 

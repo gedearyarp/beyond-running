@@ -36,7 +36,6 @@ interface ShopPageClientProps {
 
 export default function ShopPageClient({
     initialProducts,
-    collections,
     collection,
 }: ShopPageClientProps) {
     const [products, setProducts] = useState<ProductCardType[]>(initialProducts);
@@ -58,7 +57,6 @@ export default function ShopPageClient({
     const [sortBy, setSortBy] = useState("featured");
 
     const isMobile = useMobile();
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const [showFilter, setShowFilter] = useState(false);
     const [showSort, setShowSort] = useState(false);
@@ -167,8 +165,9 @@ export default function ShopPageClient({
                 setCurrentPage(1);
                 setDisplayedProducts(sortedProducts.slice(0, productsPerPage));
                 setHasMore(sortedProducts.length > productsPerPage);
-            } catch (err: any) {
-                setError(err.message);
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : "Unknown error";
+                setError(errorMessage);
             } finally {
                 setLoading(false);
             }
@@ -261,43 +260,6 @@ export default function ShopPageClient({
         setGender("");
     };
 
-    const clearSizeFilter = () => {
-        // Clear mobile size filter
-        setAppliedFilters((prev) => ({
-            ...prev,
-            size: [],
-        }));
-
-        // Clear desktop size dropdown
-        setSize("");
-    };
-
-    const clearCategoryFilter = () => {
-        // Clear mobile category filter
-        setAppliedFilters((prev) => ({
-            ...prev,
-            category: [],
-        }));
-
-        // Clear desktop category dropdown
-        setCategory("");
-    };
-
-    const clearGenderFilter = () => {
-        // Clear mobile gender filter
-        setAppliedFilters((prev) => ({
-            ...prev,
-            gender: [],
-        }));
-
-        // Clear desktop gender dropdown
-        setGender("");
-    };
-
-    const toggleMobileMenu = () => {
-        setMobileMenuOpen(!mobileMenuOpen);
-    };
-
     if (isInitialLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -308,7 +270,7 @@ export default function ShopPageClient({
 
     return (
         <div className="flex flex-col min-h-screen">
-            <Header collections={collections} />
+            <Header />
             <main className="flex-1 pt-[88px]">
                 <div className="relative w-full h-[477px] md:h-[608px]">
                     <Image
@@ -564,7 +526,7 @@ export default function ShopPageClient({
                                                 No Products Found
                                             </h3>
                                             <p className="text-gray-600 mb-6 leading-relaxed font-itc-md">
-                                                We couldn't find any products matching your current
+                                                We couldn&apos;t find any products matching your current
                                                 filters. Try adjusting your search criteria or
                                                 explore our full collection.
                                             </p>
@@ -687,7 +649,7 @@ export default function ShopPageClient({
                                                 No Products Available
                                             </h3>
                                             <p className="text-gray-600 mb-8 text-lg leading-relaxed font-itc-md">
-                                                We're currently updating our inventory. Check back
+                                                We&apos;re currently updating our inventory. Check back
                                                 soon for amazing new products, or explore our other
                                                 collections!
                                             </p>
@@ -810,7 +772,7 @@ export default function ShopPageClient({
                         {!hasMore && displayedProducts.length > 0 && !loading && !error && (
                             <div className="text-center">
                                 <p className="text-sm font-folio-light text-gray-500 mb-4">
-                                    You've reached the end of the collection
+                                    You&apos;ve reached the end of the collection
                                 </p>
                                 <button
                                     onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

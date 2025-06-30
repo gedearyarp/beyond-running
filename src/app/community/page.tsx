@@ -111,9 +111,9 @@ function CommunityPageContent() {
                 if (error) throw error;
 
                 setEvents(data || []);
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error("Error fetching communities:", error);
-                setError(error.message);
+                setError((error as Error).message);
             } finally {
                 setLoading(false);
                 setIsInitialLoading(false);
@@ -153,11 +153,6 @@ function CommunityPageContent() {
     const clearAllFilters = () => {
         setCategory("all");
         // Remove view mode clearing from here
-    };
-
-    // Clear category filter
-    const clearCategoryFilter = () => {
-        setCategory("all");
     };
 
     // Format filter button label
@@ -211,7 +206,7 @@ function CommunityPageContent() {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <Header collections={collections} />
+            <Header />
             <main className="flex-1 pt-[88px]">
                 {/* Hero Banner */}
                 <div className="relative w-full h-[477px] md:h-[608px]">
@@ -478,7 +473,7 @@ function CommunityPageContent() {
                                                 No Events Found
                                             </h3>
                                             <p className="text-gray-600 mb-6 leading-relaxed font-itc-md">
-                                                We couldn't find any community events matching your
+                                                We couldn&apos;t find any community events matching your
                                                 current filters. Try adjusting your search criteria
                                                 or explore all our events.
                                             </p>

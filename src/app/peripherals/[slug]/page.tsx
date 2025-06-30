@@ -9,8 +9,6 @@ import Loading from "@/components/ui/loading";
 import RichTextViewer from "@/components/ui/RichTextViewer";
 import { supabase } from "@/lib/supabase";
 import type { Peripherals } from "@/app/peripherals/page";
-import { getAllCollections } from "@/lib/shopify";
-import { Collection } from "@/lib/shopify/types";
 import { images } from "@/assets/images";
 
 // Extended type to include images array
@@ -26,20 +24,10 @@ export default function PeripheralsDetailPage() {
     const id = params.slug as string;
     const [peripheral, setPeripheral] = useState<PeripheralWithImages | null>(null);
     const [loading, setLoading] = useState(true);
-    const [collections, setCollections] = useState<Collection[]>([]);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     useEffect(() => {
-        const fetchCollections = async () => {
-            try {
-                const collectionsData = await getAllCollections();
-                setCollections(collectionsData);
-            } catch (error) {
-                console.error("Failed to fetch collections:", error);
-            }
-        };
 
-        fetchCollections();
     }, []);
 
     useEffect(() => {
