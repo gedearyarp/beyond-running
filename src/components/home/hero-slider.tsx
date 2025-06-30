@@ -3,36 +3,41 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import RichTextViewer from "@/components/ui/RichTextViewer";
 
 interface Slide {
-    id: number;
+    id: string;
     image: string;
     title: string;
-    subtitle?: string;
     description: string;
 }
 
-const slides: Slide[] = [
-    {
-        id: 1,
-        image: "/images/Hero1_Raw.png",
-        title: "BEYOND : RUNNING",
-        subtitle: "ROTTERDAM 2025",
-        description:
-            "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut.",
-    },
-    {
-        id: 2,
-        image: "/images/Hero1.png",
-        title: "MOMENT",
-        subtitle: "OF STILLNESS",
-        description:
-            "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut.",
-    },
-];
-
 export default function HeroSlider() {
+    const [slides, setSlides] = useState<Slide[]>([]);
     const [currentSlide, setCurrentSlide] = useState(0);
+
+    useEffect(() => {
+        const fetchSlides = async () => {
+            const { data, error } = await supabase
+                .from("carousels")
+                .select("id, pictures, title, subtitle")
+                .eq("is_active", true)
+                .order("created_at", { ascending: true });
+            if (error) {
+                console.error("Failed to fetch carousels:", error);
+                return;
+            }
+            const mappedSlides = (data || []).map((item) => ({
+                id: item.id,
+                image: item.pictures,
+                title: item.title,
+                description: item.subtitle || "",
+            }));
+            setSlides(mappedSlides);
+        };
+        fetchSlides();
+    }, []);
 
     const nextSlide = () => {
         setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -43,12 +48,16 @@ export default function HeroSlider() {
     };
 
     useEffect(() => {
+        if (slides.length === 0) return;
         const interval = setInterval(() => {
             nextSlide();
         }, 5000);
-
         return () => clearInterval(interval);
-    }, []);
+    }, [slides]);
+
+    if (slides.length === 0) {
+        return <div className="w-full h-[764px] md:h-[900px] flex items-center justify-center bg-gray-100">Loading...</div>;
+    }
 
     return (
         <div className="relative w-full h-[764px] md:h-[900px] overflow-hidden">
@@ -68,26 +77,12 @@ export default function HeroSlider() {
                             priority={index === 0}
                         />
                         <div className="absolute inset-0 bg-black/30" />
-
                         {/* Title in center */}
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white">
                             <div className="max-w-4xl px-8">
-                                <h2 className="text-6xl font-bold font-avant-garde tracking-tight">
-                                    {slide.title}
-                                    {slide.subtitle && (
-                                        <>
-                                            <br />
-                                            <span
-                                                className={`${index === 0 ? "text-red-500" : ""}`}
-                                            >
-                                                {slide.subtitle}
-                                            </span>
-                                        </>
-                                    )}
-                                </h2>
+                                <RichTextViewer content={slide.title} className="text-6xl font-bold font-avant-garde tracking-tight" />
                             </div>
                         </div>
-
                         {/* Description at bottom */}
                         <div className="absolute bottom-16 left-0 right-0 text-center text-white">
                             <p className="text-base max-w-3xl mx-auto px-8 font-avant-garde">
@@ -97,7 +92,6 @@ export default function HeroSlider() {
                     </div>
                 </div>
             ))}
-
             {/* Navigation Controls Container */}
             <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center">
                 {/* Left Arrow */}
@@ -108,7 +102,6 @@ export default function HeroSlider() {
                 >
                     <ChevronLeft className="h-5 w-5" />
                 </button>
-
                 {/* Navigation Dots */}
                 <div className="flex space-x-2">
                     {slides.map((_, index) => (
@@ -120,7 +113,6 @@ export default function HeroSlider() {
                         />
                     ))}
                 </div>
-
                 {/* Right Arrow */}
                 <button
                     onClick={nextSlide}
