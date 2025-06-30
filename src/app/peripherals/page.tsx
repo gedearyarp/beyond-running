@@ -317,21 +317,19 @@ function PeripheralsPageContent() {
 
                                         <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-8">
                                             <button
-                                                className={`text-sm transition-all duration-200 ${
-                                                    viewMode === "grid"
-                                                        ? "font-folio-bold text-black border-b-2 border-black pb-1"
-                                                        : "font-folio-medium text-gray-500 hover:text-gray-700"
-                                                }`}
+                                                className={`text-sm transition-all duration-200 ${viewMode === "grid"
+                                                    ? "font-folio-bold text-black border-b-2 border-black pb-1"
+                                                    : "font-folio-medium text-gray-500 hover:text-gray-700"
+                                                    }`}
                                                 onClick={() => setViewMode("grid")}
                                             >
                                                 Grid View
                                             </button>
                                             <button
-                                                className={`text-sm font-avant-garde transition-all duration-200 ${
-                                                    viewMode === "list"
-                                                        ? "font-folio-bold text-black border-b-2 border-black pb-1"
-                                                        : "font-folio-medium text-gray-500 hover:text-gray-700"
-                                                }`}
+                                                className={`text-sm font-avant-garde transition-all duration-200 ${viewMode === "list"
+                                                    ? "font-folio-bold text-black border-b-2 border-black pb-1"
+                                                    : "font-folio-medium text-gray-500 hover:text-gray-700"
+                                                    }`}
                                                 onClick={() => setViewMode("list")}
                                             >
                                                 List View
@@ -361,69 +359,9 @@ function PeripheralsPageContent() {
                                 </div>
 
                                 {/* Active Filters Section - Desktop */}
-                                {filter !== "all" && (
-                                    <div className="mt-6 pt-4 border-t border-gray-100">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-start gap-4">
-                                                <div className="flex flex-wrap gap-3">
-                                                    <div className="animate-slideIn group flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
-                                                            <span className="font-medium">
-                                                                Category
-                                                            </span>
-                                                            <span className="text-gray-500">•</span>
-                                                            <span>
-                                                                {
-                                                                    filterOptions.find(
-                                                                        (opt) =>
-                                                                            opt.value === filter
-                                                                    )?.label
-                                                                }
-                                                            </span>
-                                                        </div>
-                                                        <button
-                                                            onClick={clearCategoryFilter}
-                                                            className="ml-2 hover:bg-gray-200 rounded-full p-1 transition-colors duration-200 group-hover:scale-110"
-                                                        >
-                                                            <svg
-                                                                className="w-3.5 h-3.5"
-                                                                fill="currentColor"
-                                                                viewBox="0 0 20 20"
-                                                            >
-                                                                <path
-                                                                    fillRule="evenodd"
-                                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                    clipRule="evenodd"
-                                                                />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <button
-                                                onClick={clearAllFilters}
-                                                className="flex items-center gap-2 bg-black text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                                            >
-                                                <svg
-                                                    className="w-4 h-4"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16"
-                                                    />
-                                                </svg>
-                                                Clear All
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
+                                {/* {filter !== "all" && (
+                                    <div className="mt-6 pt-4 border-t border-gray-100"> ...chips... </div>
+                                )} */}
                             </>
                         )}
                     </div>

@@ -47,11 +47,25 @@ export default function CustomDropdown({
         <div className="relative" ref={dropdownRef}>
             <button
                 type="button"
-                className="flex items-center justify-center text-sm font-avant-garde cursor-pointer"
+                className="flex items-center justify-center text-sm font-avant-garde cursor-pointer relative pr-6"
                 onClick={() => setIsOpen(!isOpen)}
             >
-                {!isSort && <Plus className="mr-2 h-3 w-3" />}{" "}
-                {selectedOption ? selectedOption.label : placeholder}
+                {!isSort && <Plus className="mr-2 h-3 w-3" />} {selectedOption ? selectedOption.label : placeholder}
+                {/* Icon X untuk clear filter */}
+                {!isSort && value && value !== "all" && value !== "All Stories" && value !== "All Categories" && (
+                    <span
+                        className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 rounded-full hover:bg-gray-200 transition-colors group"
+                        onClick={e => {
+                            e.stopPropagation();
+                            onChange("");
+                        }}
+                        title="Clear filter"
+                    >
+                        <svg className="w-3.5 h-3.5 text-gray-500 group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 20 20">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6l8 8m0-8l-8 8" />
+                        </svg>
+                    </span>
+                )}
             </button>
 
             {isOpen && (
