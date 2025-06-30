@@ -80,12 +80,12 @@ export default function HeroSlider() {
                         {/* Title in center */}
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white">
                             <div className="max-w-4xl px-8">
-                                <RichTextViewer content={slide.title} className="text-6xl font-bold font-avant-garde tracking-tight" />
+                                <RichTextViewer content={slide.title} className="text-4xl md:text-6xl font-bold font-avant-garde tracking-tight" />
                             </div>
                         </div>
                         {/* Description at bottom */}
                         <div className="absolute bottom-16 left-0 right-0 text-center text-white">
-                            <p className="text-base max-w-3xl mx-auto px-8 font-avant-garde">
+                            <p className="text-sm md:text-base max-w-3xl mx-auto px-8 font-avant-garde">
                                 {slide.description}
                             </p>
                         </div>
