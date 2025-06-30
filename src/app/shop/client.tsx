@@ -19,6 +19,7 @@ import {
     productMatchesCategory,
     productMatchesGender,
 } from "@/lib/utils/product-sorting";
+import { images } from "@/assets/images";
 
 const sortOptions = [
     { value: "featured", label: "Featured" },
@@ -310,7 +311,7 @@ export default function ShopPageClient({
             <main className="flex-1 pt-[88px]">
                 <div className="relative w-full h-[477px] md:h-[608px]">
                     <Image
-                        src={collection?.image?.url || "/images/shop.png"}
+                        src={collection?.image?.url || images.shopImage}
                         alt={collection?.title || "Collections End of Summer"}
                         fill
                         className="object-cover"
@@ -320,19 +321,17 @@ export default function ShopPageClient({
                     {isMobile ? (
                         <div className="absolute w-full flex justify-center bottom-14 text-center items-center">
                             <h1 className="flex flex-col gap-2 text-4xl font-bold font-avant-garde tracking-wide text-white">
-                                <p>{collection ? "COLLECTION:" : "COLLECTIONS:"}</p>
+                                <p>{collection ? "COLLECTION:" : "BEYOND:RUNNING"}</p>
                                 <p>
-                                    {collection?.title || "END OF"}{" "}
-                                    <span className="italic">{collection ? "" : "SUMMER"}</span>
+                                    {collection?.title || ""}{" "}
                                 </p>
                             </h1>
                         </div>
                     ) : (
                         <div className="absolute inset-y-0 right-0 flex items-center pr-12">
                             <h1 className="text-4xl font-itc-demi tracking-wide text-white uppercase">
-                                {collection ? "COLLECTIONS " : "COLLECTIONS "}{" "}
-                                {collection?.title || "END OF "}
-                                <span className="italic">{collection ? "" : "SUMMER"}</span>
+                                {collection ? "COLLECTIONS " : "BEYOND:RUNNING"}{" "}
+                                {collection?.title || " "}
                             </h1>
                         </div>
                     )}
