@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { X } from "lucide-react"
 import Link from "next/link"
+import { supabase } from "@/lib/supabase"
 
 interface NewsletterModalProps {
   isOpen: boolean
@@ -16,6 +17,7 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [errorMsg, setErrorMsg] = useState("")
   const modalRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -67,17 +69,24 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
     }
   }, [isOpen, onClose])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
-
     setIsSubmitting(true)
-
-    // Simulate API call
-    setTimeout(() => {
+    setErrorMsg("")
+    try {
+      console.log("email", email)
+      const { error } = await supabase
+        .from("newsletter_subscribers")
+        .insert([{ email }])
+      if (error) {
+        console.log("error", error)
+        setErrorMsg("Failed to subscribe. Please try again or use a different email.")
+        setIsSubmitting(false)
+        return
+      }
       setIsSubmitting(false)
       setIsSuccess(true)
-
       // Close modal after success message
       setTimeout(() => {
         onClose()
@@ -87,7 +96,10 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
           setIsSuccess(false)
         }, 500)
       }, 2000)
-    }, 1000)
+    } catch {
+      setErrorMsg("An unexpected error occurred. Please try again later.")
+      setIsSubmitting(false)
+    }
   }
 
   if (!isOpen) return null
@@ -182,6 +194,10 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
                       "JOIN THE MOTION"
                     )}
                   </button>
+
+                  {errorMsg && (
+                    <p className="text-xs text-red-400 text-center mt-2">{errorMsg}</p>
+                  )}
 
                   <p className="text-[10px] font-folio-bold text-white/60 text-center mt-4">
                     By Signing Up, You Agree To Our{" "}

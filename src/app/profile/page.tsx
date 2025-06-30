@@ -140,9 +140,9 @@ export default function ProfilePage() {
 
   // Helper to format price
   const formatPrice = (price: string | number) => {
-    const num = typeof price === 'string' ? parseFloat(price) : price
-    return `IDR. ${num.toLocaleString("id-ID")},-`
-  }
+    const num = typeof price === 'string' ? parseFloat(price) : price;
+    return `IDR. ${num.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })},-`;
+  };
 
   console.log(user)
 

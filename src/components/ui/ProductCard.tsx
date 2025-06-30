@@ -13,7 +13,9 @@ export default function ProductCard({ product, isShop, collectionHandle }: Produ
   const imageUrl = product.images?.edges?.[0]?.node?.url || "/placeholder.svg";
   const imageAlt = product.images?.edges?.[0]?.node?.altText || product.title;
 
-  const formattedPrice = `${product.priceRange ? (product.priceRange.minVariantPrice.currencyCode) + (product.priceRange.minVariantPrice.amount) : "1"}`;
+  const formattedPrice = product.priceRange
+    ? `${product.priceRange.minVariantPrice.currencyCode} ${Number(product.priceRange.minVariantPrice.amount).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+    : "1";
   
   // Calculate colors count from metafields
   const colorsCount = (() => {

@@ -81,7 +81,7 @@ export default function CartDropdown() {
 
   function formatPrice(price: number) {
     if (typeof price !== 'number' || isNaN(price)) return 'Rp0';
-    return `Rp${price.toLocaleString('id-ID')}`;
+    return `Rp${price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   }
 
   const handleCheckout = async () => {

@@ -170,7 +170,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
     [product?.images?.edges]
   )
   const formattedPrice = product?.priceRange?.minVariantPrice
-    ? `${product.priceRange.minVariantPrice.currencyCode} ${product.priceRange.minVariantPrice.amount}`
+    ? `${product.priceRange.minVariantPrice.currencyCode} ${Number(product.priceRange.minVariantPrice.amount).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
     : "Price not available"
 
   // Extract available options
