@@ -28,6 +28,33 @@ export default function ProductCard({ product, isShop, collectionHandle }: Produ
         return colorMetafield.references.nodes.filter((node) => node && node.handle).length;
     })();
 
+    // Ambil list warna dari metafields
+    const colorHandles = (() => {
+        if (!product.metafields || !Array.isArray(product.metafields)) return [];
+        const colorMetafield = product.metafields.find((m) => m && m.key === "color-pattern");
+        if (!colorMetafield || !colorMetafield.references || !colorMetafield.references.nodes)
+            return [];
+        return colorMetafield.references.nodes
+            .filter((node) => node && node.handle)
+            .map((node) => node.handle);
+    })();
+
+    // Mapping handle ke HEX (tambahkan sesuai kebutuhan)
+    const colorMap: Record<string, string> = {
+        black: "#000000",
+        white: "#FFFFFF",
+        cream: "#F5F5DC",
+        "cream-1": "#F5F5DC",
+        navy: "#001F3F",
+        blue: "#0074D9",
+        red: "#FF4136",
+        green: "#2ECC40",
+        yellow: "#FFDC00",
+        grey: "#AAAAAA",
+        gray: "#AAAAAA",
+        // tambahkan mapping lain sesuai kebutuhan
+    };
+
     // Ensure product.handle exists
     if (!product.handle) {
         console.error("Product handle is missing:", product);
@@ -42,11 +69,10 @@ export default function ProductCard({ product, isShop, collectionHandle }: Produ
     return (
         <Link href={productUrl} className="group block w-full">
             <div
-                className={`${
-                    isShop
-                        ? "w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] xl:h-[400px]"
-                        : "w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] xl:h-[400px]"
-                } relative mb-3 overflow-hidden`}
+                className={`${isShop
+                    ? "w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] xl:h-[400px]"
+                    : "w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] xl:h-[400px]"
+                    } relative mb-3 overflow-hidden`}
             >
                 <Image
                     src={imageUrl}
@@ -61,6 +87,19 @@ export default function ProductCard({ product, isShop, collectionHandle }: Produ
                 <h3 className="font-bold text-xs sm:text-sm font-folio-bold line-clamp-2 mb-1">
                     {product.title}
                 </h3>
+                {/* List bulatan warna */}
+                {colorHandles.length > 0 && (
+                    <div className="flex flex-row gap-1 mb-1">
+                        {colorHandles.map((handle, idx) => (
+                            <span
+                                key={handle + idx}
+                                className="inline-block w-4 h-4 rounded-full border border-gray-200"
+                                style={{ backgroundColor: colorMap[handle] || "#E5E7EB" }}
+                                title={handle}
+                            />
+                        ))}
+                    </div>
+                )}
                 <p className="text-xs text-gray-600 mb-1 font-folio-light">{colorsCount} Colors</p>
                 <p className="text-xs sm:text-sm font-folio-bold">{formattedPrice}</p>
             </div>

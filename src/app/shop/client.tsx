@@ -340,7 +340,6 @@ export default function ShopPageClient({
                                 </h1>
                             </div>
                         </>
-                        
                     ) : (
                         <div className="absolute top-1/2 -translate-y-1/2 z-20 w-full justify-between flex flex-row items-center gap-6 pr-12">
                             <Image
