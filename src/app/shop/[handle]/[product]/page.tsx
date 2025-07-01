@@ -43,40 +43,29 @@ const getColorHex = (colorName: string): string => {
 };
 
 // New utility functions for color-based gallery images
-const extractColorFromUrl = (url: string): string | null => {
-    try {
-        // Extract filename from URL
-        const urlParts = url.split("/");
-        const filename = urlParts[urlParts.length - 1];
-
-        // Remove query parameters and file extension
-        const cleanFilename = filename.split("?")[0].split(".")[0];
-
-        // Extract color name (e.g., "black" from "black.jpg" or "black_1.jpg")
-        const colorMatch = cleanFilename.match(/^([a-zA-Z]+)(?:_\d+)?$/);
-
-        return colorMatch ? colorMatch[1].toLowerCase() : null;
-    } catch (error) {
-        console.error("Error extracting color from URL:", error);
-        return null;
-    }
+const extractColorFromAltText = (altText: string): string | null => {
+    if (!altText) return null;
+    // Misal altText: "Product - Black" atau hanya "Black"
+    // Ambil kata terakhir setelah '-' atau seluruh altText jika tidak ada '-'
+    const parts = altText.split("-").map((s) => s.trim());
+    const colorCandidate = parts.length > 1 ? parts[parts.length - 1] : parts[0];
+    // Hanya ambil huruf
+    const colorMatch = colorCandidate.match(/([a-zA-Z]+)/);
+    return colorMatch ? colorMatch[1].toLowerCase() : null;
 };
 
-const findRelatedImagesByColor = (allImages: string[], selectedColor: string): string[] => {
+const findRelatedImagesByColor = (allImages: { url: string; altText: string }[], selectedColor: string): { url: string; altText: string }[] => {
     if (!selectedColor || !allImages.length) return [];
-
     const colorName = selectedColor.toLowerCase();
-
     // Find images that match the selected color
-    const relatedImages = allImages.filter((imageUrl) => {
-        const extractedColor = extractColorFromUrl(imageUrl);
+    const relatedImages = allImages.filter((img) => {
+        const extractedColor = extractColorFromAltText(img.altText);
         return extractedColor === colorName;
     });
-
     // If no exact matches found, try partial matches
     if (relatedImages.length === 0) {
-        const partialMatches = allImages.filter((imageUrl) => {
-            const extractedColor = extractColorFromUrl(imageUrl);
+        const partialMatches = allImages.filter((img) => {
+            const extractedColor = extractColorFromAltText(img.altText);
             return (
                 (extractedColor && extractedColor.includes(colorName)) ||
                 colorName.includes(extractedColor || "")
@@ -84,31 +73,28 @@ const findRelatedImagesByColor = (allImages: string[], selectedColor: string): s
         });
         return partialMatches;
     }
-
     return relatedImages;
 };
 
 // Helper functions to check if sections have content
 const hasTechnicalDetails = (descriptionHtml: string): boolean => {
     if (!descriptionHtml) return false;
-    return (
-        descriptionHtml.includes("Technical Details") &&
-        descriptionHtml
-            .split("<h4><span>Technical Details</span></h4>")[1]
-            ?.split("<h4>")[0]
-            ?.match(/<li[^>]*>.*?<\/li>/g)?.length > 0
-    );
+    if (!descriptionHtml.includes("Technical Details")) return false;
+    const splitByTech = descriptionHtml.split("<h4><span>Technical Details</span></h4>");
+    if (splitByTech.length < 2) return false;
+    const afterTech = splitByTech[1];
+    const beforeNextSection = afterTech.split("<h4>")[0];
+    return beforeNextSection.match(/<li[^>]*>.*?<\/li>/g)?.length > 0;
 };
 
 const hasComposition = (descriptionHtml: string): boolean => {
     if (!descriptionHtml) return false;
-    return (
-        descriptionHtml.includes("Composition") &&
-        descriptionHtml
-            .split("<h4><span>Composition</span></h4>")[1]
-            ?.split("<h4>")[0]
-            ?.match(/<li[^>]*>.*?<\/li>/g)?.length > 0
-    );
+    if (!descriptionHtml.includes("Composition")) return false;
+    const splitByComp = descriptionHtml.split("<h4><span>Composition</span></h4>");
+    if (splitByComp.length < 2) return false;
+    const afterComp = splitByComp[1];
+    const beforeNextSection = afterComp.split("<h4>")[0];
+    return beforeNextSection.match(/<li[^>]*>.*?<\/li>/g)?.length > 0;
 };
 
 // Main component
@@ -168,7 +154,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
     // --- DATA EXTRACTION ---
     const allGalleryImages = useMemo(
-        () => product?.images?.edges?.map((edge) => edge.node.url) || [],
+        () => product?.images?.edges?.map((edge) => ({ url: edge.node.url, altText: edge.node.altText || "" })) || [],
         [product?.images?.edges]
     );
     const formattedPrice = product?.priceRange?.minVariantPrice
@@ -178,28 +164,28 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
     // Extract available options
     const availableColors = product?.variants?.edges
         ? Array.from(
-              new Set(
-                  product.variants.edges.flatMap(
-                      (v) =>
-                          v.node.selectedOptions
-                              ?.filter((opt) => opt.name.toLowerCase() === "color")
-                              .map((opt) => opt.value) || []
-                  )
-              )
-          )
+            new Set(
+                product.variants.edges.flatMap(
+                    (v) =>
+                        v.node.selectedOptions
+                            ?.filter((opt) => opt.name.toLowerCase() === "color")
+                            .map((opt) => opt.value) || []
+                )
+            )
+        )
         : [];
 
     const availableSizes = product?.variants?.edges
         ? Array.from(
-              new Set(
-                  product.variants.edges.flatMap(
-                      (v) =>
-                          v.node.selectedOptions
-                              ?.filter((opt) => opt.name.toLowerCase() === "size")
-                              .map((opt) => opt.value) || []
-                  )
-              )
-          )
+            new Set(
+                product.variants.edges.flatMap(
+                    (v) =>
+                        v.node.selectedOptions
+                            ?.filter((opt) => opt.name.toLowerCase() === "size")
+                            .map((opt) => opt.value) || []
+                )
+            )
+        )
         : [];
 
     // --- STATE MANAGEMENT ---
@@ -240,14 +226,11 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
         if (!selectedColor || allGalleryImages.length === 0) {
             return allGalleryImages;
         }
-
         const colorSpecificImages = findRelatedImagesByColor(allGalleryImages, selectedColor);
-
         // If we found color-specific images, use them
         if (colorSpecificImages.length > 0) {
             return colorSpecificImages;
         }
-
         // Fallback to all images if no color-specific images found
         return allGalleryImages;
     }, [allGalleryImages, selectedColor]);
@@ -318,7 +301,6 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                         option.name.toLowerCase() === "color" && option.value === selectedColor
                 )
             );
-
             if (variant?.node.image) {
                 setDisplayImage({
                     url: variant.node.image.url,
@@ -332,8 +314,8 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 );
                 if (colorSpecificImages.length > 0) {
                     setDisplayImage({
-                        url: colorSpecificImages[0],
-                        altText: `${product?.title || "Product"} - ${selectedColor}`,
+                        url: colorSpecificImages[0].url,
+                        altText: colorSpecificImages[0].altText || `${product?.title || "Product"} - ${selectedColor}`,
                     });
                 } else {
                     // Fallback to the first product image
@@ -497,11 +479,10 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                             </div>
                                         </button>
                                         <div
-                                            className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                                                expandedSections.technical
-                                                    ? "max-h-[500px] opacity-100"
-                                                    : "max-h-0 opacity-0"
-                                            }`}
+                                            className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedSections.technical
+                                                ? "max-h-[500px] opacity-100"
+                                                : "max-h-0 opacity-0"
+                                                }`}
                                         >
                                             {expandedSections.technical && (
                                                 <div className="mt-4" ref={technicalRef}>
@@ -612,11 +593,10 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                             </div>
                                         </button>
                                         <div
-                                            className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                                                expandedSections.composition
-                                                    ? "max-h-[500px] opacity-100"
-                                                    : "max-h-0 opacity-0"
-                                            }`}
+                                            className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedSections.composition
+                                                ? "max-h-[500px] opacity-100"
+                                                : "max-h-0 opacity-0"
+                                                }`}
                                         >
                                             {expandedSections.composition && (
                                                 <div className="mt-4" ref={compositionRef}>
@@ -697,18 +677,17 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                                     isAnyVariantInStock &&
                                                     (hasSizeOptions
                                                         ? availableSizes.some((size) =>
-                                                              isVariantAvailable(color, size)
-                                                          )
+                                                            isVariantAvailable(color, size)
+                                                        )
                                                         : isVariantAvailable(color));
                                                 return (
                                                     <button
                                                         key={color}
                                                         disabled={!isAvailable}
-                                                        className={`w-10 h-10 rounded-full transition-all duration-300 transform cursor-pointer ${
-                                                            selectedColor === color
-                                                                ? "ring-2 ring-offset-4 ring-black scale-110"
-                                                                : "border border-gray-300 hover:scale-110"
-                                                        } ${!isAvailable ? "opacity-50 cursor-not-allowed" : ""}`}
+                                                        className={`w-10 h-10 rounded-full transition-all duration-300 transform cursor-pointer ${selectedColor === color
+                                                            ? "ring-2 ring-offset-4 ring-black scale-110"
+                                                            : "border border-gray-300 hover:scale-110"
+                                                            } ${!isAvailable ? "opacity-50 cursor-not-allowed" : ""}`}
                                                         style={{
                                                             backgroundColor: getColorHex(color),
                                                         }}
@@ -748,19 +727,18 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                                         isAnyVariantInStock &&
                                                         (selectedColor
                                                             ? isVariantAvailable(
-                                                                  selectedColor,
-                                                                  size
-                                                              )
+                                                                selectedColor,
+                                                                size
+                                                            )
                                                             : true);
                                                     return (
                                                         <button
                                                             key={size}
                                                             disabled={!isAvailable}
-                                                            className={`w-10 h-10 flex items-center justify-center transition-all duration-300 cursor-pointer ${
-                                                                selectedSize === size
-                                                                    ? "border border-black rounded-full font-bold transform scale-110"
-                                                                    : "border-gray-300 hover:border-black text-[#ADADAD] hover:text-black hover:scale-110"
-                                                            } ${!isAvailable ? "opacity-25 cursor-not-allowed relative" : ""} font-itc-bold`}
+                                                            className={`w-10 h-10 flex items-center justify-center transition-all duration-300 cursor-pointer ${selectedSize === size
+                                                                ? "border border-black rounded-full font-bold transform scale-110"
+                                                                : "border-gray-300 hover:border-black text-[#ADADAD] hover:text-black hover:scale-110"
+                                                                } ${!isAvailable ? "opacity-25 cursor-not-allowed relative" : ""} font-itc-bold`}
                                                             onClick={() => handleSizeSelect(size)}
                                                         >
                                                             {size}
@@ -792,8 +770,8 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                                 ? !isVariantAvailable(selectedColor, selectedSize)
                                                 : true
                                             : selectedColor
-                                              ? !isVariantAvailable(selectedColor)
-                                              : true)
+                                                ? !isVariantAvailable(selectedColor)
+                                                : true)
                                     }
                                     buttonText={!isAnyVariantInStock ? "OUT OF STOCK" : undefined}
                                 />
@@ -842,17 +820,16 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                             >
                                                 {galleryImages.map((image, index) => (
                                                     <div
-                                                        key={image}
-                                                        className={`flex-shrink-0 w-[300px] h-[225px] relative transition-all duration-500 cursor-pointer ${
-                                                            activeGalleryImage === index
-                                                                ? "scale-100 opacity-100"
-                                                                : "scale-95 opacity-80"
-                                                        }`}
+                                                        key={image.url}
+                                                        className={`flex-shrink-0 w-[300px] h-[225px] relative transition-all duration-500 cursor-pointer ${activeGalleryImage === index
+                                                            ? "scale-100 opacity-100"
+                                                            : "scale-95 opacity-80"
+                                                            }`}
                                                         onClick={() => setActiveGalleryImage(index)}
                                                     >
                                                         <Image
-                                                            src={image || "/placeholder.svg"}
-                                                            alt={`Product view ${index + 1}`}
+                                                            src={image.url || "/placeholder.svg"}
+                                                            alt={image.altText || `Product view ${index + 1}`}
                                                             fill
                                                             className="object-cover transition-transform duration-500 hover:scale-105"
                                                             sizes="300px"
@@ -868,11 +845,10 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                         {galleryImages.map((_, index) => (
                                             <button
                                                 key={index}
-                                                className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                                                    activeGalleryImage === index
-                                                        ? "bg-orange-500 w-4"
-                                                        : "bg-gray-300 hover:bg-gray-400"
-                                                }`}
+                                                className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${activeGalleryImage === index
+                                                    ? "bg-orange-500 w-4"
+                                                    : "bg-gray-300 hover:bg-gray-400"
+                                                    }`}
                                                 onClick={() => setActiveGalleryImage(index)}
                                                 aria-label={`View image ${index + 1}`}
                                             />
@@ -889,20 +865,19 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                         <div className="flex space-x-4 max-w-full">
                                             {galleryImages.map((image, index) => (
                                                 <div
-                                                    key={image}
+                                                    key={image.url}
                                                     className="relative w-[400px] h-[300px] lg:w-[500px] lg:h-[375px] flex-shrink-0 transition-all duration-500 cursor-pointer"
                                                     onMouseEnter={() => setHoveredImageIndex(index)}
                                                     onMouseLeave={() => setHoveredImageIndex(null)}
                                                 >
                                                     <Image
-                                                        src={image || "/placeholder.svg"}
-                                                        alt={`Product view ${index + 1}`}
+                                                        src={image.url || "/placeholder.svg"}
+                                                        alt={image.altText || `Product view ${index + 1}`}
                                                         fill
-                                                        className={`object-cover transition-transform duration-500 ${
-                                                            hoveredImageIndex === index
-                                                                ? "scale-105"
-                                                                : "scale-100"
-                                                        }`}
+                                                        className={`object-cover transition-transform duration-500 ${hoveredImageIndex === index
+                                                            ? "scale-105"
+                                                            : "scale-100"
+                                                            }`}
                                                         sizes="(max-width: 1024px) 400px, 500px"
                                                     />
                                                 </div>
@@ -922,19 +897,18 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                                 >
                                                     {galleryImages.map((image, index) => (
                                                         <div
-                                                            key={image}
-                                                            className={`flex-shrink-0 w-[500px] h-[375px] relative transition-all duration-500 cursor-pointer ${
-                                                                activeGalleryImage === index
-                                                                    ? "scale-100 opacity-100"
-                                                                    : "scale-95 opacity-80"
-                                                            }`}
+                                                            key={image.url}
+                                                            className={`flex-shrink-0 w-[500px] h-[375px] relative transition-all duration-500 cursor-pointer ${activeGalleryImage === index
+                                                                ? "scale-100 opacity-100"
+                                                                : "scale-95 opacity-80"
+                                                                }`}
                                                             onClick={() =>
                                                                 setActiveGalleryImage(index)
                                                             }
                                                         >
                                                             <Image
-                                                                src={image || "/placeholder.svg"}
-                                                                alt={`Product view ${index + 1}`}
+                                                                src={image.url || "/placeholder.svg"}
+                                                                alt={image.altText || `Product view ${index + 1}`}
                                                                 fill
                                                                 className="object-cover transition-transform duration-500 hover:scale-105"
                                                                 sizes="500px"
@@ -950,11 +924,10 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                             {galleryImages.map((_, index) => (
                                                 <button
                                                     key={index}
-                                                    className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                                                        activeGalleryImage === index
-                                                            ? "bg-orange-500 w-4"
-                                                            : "bg-gray-300 hover:bg-gray-400"
-                                                    }`}
+                                                    className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${activeGalleryImage === index
+                                                        ? "bg-orange-500 w-4"
+                                                        : "bg-gray-300 hover:bg-gray-400"
+                                                        }`}
                                                     onClick={() => setActiveGalleryImage(index)}
                                                     aria-label={`View image ${index + 1}`}
                                                 />
