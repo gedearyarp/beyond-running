@@ -239,7 +239,7 @@ export default function Footer() {
                         </div>
                         <div className="flex space-x-4">
                             <Link
-                                href="https://instagram.com"
+                                href="https://www.instagram.com/beyond___running/"
                                 aria-label="Instagram"
                                 className="hover:opacity-70 cursor-pointer"
                             >
