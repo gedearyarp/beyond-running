@@ -1,10 +1,7 @@
 import { getProductsByCollection, getAllCollections } from "@/lib/shopify";
-import { ProductCardType, Collection } from "@/lib/shopify/types";
-import ShopPageClient from "../client";
+import ShopPageClient from "@/app/shop/client";
 import { notFound } from "next/navigation";
-import { getAllProductsForShopPage } from "@/lib/shopify";
 import { sortProductsByCategory } from "@/lib/utils/product-sorting";
-import ProductCard from "@/components/ui/ProductCard";
 
 export const dynamic = "force-dynamic";
 

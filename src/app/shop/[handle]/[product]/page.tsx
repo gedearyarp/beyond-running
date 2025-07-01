@@ -10,12 +10,9 @@ import ProductCard from "@/components/ui/ProductCard";
 import SizeChartModal from "@/components/ui/size-chart";
 import AddToCartButton from "@/components/ui/add-to-cart-button";
 import type { ProductDetailType, ProductCardType } from "@/lib/shopify/types";
-import { getAllCollections } from "@/lib/shopify";
-import { Collection } from "@/lib/shopify/types";
 
 // Constants
 const GALLERY_AUTO_SCROLL_INTERVAL = 5000;
-const RELATED_PRODUCTS_COUNT = 4;
 
 // Types
 interface ProductDetailPageProps {
@@ -116,21 +113,6 @@ const hasComposition = (descriptionHtml: string): boolean => {
 
 // Main component
 export default function ProductDetailPage({ product, relatedProducts }: ProductDetailPageProps) {
-    const [collections, setCollections] = useState<Collection[]>([]);
-
-    useEffect(() => {
-        const fetchCollections = async () => {
-            try {
-                const collectionsData = await getAllCollections();
-                setCollections(collectionsData);
-            } catch (error) {
-                console.error("Failed to fetch collections:", error);
-            }
-        };
-
-        fetchCollections();
-    }, []);
-
     // --- MEMOS ---
     const hasSizeOptions = useMemo(() => {
         return product.variants.edges.some((edge) =>
@@ -442,7 +424,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
     return (
         <div className="flex flex-col min-h-screen">
-            <Header collections={collections} />
+            <Header />
             <main className="flex-1 pt-[88px]">
                 <div className="container mx-auto md:px-4 md:py-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
