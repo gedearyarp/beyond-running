@@ -74,7 +74,7 @@ export default function CommunityDetailPage() {
         return (
             <div className="flex flex-col min-h-screen">
                 <Header collections={collections} />
-                <main className="flex-1 pt-[88px]">
+                <main className="flex-1 pt-[73px]">
                     <div className="container mx-auto px-4 py-12">
                         <Loading text="Loading event details..." />
                     </div>
@@ -88,7 +88,7 @@ export default function CommunityDetailPage() {
         return (
             <div className="flex flex-col min-h-screen">
                 <Header collections={collections} />
-                <main className="flex-1 pt-[88px]">
+                <main className="flex-1 pt-[73px]">
                     <div className="container mx-auto px-4 py-12">
                         <p className="text-center">Event not found</p>
                     </div>
@@ -104,7 +104,7 @@ export default function CommunityDetailPage() {
     return (
         <div className="flex flex-col min-h-screen">
             <Header collections={collections} />
-            <main className="flex-1 pt-[88px]">
+            <main className="flex-1 pt-[73px]">
                 {/* Hero Banner */}
                 <div className="relative w-full h-[477px] md:h-[608px]">
                     <Image

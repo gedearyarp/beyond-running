@@ -476,7 +476,7 @@ export default function ShopPageClient({
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
-            <main className="flex-1 pt-[88px]">
+            <main className="flex-1 pt-[73px]">
                 <div className="relative w-full h-[477px] md:h-[608px]">
                     <Image
                         src={collection?.image?.url || images.shopImage}

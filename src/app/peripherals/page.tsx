@@ -187,7 +187,7 @@ function PeripheralsPageContent() {
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
-            <main className="flex-1 pt-[88px]">
+            <main className="flex-1 pt-[73px]">
                 {/* Hero Banner */}
                 <div className="relative w-full h-[477px] md:h-[608px]">
                     <Image

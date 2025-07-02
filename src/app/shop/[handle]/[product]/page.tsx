@@ -407,7 +407,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
-            <main className="flex-1 pt-[88px]">
+            <main className="flex-1 pt-[73px]">
                 <div className="container mx-auto md:px-4 md:py-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                         {/* Product Image */}
