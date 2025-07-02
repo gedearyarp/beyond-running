@@ -943,7 +943,7 @@ export default function Header() {
                                             }}
                                             className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
                                         >
-                                            <span className="relative z-10">Upcoming Events</span>
+                                            <span className="relative z-10">Upcoming Programs</span>
                                             <span className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
                                         </Link>
                                     </li>
@@ -958,7 +958,7 @@ export default function Header() {
                                             }}
                                             className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
                                         >
-                                            <span className="relative z-10">Past Events</span>
+                                            <span className="relative z-10">Past Programs</span>
                                             <span className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
                                         </Link>
                                     </li>

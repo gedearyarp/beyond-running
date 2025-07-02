@@ -90,7 +90,7 @@ export default function HomePageClient({ collections }: HomePageClientProps) {
 
             {/* Main Content */}
             <div
-                className={`flex flex-col transition-all duration-500 ease-in-out ${introRemoved ? "pt-[73px]" : "pt-0"}`}
+                className={`flex flex-col transition-all duration-500 ease-in-out ${introRemoved ? "pt-[56px] md:pt-[73px]" : "pt-0"}`}
             >
                 <HeroSlider />
                 <div className="container mx-auto px-4">

@@ -88,7 +88,7 @@ export default function PeripheralsDetailPage() {
         return (
             <div className="flex flex-col min-h-screen">
                 <Header />
-                <main className="flex-1 pt-[73px]">
+                <main className="flex-1 pt-[56px] md:pt-[73px]">
                     <div className="container mx-auto px-4 py-12">
                         <Loading text="Loading story..." />
                     </div>
@@ -102,7 +102,7 @@ export default function PeripheralsDetailPage() {
         return (
             <div className="flex flex-col min-h-screen">
                 <Header />
-                <main className="flex-1 pt-[73px]">
+                <main className="flex-1 pt-[56px] md:pt-[73px]">
                     <div className="container mx-auto px-4 py-12">
                         <p className="text-center">Story not found</p>
                     </div>
@@ -131,7 +131,7 @@ export default function PeripheralsDetailPage() {
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
-            <main className={`flex-1 pt-[73px] ${bgColor} pb-42`}>
+            <main className={`flex-1 pt-[56px] md:pt-[73px] ${bgColor} pb-42`}>
                 <div className="relative w-full h-[477px] md:h-[705px]">
                     <Image
                         src={bannerImageUrl}

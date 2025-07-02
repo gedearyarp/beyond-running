@@ -9,7 +9,7 @@ export default function AboutPage() {
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
-            <main className="flex-1 mb-48 pt-[73px]">
+            <main className="flex-1 mb-48 pt-[56px] md:pt-[73px]">
                 {/* Hero Section */}
                 <div className="relative w-full h-[477px] md:h-[806px]">
                     <Image

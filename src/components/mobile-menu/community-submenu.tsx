@@ -26,12 +26,12 @@ export default function CommunitySubmenu() {
                         {[
                             {
                                 href: { pathname: "/program", query: { view: "upcoming" } },
-                                text: "Upcoming Events",
+                                text: "Upcoming Programs",
                                 disabled: false,
                             },
                             {
                                 href: { pathname: "/program", query: { view: "past" } },
-                                text: "Past Events",
+                                text: "Past Programs",
                                 disabled: false,
                             },
                             {

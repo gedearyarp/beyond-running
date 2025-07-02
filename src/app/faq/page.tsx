@@ -193,7 +193,7 @@ export default function FAQPage() {
         <div className="flex flex-col min-h-screen">
             <Header collections={collections} />
 
-            <main className="flex-1 bg-white pt-[73px]">
+            <main className="flex-1 bg-white pt-[56px] md:pt-[73px]">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-16 pb-12 md:pb-20">
                     <div className="mb-8 md:mb-12">
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-itc-demi text-black animate-fade-in">
