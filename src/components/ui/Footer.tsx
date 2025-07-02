@@ -84,13 +84,12 @@ export default function Footer() {
                 </div>
                 {message && (
                     <p
-                        className={`text-sm mt-2 ${
-                            message.includes("already subscribed")
+                        className={`text-sm mt-2 ${message.includes("already subscribed")
                                 ? "text-yellow-600"
                                 : message.includes("error")
-                                  ? "text-red-500"
-                                  : "text-green-500"
-                        }`}
+                                    ? "text-red-500"
+                                    : "text-green-500"
+                            }`}
                     >
                         {message}
                     </p>
@@ -210,6 +209,9 @@ export default function Footer() {
                                     </button>
                                     <Link href="/faq" className="hover:underline cursor-pointer">
                                         FAQ
+                                    </Link>
+                                    <Link href="/terms-of-service" className="hover:underline cursor-pointer">
+                                        Terms of Service
                                     </Link>
                                 </div>
                             </div>
