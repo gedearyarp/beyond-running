@@ -837,24 +837,15 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
 
                                 {/* Additional Links */}
                                 <div className="flex flex-row justify-center gap-4 sm:gap-8 mt-6 text-sm w-full font-folio-light">
-                                    <Link
-                                        href="/faq"
-                                        className="underline hover:text-orange-500 transition-colors duration-300 relative group text-center sm:text-left"
-                                    >
+                                    <Link href="/faq?section=ordersShipping" className="underline hover:text-orange-500 transition-colors duration-300 relative group text-center sm:text-left">
                                         <span>Delivery</span>
                                         <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
                                     </Link>
-                                    <Link
-                                        href="/faq"
-                                        className="underline hover:text-orange-500 transition-colors duration-300 relative group text-center sm:text-left"
-                                    >
+                                    <Link href="/faq?section=returnsExchanges" className="underline hover:text-orange-500 transition-colors duration-300 relative group text-center sm:text-left">
                                         <span>Return & Exchange</span>
                                         <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
                                     </Link>
-                                    <Link
-                                        href="/faq"
-                                        className="underline hover:text-orange-500 transition-colors duration-300 relative group text-center sm:text-left"
-                                    >
+                                    <Link href="/faq?section=sizingCare" className="underline hover:text-orange-500 transition-colors duration-300 relative group text-center sm:text-left">
                                         <span>Washing Guide</span>
                                         <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
                                     </Link>

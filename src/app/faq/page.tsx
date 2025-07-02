@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import Header from "@/components/ui/Header";
 import Footer from "@/components/ui/Footer";
 import Loading from "@/components/ui/loading";
@@ -25,6 +26,8 @@ interface FAQData {
 }
 
 export default function FAQPage() {
+    const searchParams = useSearchParams();
+    const sectionParam = searchParams?.get("section") as FAQSection | null;
     const [activeSection, setActiveSection] = useState<FAQSection>("contact");
     const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
     const [searchQuery, setSearchQuery] = useState("");
@@ -35,6 +38,10 @@ export default function FAQPage() {
 
     useEffect(() => {
         setMounted(true);
+        // Set section from query param on first mount
+        if (sectionParam && ["contact", "ordersShipping", "sizingCare", "returnsExchanges"].includes(sectionParam)) {
+            setActiveSection(sectionParam as FAQSection);
+        }
     }, []);
 
     useEffect(() => {
@@ -191,7 +198,7 @@ export default function FAQPage() {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <Header collections={collections} />
+            <Header />
 
             <main className="flex-1 bg-white pt-[56px] md:pt-[73px]">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-16 pb-12 md:pb-20">
@@ -228,8 +235,8 @@ export default function FAQPage() {
                                         key={key}
                                         onClick={() => handleSectionChange(key as FAQSection)}
                                         className={`block w-full text-left py-3 px-4 text-sm md:text-base font-folio-bold transition-all duration-300 rounded-lg group animate-fade-in cursor-pointer ${activeSection === key && !searchQuery
-                                                ? "text-white bg-black transform scale-105"
-                                                : "text-gray-600 hover:text-black hover:bg-gray-100 hover:transform hover:translate-x-2"
+                                            ? "text-white bg-black transform scale-105"
+                                            : "text-gray-600 hover:text-black hover:bg-gray-100 hover:transform hover:translate-x-2"
                                             }`}
                                         style={{ animationDelay: `${index * 100}ms` }}
                                     >
@@ -237,8 +244,8 @@ export default function FAQPage() {
                                             {title}
                                             <span
                                                 className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 ${activeSection === key && !searchQuery
-                                                        ? "w-full"
-                                                        : "group-hover:w-full"
+                                                    ? "w-full"
+                                                    : "group-hover:w-full"
                                                     }`}
                                             ></span>
                                         </span>
@@ -299,8 +306,8 @@ export default function FAQPage() {
                                                     </button>
                                                     <div
                                                         className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded
-                                                                ? "max-h-96 opacity-100"
-                                                                : "max-h-0 opacity-0"
+                                                            ? "max-h-96 opacity-100"
+                                                            : "max-h-0 opacity-0"
                                                             }`}
                                                     >
                                                         <div className="p-4 md:p-6 pt-0 font-folio-light text-sm md:text-base text-gray-700 leading-relaxed">
