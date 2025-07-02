@@ -139,21 +139,12 @@ export default function Footer() {
 
                                 <div className="space-y-4 md:space-y-6">
                                     <a
-                                        href="mailto:dummy@email.com"
+                                        href="mailto:info.beyondrunning@gmail.com"
                                         className="block w-full bg-[#d17928] hover:bg-[#c06820] text-white text-lg md:text-xl font-semibold py-4 md:py-5 rounded transition-all duration-300 text-center"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
                                         EMAIL
-                                    </a>
-
-                                    <a
-                                        href="https://wa.me/6281234567890"
-                                        className="block w-full bg-[#d17928] hover:bg-[#c06820] text-white text-lg md:text-xl font-semibold py-4 md:py-5 rounded transition-all duration-300 text-center"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        WHATSAPP
                                     </a>
                                 </div>
                             </div>
@@ -244,13 +235,6 @@ export default function Footer() {
                                 className="hover:opacity-70 cursor-pointer"
                             >
                                 <Instagram className="h-5 w-5" />
-                            </Link>
-                            <Link
-                                href="https://twitter.com"
-                                aria-label="Twitter"
-                                className="hover:opacity-70 cursor-pointer"
-                            >
-                                <Twitter className="h-5 w-5" />
                             </Link>
                         </div>
                     </div>
