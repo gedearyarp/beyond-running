@@ -6,7 +6,7 @@ export const images = {
     aboutImage:
         "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//642204d998d5db974975bd94c760d42afa0c1dfa.png",
     peripheralImage:
-        "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//per_1.png",
+        "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//1070670be5aa006614cf0a6cb52e5940244ec33e%20(1).jpg",
     communityImage:
         "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//com_banner.png",
     bottomBanner:
