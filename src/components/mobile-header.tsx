@@ -51,7 +51,7 @@ export default function MobileHeader({
             </div> */}
 
             <header
-                className={`fixed top-8 left-0 right-0 flex items-center justify-between px-4 py-4 bg-white z-50 md:hidden transition-all duration-500 ease-in-out transform ${
+                className={`fixed top-0 left-0 right-0 flex items-center justify-between px-4 py-4 bg-white z-50 md:hidden transition-all duration-500 ease-in-out transform ${
                     isScrolled ? "shadow-md" : ""
                 } animate-slide-down`}
             >
