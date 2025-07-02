@@ -16,6 +16,8 @@ interface Slide {
 export default function HeroSlider() {
     const [slides, setSlides] = useState<Slide[]>([]);
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [touchStartX, setTouchStartX] = useState<number | null>(null);
+    const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchSlides = async () => {
@@ -51,22 +53,49 @@ export default function HeroSlider() {
         if (slides.length === 0) return;
         const interval = setInterval(() => {
             nextSlide();
-        }, 5000);
+        }, 10000);
         return () => clearInterval(interval);
     }, [slides]);
+
+    // Swipe handlers
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setTouchStartX(e.touches[0].clientX);
+    };
+    const handleTouchMove = (e: React.TouchEvent) => {
+        setTouchEndX(e.touches[0].clientX);
+    };
+    const handleTouchEnd = () => {
+        if (touchStartX === null || touchEndX === null) return;
+        const distance = touchStartX - touchEndX;
+        if (Math.abs(distance) > 50) {
+            if (distance > 0) {
+                // Swipe left
+                nextSlide();
+            } else {
+                // Swipe right
+                prevSlide();
+            }
+        }
+        setTouchStartX(null);
+        setTouchEndX(null);
+    };
 
     if (slides.length === 0) {
         return <div className="w-full h-[764px] md:h-[900px] flex items-center justify-center bg-gray-100">Loading...</div>;
     }
 
     return (
-        <div className="relative w-full h-[764px] md:h-[900px] overflow-hidden">
+        <div
+            className="relative w-full h-[764px] md:h-[900px] overflow-hidden"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+        >
             {slides.map((slide, index) => (
                 <div
                     key={slide.id}
-                    className={`absolute inset-0 transition-opacity duration-1000 ${
-                        index === currentSlide ? "opacity-100" : "opacity-0 pointer-events-none"
-                    }`}
+                    className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? "opacity-100" : "opacity-0 pointer-events-none"
+                        }`}
                 >
                     <div className="relative w-full h-full">
                         <Image
