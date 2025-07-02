@@ -46,9 +46,9 @@ export default function MobileHeader({
     return (
         <>
             {/* Announcement Bar */}
-            <div className="w-full bg-black text-white text-center py-2 text-xs fixed top-0 left-0 right-0 z-50 animate-slide-down">
+            {/* <div className="w-full bg-black text-white text-center py-2 text-xs fixed top-0 left-0 right-0 z-50 animate-slide-down">
                 Free Shipping On All Orders Above Rp 999,999
-            </div>
+            </div> */}
 
             <header
                 className={`fixed top-8 left-0 right-0 flex items-center justify-between px-4 py-4 bg-white z-50 md:hidden transition-all duration-500 ease-in-out transform ${

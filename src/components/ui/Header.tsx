@@ -592,9 +592,9 @@ export default function Header() {
                     } animate-slide-down`}
             >
                 {/* Announcement Bar */}
-                <div className="w-full bg-black text-white text-center py-2 text-xs animate-slide-down">
+                {/* <div className="w-full bg-black text-white text-center py-2 text-xs animate-slide-down">
                     Free Shipping On All Orders Above Rp 999,999
-                </div>
+                </div> */}
 
                 {/* Main Navigation Container */}
                 <div
