@@ -31,7 +31,7 @@ const promoCards = [
         title: "COMMUNITY PROGRAMS & EVENTS",
         buttonText: "More",
         footerText: "COMMUNITY:EVENTS-COLLABORATION-FEATURED RUNNERS",
-        link: "/community",
+        link: "/program",
         bgImage: images.featured3Image,
         icon: "/icons/featured_3.svg",
         gifIcon: "/gif/community-white.gif", // Animated version

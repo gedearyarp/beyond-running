@@ -4,7 +4,7 @@ export default function CommunitySubmenu() {
     return (
         <div className="px-4 py-6">
             <h2 className="text-2xl font-folio-bold text-[#d17928] mb-8 animate-fade-in">
-                Community
+                Programs
             </h2>
 
             <div className="flex">
