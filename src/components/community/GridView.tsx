@@ -81,7 +81,7 @@ export default function GridView({ events }: GridViewProps) {
                     </h3>
 
                     <Link
-                        href={`/community/${event.id}`}
+                        href={`/program/${event.id}`}
                         className="bg-[#ADADAD] text-black text-xs px-4 py-1 rounded-full hover:bg-gray-200 transition-colors font-folio-bold mb-8"
                     >
                         More

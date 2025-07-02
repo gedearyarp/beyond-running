@@ -30,7 +30,7 @@ export default function ListView({ events }: ListViewProps) {
                     .replace(/\//g, ".");
 
                 return (
-                    <Link key={event.id} href={`/community/${event.id}`} className="block group">
+                    <Link key={event.id} href={`/program/${event.id}`} className="block group">
                         <div className="border-t border-gray-200 py-6">
                             <div className="flex justify-between items-center space-x-16 md:space-x-36">
                                 <div className="flex-shrink-0 w-24">

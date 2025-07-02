@@ -97,7 +97,7 @@ export default function CalendarView({ events }: CalendarViewProps) {
                                                     </div>
 
                                                     <Link
-                                                        href={`/community/${event.id}`}
+                                                        href={`/program/${event.id}`}
                                                         className="block"
                                                     >
                                                         <h4 className="text-[14px] font-folio-bold mb-8 hover:underline">
