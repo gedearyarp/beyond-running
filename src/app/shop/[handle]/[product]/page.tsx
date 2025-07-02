@@ -12,13 +12,16 @@ import AddToCartButton from "@/components/ui/add-to-cart-button";
 import type { ProductDetailType, ProductCardType } from "@/lib/shopify/types";
 
 // Constants
-const GALLERY_AUTO_SCROLL_INTERVAL = 5000;
+const GALLERY_AUTO_SCROLL_INTERVAL = 10000;
 
 // Types
 interface ProductDetailPageProps {
     product: ProductDetailType;
     relatedProducts: ProductCardType[];
 }
+
+// Gallery image type
+type GalleryImage = { url: string; altText: string };
 
 // Utility functions
 const extractPureDescription = (htmlString: string): string => {
@@ -221,6 +224,10 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
     const [activeGalleryImage, setActiveGalleryImage] = useState(0);
     const [hoveredImageIndex, setHoveredImageIndex] = useState<number | null>(null);
 
+    // Touch state for swipe gesture (mobile)
+    const [touchStartX, setTouchStartX] = useState<number | null>(null);
+    const [touchEndX, setTouchEndX] = useState<number | null>(null);
+
     // Create color-based gallery images (after state declarations)
     const galleryImages = useMemo(() => {
         if (!selectedColor || allGalleryImages.length === 0) {
@@ -238,6 +245,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
     // Refs
     const technicalRef = useRef<HTMLDivElement>(null);
     const compositionRef = useRef<HTMLDivElement>(null);
+    const mainImageRef = useRef<HTMLDivElement>(null);
 
     // Callbacks
     const toggleSection = useCallback((section: string) => {
@@ -331,6 +339,57 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
         }
     }, [selectedColor, product?.images?.edges]);
 
+    // Handler for clicking gallery image
+    const handleGalleryImageClick = useCallback((image: GalleryImage) => {
+        setDisplayImage({
+            url: image.url,
+            altText: image.altText || product?.title || "Product image",
+        });
+        // Scroll to main image
+        if (mainImageRef.current) {
+            mainImageRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }, [product?.title]);
+
+    // Handler for touch events (mobile swipe)
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setTouchStartX(e.touches[0].clientX);
+        setTouchEndX(null);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        setTouchEndX(e.touches[0].clientX);
+    };
+
+    const handleTouchEnd = () => {
+        if (touchStartX === null || touchEndX === null) return;
+        const distance = touchStartX - touchEndX;
+        const minSwipeDistance = 50; // px
+        if (distance > minSwipeDistance) {
+            // Swipe left (next)
+            setActiveGalleryImage((prev) => {
+                const next = prev + 1;
+                if (next < galleryImages.length) {
+                    handleGalleryImageClick(galleryImages[next]);
+                    return next;
+                }
+                return prev;
+            });
+        } else if (distance < -minSwipeDistance) {
+            // Swipe right (prev)
+            setActiveGalleryImage((prev) => {
+                const next = prev - 1;
+                if (next >= 0) {
+                    handleGalleryImageClick(galleryImages[next]);
+                    return next;
+                }
+                return prev;
+            });
+        }
+        setTouchStartX(null);
+        setTouchEndX(null);
+    };
+
     useEffect(() => {
         const interval = setInterval(() => {
             if (galleryImages.length >= 2) {
@@ -411,7 +470,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 <div className="container mx-auto md:px-4 md:py-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                         {/* Product Image */}
-                        <div>
+                        <div ref={mainImageRef}>
                             <div className="bg-gray-100 mt-16 aspect-square relative overflow-hidden">
                                 <Image
                                     src={displayImage.url}
@@ -817,6 +876,9 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                                 style={{
                                                     transform: `translateX(-${activeGalleryImage * (300 + 16)}px)`,
                                                 }}
+                                                onTouchStart={handleTouchStart}
+                                                onTouchMove={handleTouchMove}
+                                                onTouchEnd={handleTouchEnd}
                                             >
                                                 {galleryImages.map((image, index) => (
                                                     <div
@@ -825,7 +887,10 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                                             ? "scale-100 opacity-100"
                                                             : "scale-95 opacity-80"
                                                             }`}
-                                                        onClick={() => setActiveGalleryImage(index)}
+                                                        onClick={() => {
+                                                            setActiveGalleryImage(index);
+                                                            handleGalleryImageClick(image);
+                                                        }}
                                                     >
                                                         <Image
                                                             src={image.url || "/placeholder.svg"}
@@ -869,6 +934,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                                     className="relative w-[400px] h-[300px] lg:w-[500px] lg:h-[375px] flex-shrink-0 transition-all duration-500 cursor-pointer"
                                                     onMouseEnter={() => setHoveredImageIndex(index)}
                                                     onMouseLeave={() => setHoveredImageIndex(null)}
+                                                    onClick={() => handleGalleryImageClick(image)}
                                                 >
                                                     <Image
                                                         src={image.url || "/placeholder.svg"}
@@ -902,9 +968,10 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                                                 ? "scale-100 opacity-100"
                                                                 : "scale-95 opacity-80"
                                                                 }`}
-                                                            onClick={() =>
-                                                                setActiveGalleryImage(index)
-                                                            }
+                                                            onClick={() => {
+                                                                setActiveGalleryImage(index);
+                                                                handleGalleryImageClick(image);
+                                                            }}
                                                         >
                                                             <Image
                                                                 src={image.url || "/placeholder.svg"}
