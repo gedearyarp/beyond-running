@@ -36,10 +36,6 @@ export default function PeripheralsSubmenu() {
                                 href: { pathname: "/peripherals", query: { filter: "community" } },
                                 text: "Community",
                             },
-                            {
-                                href: { pathname: "/peripherals", query: { filter: "all" } },
-                                text: "All",
-                            },
                         ].map((item, index) => (
                             <li
                                 key={item.text}

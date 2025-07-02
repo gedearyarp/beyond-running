@@ -58,9 +58,8 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
 
     return (
         <div
-            className={`fixed inset-0 bg-white z-50 overflow-y-auto transition-transform duration-300 ease-in-out ${
-                isVisible ? "translate-x-0" : "-translate-x-full"
-            }`}
+            className={`fixed inset-0 bg-white z-50 overflow-y-auto transition-transform duration-300 ease-in-out ${isVisible ? "translate-x-0" : "-translate-x-full"
+                }`}
         >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-4">
@@ -184,7 +183,7 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
             {/* Shop Submenu */}
             {currentView === "shop" && (
                 <div className="animate-slide-in">
-                    <ShopSubmenu />
+                    <ShopSubmenu onClose={onClose} />
                 </div>
             )}
 

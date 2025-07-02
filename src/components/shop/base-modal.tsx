@@ -65,19 +65,23 @@ export default function BaseModal({
     return (
         <div className="fixed inset-0 bg-black/50 z-50 overflow-hidden">
             <div
-                className={`absolute inset-0 bg-white transition-transform duration-300 ease-out ${
-                    isVisible && !isClosing
-                        ? slideInClass
-                        : isClosing
-                          ? slideOutClass
-                          : slideDirection === "left"
+                className={`absolute inset-0 bg-white transition-transform duration-300 ease-out ${isVisible && !isClosing
+                    ? slideInClass
+                    : isClosing
+                        ? slideOutClass
+                        : slideDirection === "left"
                             ? "-translate-x-full"
                             : "translate-x-full"
-                }`}
+                    }`}
+                style={{
+                    msOverflowStyle: 'none',
+                    scrollbarWidth: 'none',
+                    WebkitOverflowScrolling: 'touch'
+                }}
             >
-                <div className="p-6 flex flex-col h-full">
+                <div className="flex flex-col h-full">
                     {/* Header */}
-                    <div className="flex justify-between items-center mb-10">
+                    <div className="flex justify-between items-center p-6 pb-4 flex-shrink-0">
                         <h2 className="text-xl font-medium">{title}</h2>
                         <div className="flex items-center">
                             <span className="mr-2 text-xl">Close</span>
@@ -92,10 +96,14 @@ export default function BaseModal({
                     </div>
 
                     {/* Content */}
-                    <div className="flex-grow">{children}</div>
+                    <div className="flex-1 overflow-y-auto px-6 hide-scrollbar" style={{
+                        msOverflowStyle: 'none',
+                        scrollbarWidth: 'none',
+                        WebkitOverflowScrolling: 'touch'
+                    }}>{children}</div>
 
                     {/* Footer Buttons */}
-                    <div className="grid grid-cols-2 gap-4 mt-auto">
+                    <div className="grid grid-cols-2 gap-4 p-6 pt-4 flex-shrink-0">
                         <button
                             onClick={handleReset}
                             className="py-4 bg-[#adadad] text-black font-medium cursor-pointer hover:bg-[#9a9a9a] transition-colors duration-200"

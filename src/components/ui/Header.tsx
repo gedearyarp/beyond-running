@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, User, ShoppingBag, X } from "lucide-react";
@@ -13,6 +13,7 @@ import { useCollectionsStore } from "@/store/collections";
 import { useCartStore } from "@/store/cart";
 import { useAuth } from "@/contexts/AuthContext";
 import type { ProductCardType } from "@/lib/shopify/types";
+import { useRouter } from "next/navigation";
 
 // Ubah recent search: simpan array of produk (id, title, handle, image)
 type RecentProduct = {
@@ -42,6 +43,8 @@ export default function Header() {
     const [productsLoading, setProductsLoading] = useState(false);
     const [productsError, setProductsError] = useState<string | null>(null);
     const [mounted, setMounted] = useState(false);
+    const [activeShopTab, setActiveShopTab] = useState<string>("men");
+    const router = useRouter();
 
     // Memoize functions that are used in useEffect dependencies
     const handleScroll = useCallback(() => {
@@ -113,9 +116,9 @@ export default function Header() {
         }
     }, [activeDropdown, refreshCollections]);
 
-    // Fetch real products saat search overlay dibuka
+    // Fetch all products for dropdown on mount
     useEffect(() => {
-        if (isSearchOpen && allProducts.length === 0) {
+        if (allProducts.length === 0) {
             setProductsLoading(true);
             getAllProductsForShopPage(100)
                 .then((data) => {
@@ -127,15 +130,15 @@ export default function Header() {
                     setProductsLoading(false);
                 });
         }
-    }, [isSearchOpen, allProducts.length]);
+    }, []);
 
     // Filter products based on search query
     const filteredProducts = searchQuery
         ? allProducts.filter(
-              (product) =>
-                  product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  (product.productType?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
-          )
+            (product) =>
+                product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (product.productType?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
+        )
         : allProducts;
 
     // Focus search input when search opens
@@ -316,16 +319,100 @@ export default function Header() {
         setMounted(true);
     }, []);
 
+    // --- GROUPING LOGIC FOR SHOP DROPDOWN ---
+    // Helper: pluralize category
+    const pluralizeCategory = (cat: string) => {
+        const map: Record<string, string> = {
+            Top: "top",
+            Bottom: "bottom",
+            Accessories: "accessories",
+            Outerwear: "outerwears",
+            // add more if needed
+        };
+        return map[cat] || cat.toLowerCase();
+    };
+
+    // Helper: normalize tag/category for URL
+    const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, "-");
+
+    // Generate main categories dynamically from allProducts
+    const allMainCategories = useMemo(() => {
+        const set = new Set<string>();
+        allProducts.forEach((p) => {
+            if (p.productType) set.add(p.productType);
+        });
+        return Array.from(set);
+    }, [allProducts]);
+
+    // Pisahkan accessories dan urutkan Top, Bottom, lalu lainnya
+    const mainCategories = useMemo(() => {
+        const filtered = allMainCategories.filter(cat => cat.toLowerCase() !== 'accessories');
+        // Urutkan: Top, Bottom, lalu lainnya
+        const topIdx = filtered.findIndex(cat => cat.toLowerCase() === 'top');
+        const bottomIdx = filtered.findIndex(cat => cat.toLowerCase() === 'bottom');
+        const top = topIdx !== -1 ? [filtered[topIdx]] : [];
+        const bottom = bottomIdx !== -1 ? [filtered[bottomIdx]] : [];
+        const rest = filtered.filter((cat, i) => i !== topIdx && i !== bottomIdx);
+        return [...top, ...bottom, ...rest];
+    }, [allMainCategories]);
+    const accessoriesCategory = useMemo(() => allMainCategories.find(cat => cat.toLowerCase() === 'accessories'), [allMainCategories]);
+
+    // Helper: get subcategories for a main category
+    function getSubcategoriesForCategory(category: string) {
+        const set = new Set<string>();
+        allProducts
+            .filter((p) => p.productType && p.productType === category)
+            .forEach((p) => (p.tags || []).forEach((tag) => set.add(tag)));
+        return Array.from(set).sort();
+    }
+
+    // Group products for dropdown
+    const groupedShopMenu = useMemo(() => {
+        const result: any = { men: {}, women: {}, accessories: {} };
+        allProducts.forEach((product) => {
+            const productType = product.productType;
+            if (!productType) return;
+            // Robust gender extraction
+            const genderHandles = (
+                product.metafields
+                    ?.filter((m) => m && m.key === "target-gender")
+                    .flatMap((m) => m?.references?.nodes?.map((n: any) => n.handle) || [])
+            ) || [];
+            const isMen = genderHandles.includes("male");
+            const isWomen = genderHandles.includes("female");
+            const isAccessories = productType.toLowerCase() === "accessories";
+            // Grouping
+            if (isMen) {
+                if (!result.men[productType]) result.men[productType] = new Set();
+                product.tags?.forEach((tag: string) => result.men[productType].add(tag));
+            }
+            if (isWomen) {
+                if (!result.women[productType]) result.women[productType] = new Set();
+                product.tags?.forEach((tag: string) => result.women[productType].add(tag));
+            }
+            if (isAccessories) {
+                if (!result.accessories[productType]) result.accessories[productType] = new Set();
+                product.tags?.forEach((tag: string) => result.accessories[productType].add(tag));
+            }
+        });
+        // Convert sets to arrays
+        Object.keys(result).forEach((gender) => {
+            Object.keys(result[gender]).forEach((cat) => {
+                result[gender][cat] = Array.from(result[gender][cat]);
+            });
+        });
+        return result;
+    }, [allProducts]);
+
     return (
         <>
             {/* Search Overlay */}
             <div
                 ref={searchOverlayRef}
-                className={`fixed inset-0 bg-white z-[60] transition-all duration-500 ease-in-out overflow-auto ${
-                    isSearchOpen
-                        ? "opacity-100 visible transform translate-y-0"
-                        : "opacity-0 invisible transform -translate-y-full"
-                }`}
+                className={`fixed inset-0 bg-white z-[60] transition-all duration-500 ease-in-out overflow-auto ${isSearchOpen
+                    ? "opacity-100 visible transform translate-y-0"
+                    : "opacity-0 invisible transform -translate-y-full"
+                    }`}
             >
                 {/* Search Header */}
                 <div className="border-b border-gray-200">
@@ -501,9 +588,8 @@ export default function Header() {
             {/* Desktop Header */}
             <header
                 ref={headerRef}
-                className={`w-full fixed top-0 left-0 right-0 z-50 transition-all hidden md:block duration-500 ease-in-out transform ${
-                    isScrolled ? "shadow-md" : ""
-                } animate-slide-down`}
+                className={`w-full fixed top-0 left-0 right-0 z-50 transition-all hidden md:block duration-500 ease-in-out transform ${isScrolled ? "shadow-md" : ""
+                    } animate-slide-down`}
             >
                 {/* Announcement Bar */}
                 <div className="w-full bg-black text-white text-center py-2 text-xs animate-slide-down">
@@ -526,11 +612,10 @@ export default function Header() {
                             >
                                 <Link
                                     href="/shop"
-                                    className={`text-[14px] font-medium transition-all duration-300 ${
-                                        activeDropdown === "shop"
-                                            ? "text-gray-500 transform scale-105"
-                                            : "hover:text-gray-500 hover:transform hover:scale-105"
-                                    }`}
+                                    className={`text-[14px] font-medium transition-all duration-300 ${activeDropdown === "shop"
+                                        ? "text-gray-500 transform scale-105"
+                                        : "hover:text-gray-500 hover:transform hover:scale-105"
+                                        }`}
                                 >
                                     Shop
                                 </Link>
@@ -542,11 +627,10 @@ export default function Header() {
                             >
                                 <Link
                                     href="/peripherals"
-                                    className={`text-[14px] font-medium transition-all duration-300 ${
-                                        activeDropdown === "peripherals"
-                                            ? "text-gray-500 transform scale-105"
-                                            : "hover:text-gray-500 hover:transform hover:scale-105"
-                                    }`}
+                                    className={`text-[14px] font-medium transition-all duration-300 ${activeDropdown === "peripherals"
+                                        ? "text-gray-500 transform scale-105"
+                                        : "hover:text-gray-500 hover:transform hover:scale-105"
+                                        }`}
                                 >
                                     Peripherals
                                 </Link>
@@ -558,11 +642,10 @@ export default function Header() {
                             >
                                 <Link
                                     href="/community"
-                                    className={`text-[14px] font-medium transition-all duration-300 ${
-                                        activeDropdown === "community"
-                                            ? "text-gray-500 transform scale-105"
-                                            : "hover:text-gray-500 hover:transform hover:scale-105"
-                                    }`}
+                                    className={`text-[14px] font-medium transition-all duration-300 ${activeDropdown === "community"
+                                        ? "text-gray-500 transform scale-105"
+                                        : "hover:text-gray-500 hover:transform hover:scale-105"
+                                        }`}
                                 >
                                     Community
                                 </Link>
@@ -646,9 +729,8 @@ export default function Header() {
 
                     {/* Backdrop Blur Overlay - Now used for hover area */}
                     <div
-                        className={`fixed inset-0 bg-black/5 backdrop-blur-sm transition-all duration-300 ${
-                            activeDropdown ? "opacity-100 visible" : "opacity-0 invisible"
-                        }`}
+                        className={`fixed inset-0 bg-black/5 backdrop-blur-sm transition-all duration-300 ${activeDropdown ? "opacity-100 visible" : "opacity-0 invisible"
+                            }`}
                         style={{ top: "110px" }}
                         onMouseEnter={handleDropdownMouseEnter}
                         onMouseLeave={handleDropdownMouseLeave}
@@ -656,11 +738,10 @@ export default function Header() {
 
                     {/* Dropdown Menus */}
                     <div
-                        className={`absolute left-0 right-0 bg-white backdrop-blur-md border-b border-gray-200 px-8 py-6 transform transition-all duration-400 ease-out shadow-2xl ${
-                            activeDropdown
-                                ? "opacity-100 visible translate-y-0 scale-100 rotate-0"
-                                : "opacity-0 invisible -translate-y-8 scale-100 -rotate-1"
-                        }`}
+                        className={`absolute left-0 right-0 bg-white backdrop-blur-md border-b border-gray-200 px-8 py-6 transform transition-all duration-400 ease-out shadow-2xl ${activeDropdown
+                            ? "opacity-100 visible translate-y-0 scale-100 rotate-0"
+                            : "opacity-0 invisible -translate-y-8 scale-100 -rotate-1"
+                            }`}
                         onMouseEnter={handleDropdownMouseEnter}
                         onMouseLeave={handleDropdownMouseLeave}
                     >
@@ -672,65 +753,119 @@ export default function Header() {
 
                         {/* Shop Dropdown */}
                         {activeDropdown === "shop" && (
-                            <div className="flex relative">
-                                {/* Invisible hover areas for better navigation */}
-                                <div className="absolute -left-4 top-0 bottom-0 w-4 bg-transparent" />
-                                <div className="absolute -right-4 top-0 bottom-0 w-4 bg-transparent" />
-
-                                <div className="mr-16">
-                                    <Link
-                                        href="/shop"
-                                        className="inline-block bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-full px-6 py-3 text-sm font-folio-bold mb-6 hover:from-gray-500 hover:to-gray-600 hover:transform hover:scale-105 hover:shadow-lg transition-all duration-300"
-                                    >
-                                        Discover All
-                                    </Link>
+                            <div className="flex relative gap-0 min-w-[700px] min-h-[220px] overflow-hidden animate-fade-in-shop">
+                                {/* Sidebar Tabs */}
+                                <div className="flex flex-col w-48 py-6 px-4 gap-2 border-r border-gray-200 bg-white animate-slide-left-shop">
+                                    {[
+                                        { key: "men", label: "Men" },
+                                        { key: "women", label: "Women" },
+                                        { key: "accessories", label: "Accessories" },
+                                        { key: "collections", label: "Collections" },
+                                    ].map((tab, idx) => (
+                                        <button
+                                            key={tab.key}
+                                            type="button"
+                                            className={`text-left px-3 py-2 rounded transition text-[15px] font-folio-bold cursor-pointer ${activeShopTab === tab.key ? "bg-gray-100 text-black scale-105 shadow-sm" : "text-gray-600 hover:bg-gray-50"} animate-fade-in-shop-tab`}
+                                            style={{ animationDelay: `${idx * 60}ms` }}
+                                            onMouseEnter={() => setActiveShopTab(tab.key)}
+                                            onFocus={() => setActiveShopTab(tab.key)}
+                                            onClick={() => {
+                                                setActiveShopTab(tab.key);
+                                                if (tab.key === "men" || tab.key === "women" || tab.key === "accessories") {
+                                                    router.push(`/shop?gender=${tab.key}`);
+                                                }
+                                            }}
+                                        >
+                                            {tab.label}
+                                        </button>
+                                    ))}
                                 </div>
-                                <div className="mr-16 font-folio-bold">
-                                    <ul className="space-y-3">
-                                        {[
-                                            { href: "/shop/men", text: "Men" },
-                                            { href: "/shop/women", text: "Women" },
-                                        ].map((item, index) => (
-                                            <li
-                                                key={item.href}
-                                                className={`transform transition-all duration-500 ${activeDropdown === "shop" ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}
-                                                style={{ transitionDelay: `${index * 100}ms` }}
-                                            >
+                                {/* Content Panel */}
+                                <div className="flex-1 px-8 py-6 animate-fade-in-shop-content">
+                                    {(["men", "women"] as const).includes(activeShopTab as any) && (
+                                        <div className="flex flex-row gap-12">
+                                            {mainCategories.map((cat, idx) => {
+                                                // Only show categories that have products for the selected gender
+                                                const productsForGender = allProducts.filter((p) => {
+                                                    // Gender logic: check metafields for target-gender
+                                                    if (!p.metafields) return false;
+                                                    const genderMeta = p.metafields.find((m) => m && m.key === "target-gender");
+                                                    if (!genderMeta || !genderMeta.references || !genderMeta.references.nodes) return false;
+                                                    const genderHandles = genderMeta.references.nodes.map((n: any) => n.handle);
+                                                    if (activeShopTab === "men") return genderHandles.includes("male");
+                                                    if (activeShopTab === "women") return genderHandles.includes("female");
+                                                    return false;
+                                                });
+                                                if (productsForGender.length === 0) return null;
+                                                const subcats = getSubcategoriesForCategory(cat);
+                                                return (
+                                                    <div key={cat} className="mb-6 min-w-[180px] animate-slide-up-shop-cat" style={{ animationDelay: `${idx * 80}ms` }}>
+                                                        <div className="uppercase text-xs text-gray-400 font-folio-bold mb-2 animate-fade-in-shop-label">{cat}</div>
+                                                        <ul className="space-y-1 mb-2">
+                                                            {subcats.map((tag, tIdx) => (
+                                                                <li key={tag} className="animate-fade-in-shop-tag" style={{ animationDelay: `${tIdx * 40}ms` }}>
+                                                                    <Link
+                                                                        href={`/shop?gender=${activeShopTab === "accessories" ? "all gender" : activeShopTab}&category=${normalize(cat)}&subcategory=${normalize(tag)}`}
+                                                                        className="uppercase font-itc-bold text-black text-base hover:underline hover:text-gray-700 transition cursor-pointer"
+                                                                    >
+                                                                        {tag}
+                                                                    </Link>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                        <Link
+                                                            href={`/shop?gender=${activeShopTab}&category=${normalize(cat)}`}
+                                                            className="uppercase text-xs text-gray-400 underline hover:text-gray-700 font-folio-medium cursor-pointer animate-fade-in-shop-label"
+                                                        >
+                                                            Shop All {cat}
+                                                        </Link>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                    {activeShopTab === "collections" && (
+                                        <div className="flex flex-col gap-2">
+                                            <div className="font-folio-bold mb-2 uppercase text-xs text-gray-500">Collections</div>
+                                            <ul className="space-y-2">
+                                                {collections.map((collection) => (
+                                                    <li key={collection.id}>
+                                                        <Link
+                                                            href={`/shop/${collection.handle}`}
+                                                            className="uppercase text-base font-itc-bold hover:underline hover:text-gray-700 cursor-pointer"
+                                                        >
+                                                            {collection.title}
+                                                        </Link>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                    {activeShopTab === "accessories" && accessoriesCategory && (
+                                        <div className="flex flex-row gap-12">
+                                            <div key={accessoriesCategory} className="mb-6 min-w-[180px] animate-slide-up-shop-cat">
+                                                <div className="uppercase text-xs text-gray-400 font-folio-bold mb-2 animate-fade-in-shop-label">{accessoriesCategory}</div>
+                                                <ul className="space-y-1 mb-2">
+                                                    {getSubcategoriesForCategory(accessoriesCategory).map((tag, tIdx) => (
+                                                        <li key={tag} className="animate-fade-in-shop-tag" style={{ animationDelay: `${tIdx * 40}ms` }}>
+                                                            <Link
+                                                                href={`/shop?gender=all gender&category=${normalize(accessoriesCategory)}&subcategory=${normalize(tag)}`}
+                                                                className="uppercase font-itc-bold text-black text-base hover:underline hover:text-gray-700 transition cursor-pointer"
+                                                            >
+                                                                {tag}
+                                                            </Link>
+                                                        </li>
+                                                    ))}
+                                                </ul>
                                                 <Link
-                                                    href={item.href}
-                                                    className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
+                                                    href={`/shop?gender=accessories&category=${normalize(accessoriesCategory)}`}
+                                                    className="uppercase text-xs text-gray-400 underline hover:text-gray-700 font-folio-medium cursor-pointer animate-fade-in-shop-label"
                                                 >
-                                                    <span className="relative z-10">
-                                                        {item.text}
-                                                    </span>
-                                                    <span className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
+                                                    Shop All {accessoriesCategory}
                                                 </Link>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                                <div className="font-folio-bold">
-                                    <ul className="space-y-3">
-                                        {collections.map((collection, index) => (
-                                            <li
-                                                key={collection.id}
-                                                className={`transform transition-all duration-500 ${activeDropdown === "shop" ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}
-                                                style={{
-                                                    transitionDelay: `${(index + 3) * 100}ms`,
-                                                }}
-                                            >
-                                                <Link
-                                                    href={`/shop/${collection.handle}`}
-                                                    className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
-                                                >
-                                                    <span className="relative z-10">
-                                                        {collection.title}
-                                                    </span>
-                                                    <span className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded"></span>
-                                                </Link>
-                                            </li>
-                                        ))}
-                                    </ul>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -756,7 +891,6 @@ export default function Header() {
                                             { filter: "discovery", text: "Discovery" },
                                             { filter: "clarity", text: "Clarity" },
                                             { filter: "community", text: "Community" },
-                                            { filter: "all", text: "All" },
                                         ].map((item, index) => (
                                             <li
                                                 key={item.filter}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Minus } from "lucide-react";
 import BaseModal from "./base-modal";
 
@@ -8,6 +8,7 @@ export interface FilterSelections {
     size: string[];
     category: string[];
     gender: string[];
+    type?: string[];
 }
 
 export interface FilterOption {
@@ -22,6 +23,8 @@ interface FilterModalProps {
     sizeOptions: FilterOption[];
     categoryOptions: FilterOption[];
     genderOptions: FilterOption[];
+    typeOptions?: FilterOption[];
+    getSubcategoryOptionsForCategory?: (catValue: string) => FilterOption[];
 }
 
 export default function FilterModal({
@@ -31,14 +34,32 @@ export default function FilterModal({
     sizeOptions,
     categoryOptions,
     genderOptions,
+    typeOptions,
+    getSubcategoryOptionsForCategory,
 }: FilterModalProps) {
     const [expandedSections, setExpandedSections] = useState({
         size: true,
         category: true,
         gender: false,
+        type: true,
     });
 
     const [selectedFilters, setSelectedFilters] = useState<FilterSelections>(initialFilters);
+    const [internalTypeOptions, setInternalTypeOptions] = useState<FilterOption[]>([]);
+
+    useEffect(() => {
+        setSelectedFilters(initialFilters);
+    }, [initialFilters]);
+
+    useEffect(() => {
+        if (getSubcategoryOptionsForCategory && selectedFilters.category && selectedFilters.category[0]) {
+            const found = categoryOptions.find(opt => opt.label === selectedFilters.category[0]);
+            const catValue = found ? found.value : "";
+            setInternalTypeOptions(getSubcategoryOptionsForCategory(catValue));
+        } else {
+            setInternalTypeOptions([]);
+        }
+    }, [selectedFilters.category, getSubcategoryOptionsForCategory, categoryOptions]);
 
     const toggleSection = (section: keyof typeof expandedSections) => {
         setExpandedSections((prev) => ({
@@ -47,28 +68,19 @@ export default function FilterModal({
         }));
     };
 
-    const toggleFilter = (section: keyof FilterSelections, value: string) => {
-        setSelectedFilters((prev) => {
-            const currentFilters = [...prev[section]];
-            const index = currentFilters.indexOf(value);
-
-            if (index === -1) {
-                // Add filter
-                return { ...prev, [section]: [...currentFilters, value] };
-            } else {
-                // Remove filter
-                currentFilters.splice(index, 1);
-                return { ...prev, [section]: currentFilters };
-            }
-        });
+    const setFilter = (section: keyof FilterSelections, value: string) => {
+        setSelectedFilters((prev) => ({
+            ...prev,
+            [section]: [value],
+        }));
     };
 
     const isFilterSelected = (section: keyof FilterSelections, value: string) => {
-        return selectedFilters[section].includes(value);
+        return (selectedFilters[section] || [])[0] === value;
     };
 
     const handleReset = () => {
-        const resetFilters = { size: [], category: [], gender: [] };
+        const resetFilters = { size: [], category: [], gender: [], type: [] };
         setSelectedFilters(resetFilters);
         onApplyFilters(resetFilters);
         onClose();
@@ -106,7 +118,7 @@ export default function FilterModal({
                             <div
                                 key={size.value}
                                 className={`text-xl cursor-pointer flex items-center ${isFilterSelected("size", size.label) ? "font-semibold" : ""}`}
-                                onClick={() => toggleFilter("size", size.label)}
+                                onClick={() => setFilter("size", size.label)}
                             >
                                 <div
                                     className={`w-5 h-5 border border-black mr-2 flex items-center justify-center cursor-pointer ${isFilterSelected("size", size.label) ? "bg-black" : "bg-white"}`}
@@ -141,7 +153,7 @@ export default function FilterModal({
                             <div
                                 key={category.value}
                                 className={`text-xl cursor-pointer flex items-center ${isFilterSelected("category", category.label) ? "font-semibold" : ""}`}
-                                onClick={() => toggleFilter("category", category.label)}
+                                onClick={() => setFilter("category", category.label)}
                             >
                                 <div
                                     className={`w-5 h-5 border border-black mr-2 flex items-center justify-center cursor-pointer ${isFilterSelected("category", category.label) ? "bg-black" : "bg-white"}`}
@@ -156,6 +168,47 @@ export default function FilterModal({
                     </div>
                 )}
             </div>
+
+            {/* Type Section (Subcategory) */}
+            {selectedFilters.category && selectedFilters.category[0] && (
+                <div className="mb-8">
+                    <div
+                        className="flex justify-between items-center mb-4 cursor-pointer"
+                        onClick={() => toggleSection("type")}
+                    >
+                        <h3 className="text-2xl font-medium">Type</h3>
+                        {expandedSections.type ? (
+                            <Minus className="h-6 w-6" />
+                        ) : (
+                            <Plus className="h-6 w-6" />
+                        )}
+                    </div>
+                    {expandedSections.type && (
+                        <div className="space-y-4">
+                            {internalTypeOptions.length === 0 ? (
+                                <div className="text-gray-400 text-base">No type available</div>
+                            ) : (
+                                internalTypeOptions.map((type) => (
+                                    <div
+                                        key={type.value}
+                                        className={`text-xl cursor-pointer flex items-center ${isFilterSelected("type", type.label) ? "font-semibold" : ""}`}
+                                        onClick={() => setFilter("type", type.label)}
+                                    >
+                                        <div
+                                            className={`w-5 h-5 border border-black mr-2 flex items-center justify-center cursor-pointer ${isFilterSelected("type", type.label) ? "bg-black" : "bg-white"}`}
+                                        >
+                                            {isFilterSelected("type", type.label) && (
+                                                <span className="text-white text-xs">✓</span>
+                                            )}
+                                        </div>
+                                        {type.label}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Gender Section */}
             <div className="mb-8">
@@ -176,7 +229,7 @@ export default function FilterModal({
                             <div
                                 key={gender.value}
                                 className={`text-xl cursor-pointer flex items-center ${isFilterSelected("gender", gender.label) ? "font-semibold" : ""}`}
-                                onClick={() => toggleFilter("gender", gender.label)}
+                                onClick={() => setFilter("gender", gender.label)}
                             >
                                 <div
                                     className={`w-5 h-5 border border-black mr-2 flex items-center justify-center cursor-pointer ${isFilterSelected("gender", gender.label) ? "bg-black" : "bg-white"}`}

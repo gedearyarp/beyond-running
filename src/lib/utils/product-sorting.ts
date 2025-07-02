@@ -133,35 +133,34 @@ export const productMatchesSize = (product: ProductCardType, selectedSizes: stri
 // Utility function to check if product matches category filter
 export const productMatchesCategory = (product: ProductCardType, selectedCategories: string[]) => {
     if (selectedCategories.length === 0) return true;
-
     if (!product.productType) return false;
-
+    // Normalize both sides for comparison
+    const normalizedProductType = product.productType.toLowerCase().replace(/\s+/g, "-");
     return selectedCategories.some(
-        (selectedCategory) => product.productType?.toLowerCase() === selectedCategory.toLowerCase()
+        (selectedCategory) => normalizedProductType === selectedCategory.toLowerCase()
     );
 };
 
 // Utility function to check if product matches gender filter
 export const productMatchesGender = (product: ProductCardType, selectedGenders: string[]) => {
     if (selectedGenders.length === 0) return true;
-
     if (!product.metafields || !Array.isArray(product.metafields)) return false;
-
     const genderMetafield = product.metafields.find((m) => m && m.key === "target-gender");
     if (!genderMetafield || !genderMetafield.references || !genderMetafield.references.nodes)
         return false;
-
     const productGenders = genderMetafield.references.nodes
         .filter((node) => node && node.handle)
         .map((node) => {
             const gender =
                 node.handle === "male"
-                    ? "Men"
+                    ? "men"
                     : node.handle === "female"
-                        ? "Women"
-                        : node.handle;
+                        ? "women"
+                        : node.handle.toLowerCase();
             return gender;
         });
-
-    return selectedGenders.some((selectedGender) => productGenders.includes(selectedGender));
+    // Normalize both sides for comparison
+    return selectedGenders.some((selectedGender) =>
+        productGenders.includes(selectedGender.toLowerCase())
+    );
 };

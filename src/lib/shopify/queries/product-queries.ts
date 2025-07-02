@@ -7,6 +7,7 @@ export const PRODUCT_CARD_FRAGMENT = gql`
         handle
         description
         productType
+        tags
         priceRange {
             minVariantPrice {
                 amount
@@ -65,6 +66,7 @@ export const PRODUCT_DETAIL_FRAGMENT = gql`
         description
         descriptionHtml
         productType
+        tags
         priceRange {
             minVariantPrice {
                 amount

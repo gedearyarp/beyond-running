@@ -9,6 +9,7 @@
     font-style: normal;
     font-display: swap;
 }
+
 @font-face {
     font-family: "itc-bk-obl";
     src: url("../assets/fonts/primary/ITCAvantGardePro-BkObl.otf") format("opentype");
@@ -16,6 +17,7 @@
     font-style: oblique;
     font-display: swap;
 }
+
 @font-face {
     font-family: "itc-bold";
     src: url("../assets/fonts/primary/ITCAvantGardePro-Bold.otf") format("opentype");
@@ -23,6 +25,7 @@
     font-style: normal;
     font-display: swap;
 }
+
 @font-face {
     font-family: "itc-bold-obl";
     src: url("../assets/fonts/primary/ITCAvantGardePro-BoldObl.otf") format("opentype");
@@ -30,6 +33,7 @@
     font-style: oblique;
     font-display: swap;
 }
+
 @font-face {
     font-family: "itc-demi";
     src: url("../assets/fonts/primary/ITCAvantGardePro-Demi.otf") format("opentype");
@@ -37,6 +41,7 @@
     font-style: normal;
     font-display: swap;
 }
+
 @font-face {
     font-family: "itc-demi-obl";
     src: url("../assets/fonts/primary/ITCAvantGardePro-DemiObl.otf") format("opentype");
@@ -44,6 +49,7 @@
     font-style: oblique;
     font-display: swap;
 }
+
 @font-face {
     font-family: "itc-md";
     src: url("../assets/fonts/primary/ITCAvantGardePro-Md.otf") format("opentype");
@@ -51,6 +57,7 @@
     font-style: normal;
     font-display: swap;
 }
+
 @font-face {
     font-family: "itc-md-obl";
     src: url("../assets/fonts/primary/ITCAvantGardePro-MdObl.otf") format("opentype");
@@ -58,6 +65,7 @@
     font-style: oblique;
     font-display: swap;
 }
+
 @font-face {
     font-family: "itc-xl";
     src: url("../assets/fonts/primary/ITCAvantGardePro-XLt.otf") format("opentype");
@@ -65,6 +73,7 @@
     font-style: normal;
     font-display: swap;
 }
+
 @font-face {
     font-family: "itc-xl-obl";
     src: url("../assets/fonts/primary/ITCAvantGardePro-XLtObl.otf") format("opentype");
@@ -72,6 +81,7 @@
     font-style: oblique;
     font-display: swap;
 }
+
 @font-face {
     font-family: "folio-bold";
     src: url("../assets/fonts/secondary/FolioStd-Bold.otf") format("opentype");
@@ -79,6 +89,7 @@
     font-style: normal;
     font-display: swap;
 }
+
 @font-face {
     font-family: "folio-bold-condensed";
     src: url("../assets/fonts/secondary/FolioStd-BoldCondensed.otf") format("opentype");
@@ -87,6 +98,7 @@
     font-stretch: condensed;
     font-display: swap;
 }
+
 @font-face {
     font-family: "folio-extra-bold";
     src: url("../assets/fonts/secondary/FolioStd-ExtraBold.otf") format("opentype");
@@ -94,6 +106,7 @@
     font-style: normal;
     font-display: swap;
 }
+
 @font-face {
     font-family: "folio-light";
     src: url("../assets/fonts/secondary/FolioStd-Light.otf") format("opentype");
@@ -101,6 +114,7 @@
     font-style: normal;
     font-display: swap;
 }
+
 @font-face {
     font-family: "folio-medium";
     src: url("../assets/fonts/secondary/FolioStd-Medium.otf") format("opentype");
@@ -127,37 +141,87 @@
     --font-folio-medium: "folio-medium", sans-serif;
 }
 
-.hide-scrollbar::-webkit-scrollbar {
-    height: 4px;
-    width: 4px;
-}
-
-.hide-scrollbar::-webkit-scrollbar-track {
-    background: transparent; /* Transparent track */
-}
-
-.hide-scrollbar::-webkit-scrollbar-thumb {
-    background: #000000;
-    border-radius: 2px;
-}
-
-.hide-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #333333;
-}
-
-/* Hide scrollbar buttons */
-.hide-scrollbar::-webkit-scrollbar-button {
-    display: none; /* Hide the arrow buttons */
-}
-
-/* For Firefox */
+/* Hide scrollbar completely */
 .hide-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: #000000 transparent; /* Black thumb, transparent track */
+    -ms-overflow-style: none;
+    /* Internet Explorer 10+ */
+    scrollbar-width: none;
+    /* Firefox */
+    overflow: -moz-scrollbars-none;
+    /* Old Firefox */
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
+    display: none;
+    /* Safari and Chrome */
+    width: 0;
+    /* Remove scrollbar space */
+    background: transparent;
+    /* Optional: just make scrollbar invisible */
+}
+
+/* Additional mobile-specific scrollbar hiding */
+@media (max-width: 768px) {
+    .hide-scrollbar {
+        -webkit-overflow-scrolling: touch;
+        /* Smooth scrolling on iOS */
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+        background: transparent;
+    }
+}
+
+/* Modal-specific scrollbar hiding */
+.fixed.inset-0 .absolute.inset-0 .flex.flex-col.h-full .flex-1 {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overflow: -moz-scrollbars-none;
+}
+
+.fixed.inset-0 .absolute.inset-0 .flex.flex-col.h-full .flex-1::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
+}
+
+/* Additional comprehensive scrollbar hiding */
+.overflow-y-auto {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overflow: -moz-scrollbars-none;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
+}
+
+/* Force hide scrollbars on mobile */
+@media (max-width: 768px) {
+    * {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .overflow-y-auto,
+    .overflow-auto {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        overflow: -moz-scrollbars-none;
+    }
+
+    .overflow-y-auto::-webkit-scrollbar,
+    .overflow-auto::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+        background: transparent;
+    }
 }
 
 /* Animation utilities */
@@ -166,6 +230,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -177,6 +242,7 @@
         opacity: 0;
         transform: translateY(-100%);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -188,6 +254,7 @@
         opacity: 0;
         transform: translateX(100%);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -199,6 +266,7 @@
         opacity: 0;
         transform: translateY(100%);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -265,10 +333,12 @@
 
 /* Custom pulse animation for skeleton loading */
 @keyframes customPulse {
+
     0%,
     100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.5;
     }
@@ -278,6 +348,7 @@
     0% {
         background-position: -200px 0;
     }
+
     100% {
         background-position: calc(200px + 100%) 0;
     }

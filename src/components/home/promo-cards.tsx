@@ -28,7 +28,7 @@ const promoCards = [
     },
     {
         id: 3,
-        title: "BALI 140 RELAY OPEN REGISTRATION",
+        title: "COMMUNITY PROGRAMS & EVENTS",
         buttonText: "More",
         footerText: "COMMUNITY:EVENTS-COLLABORATION-FEATURED RUNNERS",
         link: "/community",

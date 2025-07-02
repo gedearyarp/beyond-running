@@ -59,6 +59,7 @@ export type ProductCardType = {
     >;
     productType?: string;
     metafields?: (Metafield | null)[];
+    tags?: string[];
 };
 
 export type ProductDetailType = {

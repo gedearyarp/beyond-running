@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Header from "@/components/ui/Header";
 import Footer from "@/components/ui/Footer";
@@ -21,6 +21,7 @@ import {
 } from "@/lib/utils/product-sorting";
 import { images } from "@/assets/images";
 import GifIcon from "../../../public/gif/discover-white.gif"
+import { useSearchParams } from "next/navigation";
 
 const sortOptions = [
     { value: "featured", label: "Featured" },
@@ -56,6 +57,9 @@ export default function ShopPageClient({
     const [gender, setGender] = useState("");
     const [sortBy, setSortBy] = useState("featured");
 
+    // Add state for subcategory
+    const [subcategory, setSubcategory] = useState("");
+
     const isMobile = useMobile();
 
     const [showFilter, setShowFilter] = useState(false);
@@ -82,28 +86,95 @@ export default function ShopPageClient({
         return [{ value: "all", label: "All Gender" }, ...options];
     }, [initialProducts]);
 
+    // Helper to normalize tag values
+    const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, "-");
+
+    // Generate subcategory options based on selected category
+    const subcategoryOptions = useMemo(() => {
+        if (!category) return [];
+        // Find all products that match the selected category
+        const productsInCategory = initialProducts.filter(
+            (p) => p.productType && p.productType.toLowerCase().replace(/\s+/g, "-") === category
+        );
+        // Collect all tags from those products
+        const tagSet = new Set<string>();
+        productsInCategory.forEach((p) => {
+            (p.tags || []).forEach((tag) => tagSet.add(tag));
+        });
+        // Return as dropdown options (normalize value, keep label original)
+        return Array.from(tagSet).sort().map((tag) => ({ value: normalize(tag), label: tag }));
+    }, [category, initialProducts]);
+
     // Convert desktop dropdown values to filter arrays
     const getActiveFilters = (): FilterSelections => {
         if (isMobile) {
             return appliedFilters;
         } else {
-            // Find the selected options by value and get their labels
+            // Use value for category and gender
             const selectedSizeOption = sizeOptions.find((option) => option.value === size);
-            const selectedCategoryOption = categoryOptions.find(
-                (option) => option.value === category
-            );
+            const selectedCategoryOption = categoryOptions.find((option) => option.value === category);
             const selectedGenderOption = genderOptions.find((option) => option.value === gender);
 
             return {
                 size: selectedSizeOption ? [selectedSizeOption.label] : [],
-                category: selectedCategoryOption ? [selectedCategoryOption.label] : [],
+                category: selectedCategoryOption ? [selectedCategoryOption.value] : [],
                 gender:
                     selectedGenderOption && selectedGenderOption.value !== "all"
-                        ? [selectedGenderOption.label]
+                        ? [selectedGenderOption.value]
                         : [],
             };
         }
     };
+
+    const searchParams = useSearchParams();
+
+    const hasInitializedFromUrl = useRef(false);
+    const lastUrl = useRef("");
+
+    useEffect(() => {
+        // Reset filter state setiap kali URL berubah
+        const url = window.location.search;
+        if (lastUrl.current !== url) {
+            lastUrl.current = url;
+            const urlCategory = searchParams.get("category");
+            const urlGender = searchParams.get("gender");
+            const urlSubcategory = searchParams.get("subcategory");
+
+            setCategory("");
+            setGender("");
+            setSubcategory("");
+
+            if (urlGender && genderOptions.some(opt => opt.value === urlGender)) {
+                setGender(urlGender);
+            }
+            let matchedCategory = categoryOptions.find(opt => opt.value === urlCategory)?.value;
+            if (!matchedCategory && urlCategory) {
+                if (urlCategory.endsWith('s')) {
+                    matchedCategory = categoryOptions.find(opt => opt.value === urlCategory.slice(0, -1))?.value;
+                } else {
+                    matchedCategory = categoryOptions.find(opt => opt.value === urlCategory + 's')?.value;
+                }
+            }
+            if (matchedCategory) {
+                setCategory(matchedCategory);
+            }
+            // subcategory akan di-handle di useEffect terpisah di bawah
+        }
+        // Untuk mobile, biarkan tetap sinkron setiap kali URL berubah
+        // (tidak perlu perubahan di sini, sudah handled di useEffect lain)
+        // eslint-disable-next-line
+    }, [searchParams, categoryOptions, genderOptions]);
+
+    // Sinkronkan subcategory dari URL setiap kali category/subcategoryOptions berubah
+    useEffect(() => {
+        const urlSubcategory = searchParams.get("subcategory");
+        if (urlSubcategory && subcategoryOptions.some(opt => opt.value === urlSubcategory)) {
+            setSubcategory(urlSubcategory);
+        } else if (!urlSubcategory) {
+            setSubcategory("");
+        }
+        // eslint-disable-next-line
+    }, [category, subcategoryOptions, searchParams]);
 
     useEffect(() => {
         const applyClientSideFiltersAndSort = () => {
@@ -120,17 +191,79 @@ export default function ShopPageClient({
                     );
                 }
 
-                // Apply category filter
-                if (activeFilters.category.length > 0) {
-                    filteredProducts = filteredProducts.filter((product) =>
-                        productMatchesCategory(product, activeFilters.category)
-                    );
+                // Apply combined category and gender filter (AND logic)
+                if (activeFilters.category.length > 0 && activeFilters.gender.length > 0) {
+                    filteredProducts = filteredProducts.filter((product) => {
+                        // Category match
+                        const catMatch = productMatchesCategory(product, activeFilters.category);
+                        // Gender match
+                        const genderMatch = productMatchesGender(product, activeFilters.gender);
+                        return catMatch && genderMatch;
+                    });
+                } else {
+                    // Fallback: apply each filter separately if only one is selected
+                    if (activeFilters.category.length > 0) {
+                        filteredProducts = filteredProducts.filter((product) =>
+                            productMatchesCategory(product, activeFilters.category)
+                        );
+                    }
+                    if (activeFilters.gender.length > 0) {
+                        filteredProducts = filteredProducts.filter((product) =>
+                            productMatchesGender(product, activeFilters.gender)
+                        );
+                    }
                 }
 
-                // Apply gender filter
-                if (activeFilters.gender.length > 0) {
+                // Apply category, gender, and subcategory (tag) filter in mobile with AND logic using helpers
+                if (isMobile) {
+                    // Convert label to value for category
+                    let catValue = "";
+                    if (activeFilters.category && activeFilters.category[0]) {
+                        const found = categoryOptions.find(opt => opt.label === activeFilters.category[0]);
+                        catValue = found ? found.value : "";
+                    }
+                    let genderValue = "";
+                    if (activeFilters.gender && activeFilters.gender[0]) {
+                        const found = genderOptions.find(opt => opt.label === activeFilters.gender[0]);
+                        genderValue = found ? found.value : "";
+                    }
+                    let filtered = [...filteredProducts];
+                    if (catValue) {
+                        filtered = filtered.filter((product) =>
+                            productMatchesCategory(product, [catValue])
+                        );
+                    }
+                    if (genderValue && genderValue !== "all") {
+                        filtered = filtered.filter((product) =>
+                            productMatchesGender(product, [genderValue])
+                        );
+                    }
+                    const typeLabel = activeFilters.type && activeFilters.type[0];
+                    if (typeLabel) {
+                        const normType = normalize(typeLabel);
+                        filtered = filtered.filter((product) =>
+                            (product.tags || []).some((tag) => {
+                                const normTag = normalize(tag);
+                                return (
+                                    normTag === normType ||
+                                    normTag + 's' === normType ||
+                                    normTag === normType + 's'
+                                );
+                            })
+                        );
+                    }
+                    filteredProducts = filtered;
+                } else if (subcategory) {
                     filteredProducts = filteredProducts.filter((product) =>
-                        productMatchesGender(product, activeFilters.gender)
+                        (product.tags || []).some((tag) => {
+                            const normTag = normalize(tag);
+                            // Match exact, or singular/plural
+                            return (
+                                normTag === subcategory ||
+                                normTag + 's' === subcategory ||
+                                normTag === subcategory + 's'
+                            );
+                        })
                     );
                 }
 
@@ -174,7 +307,7 @@ export default function ShopPageClient({
         };
 
         applyClientSideFiltersAndSort();
-    }, [appliedFilters, appliedSort, size, category, gender, sortBy, initialProducts, isMobile]);
+    }, [appliedFilters, appliedSort, size, category, gender, sortBy, initialProducts, isMobile, subcategory]);
 
     // Initialize displayed products on first load
     useEffect(() => {
@@ -210,8 +343,11 @@ export default function ShopPageClient({
         return sortOption ? sortOption.label : "Featured";
     }, [appliedSort, sortBy, isMobile]);
 
+    const [hasUserAppliedMobileFilter, setHasUserAppliedMobileFilter] = useState(false);
+
     const handleApplyFilters = (filters: FilterSelections) => {
         setAppliedFilters(filters);
+        setHasUserAppliedMobileFilter(true);
         setShowFilter(false);
     };
 
@@ -247,18 +383,87 @@ export default function ShopPageClient({
     };
 
     const clearAllFilters = () => {
-        // Clear mobile filters
         setAppliedFilters({
             size: [],
             category: [],
             gender: [],
         });
-
-        // Clear desktop dropdowns
+        setHasUserAppliedMobileFilter(false);
         setSize("");
         setCategory("");
         setGender("");
+        setSubcategory("");
     };
+
+    // Sinkronkan appliedFilters dengan state gender/category/type dari URL/header di mobile
+    useEffect(() => {
+        if (isMobile && !hasUserAppliedMobileFilter) {
+            setAppliedFilters((prev) => ({
+                ...prev,
+                gender: gender ? [gender] : [],
+                category: category ? [category] : [],
+                type: subcategory ? [subcategory] : [],
+            }));
+        }
+    }, [gender, category, subcategory, isMobile, hasUserAppliedMobileFilter]);
+
+    // Untuk mobile, urutkan filter options agar yang sudah dipilih user muncul di urutan teratas
+    const sortedSizeOptions = useMemo(() => {
+        if (!isMobile || !appliedFilters.size.length) return sizeOptions;
+        return [
+            ...sizeOptions.filter(opt => appliedFilters.size.includes(opt.label)),
+            ...sizeOptions.filter(opt => !appliedFilters.size.includes(opt.label)),
+        ];
+    }, [isMobile, sizeOptions, appliedFilters.size]);
+    const sortedCategoryOptions = useMemo(() => {
+        if (!isMobile || !appliedFilters.category.length) return categoryOptions;
+        return [
+            ...categoryOptions.filter(opt => appliedFilters.category.includes(opt.value)),
+            ...categoryOptions.filter(opt => !appliedFilters.category.includes(opt.value)),
+        ];
+    }, [isMobile, categoryOptions, appliedFilters.category]);
+    const sortedGenderOptions = useMemo(() => {
+        if (!isMobile || !appliedFilters.gender.length) return genderOptions;
+        return [
+            ...genderOptions.filter(opt => appliedFilters.gender.includes(opt.value)),
+            ...genderOptions.filter(opt => !appliedFilters.gender.includes(opt.value)),
+        ];
+    }, [isMobile, genderOptions, appliedFilters.gender]);
+
+    // Helper: konversi array value ke array label pakai options
+    function valuesToLabels(values: string[], options: { value: string; label: string }[]) {
+        return values
+            .map((val) => options.find((opt) => opt.value === val)?.label)
+            .filter((x): x is string => !!x);
+    }
+
+    const [filterSnapshot, setFilterSnapshot] = useState(appliedFilters);
+
+    useEffect(() => {
+        if (showFilter) {
+            setFilterSnapshot(appliedFilters);
+        }
+    }, [showFilter, appliedFilters]);
+
+    // Helper untuk generate subcategoryOptions dari category tertentu
+    function getSubcategoryOptionsForCategory(catValue: string) {
+        if (!catValue) return [];
+        const productsInCategory = initialProducts.filter(
+            (p) => p.productType && p.productType.toLowerCase().replace(/\s+/g, "-") === catValue
+        );
+        const tagSet = new Set<string>();
+        productsInCategory.forEach((p) => {
+            (p.tags || []).forEach((tag) => tagSet.add(tag));
+        });
+        return Array.from(tagSet).sort().map((tag) => ({ value: normalize(tag), label: tag }));
+    }
+
+    // Helper: konversi query param ke label (untuk initialFilters dari URL)
+    function getLabelFromValue(val: string | null, options: { value: string; label: string }[]) {
+        if (!val) return [];
+        const found = options.find(opt => opt.value === val);
+        return found ? [found.label] : [];
+    }
 
     if (isInitialLoading) {
         return (
@@ -401,16 +606,28 @@ export default function ShopPageClient({
                                                 placeholder="Size"
                                             />
                                         </div>
-
                                         <div className="">
                                             <CustomDropdown
                                                 options={categoryOptions}
                                                 value={category}
-                                                onChange={setCategory}
+                                                onChange={(val) => {
+                                                    setCategory(val);
+                                                    setSubcategory(""); // reset subcategory when category changes
+                                                }}
                                                 placeholder="Category"
                                             />
                                         </div>
-
+                                        {/* Subcategory Dropdown: only show if category is selected and options exist */}
+                                        {category && subcategoryOptions.length > 0 && (
+                                            <div className="">
+                                                <CustomDropdown
+                                                    options={subcategoryOptions}
+                                                    value={subcategory}
+                                                    onChange={setSubcategory}
+                                                    placeholder="Type"
+                                                />
+                                            </div>
+                                        )}
                                         <div className="">
                                             <CustomDropdown
                                                 options={genderOptions}
@@ -420,7 +637,6 @@ export default function ShopPageClient({
                                             />
                                         </div>
                                     </div>
-
                                     <div className="flex items-center font-folio-medium space-x-6">
                                         <span className="text-sm">
                                             {displayedProducts.length} ITEMS
@@ -800,14 +1016,44 @@ export default function ShopPageClient({
             </main>
             <Footer />
             {showFilter && (
-                <FilterModal
-                    onClose={() => setShowFilter(false)}
-                    onApplyFilters={handleApplyFilters}
-                    initialFilters={appliedFilters}
-                    sizeOptions={sizeOptions}
-                    categoryOptions={categoryOptions}
-                    genderOptions={genderOptions}
-                />
+                (() => {
+                    // Ambil query param dari URL
+                    const urlCategory = searchParams.get("category");
+                    const urlGender = searchParams.get("gender");
+                    const urlSubcategory = searchParams.get("subcategory");
+                    // Jika user belum pernah apply filter, gunakan initialFilters dari URL
+                    const isInitial = !hasUserAppliedMobileFilter;
+                    let selectedCategoryLabel = isInitial ? getLabelFromValue(urlCategory, categoryOptions)[0] : (filterSnapshot.category && filterSnapshot.category[0]) || "";
+                    let selectedGenderLabel = isInitial ? getLabelFromValue(urlGender, genderOptions)[0] : (filterSnapshot.gender && filterSnapshot.gender[0]) || "";
+                    let selectedTypeLabel = "";
+                    let dynamicTypeOptions: { value: string; label: string }[] = [];
+                    if (selectedCategoryLabel) {
+                        const found = categoryOptions.find(opt => opt.label === selectedCategoryLabel);
+                        const catValue = found ? found.value : "";
+                        dynamicTypeOptions = getSubcategoryOptionsForCategory(catValue);
+                        if (isInitial) {
+                            selectedTypeLabel = getLabelFromValue(urlSubcategory, dynamicTypeOptions)[0] || "";
+                        } else {
+                            selectedTypeLabel = (filterSnapshot.type && filterSnapshot.type[0]) || "";
+                        }
+                    }
+                    return (
+                        <FilterModal
+                            onClose={() => setShowFilter(false)}
+                            onApplyFilters={handleApplyFilters}
+                            initialFilters={{
+                                size: filterSnapshot.size,
+                                category: selectedCategoryLabel ? [selectedCategoryLabel] : [],
+                                gender: selectedGenderLabel ? [selectedGenderLabel] : [],
+                                type: selectedTypeLabel ? [selectedTypeLabel] : [],
+                            }}
+                            sizeOptions={sortedSizeOptions}
+                            categoryOptions={sortedCategoryOptions}
+                            genderOptions={sortedGenderOptions}
+                            getSubcategoryOptionsForCategory={getSubcategoryOptionsForCategory}
+                        />
+                    );
+                })()
             )}
 
             {showSort && (
