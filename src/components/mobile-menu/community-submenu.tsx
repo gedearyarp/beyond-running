@@ -12,7 +12,7 @@ export default function CommunitySubmenu() {
                 <div className="w-1/3 mr-8">
                     <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
                         <Link
-                            href="/community"
+                            href="/program"
                             className="inline-block bg-gray-300 text-black rounded-full px-2 py-1 text-md font-folio-bold cursor-pointer"
                         >
                             Join Now
@@ -25,22 +25,22 @@ export default function CommunitySubmenu() {
                     <ul className="space-y-4">
                         {[
                             {
-                                href: { pathname: "/community", query: { view: "upcoming" } },
+                                href: { pathname: "/program", query: { view: "upcoming" } },
                                 text: "Upcoming Events",
                                 disabled: false,
                             },
                             {
-                                href: { pathname: "/community", query: { view: "past" } },
+                                href: { pathname: "/program", query: { view: "past" } },
                                 text: "Past Events",
                                 disabled: false,
                             },
                             {
-                                href: { pathname: "/community", query: { view: "calendar" } },
+                                href: { pathname: "/program", query: { view: "calendar" } },
                                 text: "Calendar",
                                 disabled: false,
                             },
                             {
-                                href: { pathname: "/community", query: { view: "membership" } },
+                                href: { pathname: "/program", query: { view: "membership" } },
                                 text: "Membership (Coming Soon)",
                                 disabled: true,
                             },

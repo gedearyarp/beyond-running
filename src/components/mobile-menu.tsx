@@ -8,7 +8,7 @@ import CommunitySubmenu from "./mobile-menu/community-submenu";
 import { useCollectionsStore } from "@/store/collections";
 import { useAuth } from "@/contexts/AuthContext";
 
-type MenuView = "main" | "shop" | "peripherals" | "community";
+type MenuView = "main" | "shop" | "peripherals" | "program";
 
 interface MobileMenuProps {
     onClose: () => void;
@@ -91,7 +91,7 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
                         {[
                             { text: "Shop", action: () => navigateTo("shop") },
                             { text: "Peripherals", action: () => navigateTo("peripherals") },
-                            { text: "Community", action: () => navigateTo("community") },
+                            { text: "Programs", action: () => navigateTo("program") },
                             { text: "About", href: "/about" },
                         ].map((item, index) => (
                             <div
@@ -195,7 +195,7 @@ export default function MobileMenu({ onClose, onCartClick, cartItemCount = 0 }: 
             )}
 
             {/* Community Submenu */}
-            {currentView === "community" && (
+            {currentView === "program" && (
                 <div className="animate-slide-in">
                     <CommunitySubmenu />
                 </div>

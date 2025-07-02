@@ -641,13 +641,13 @@ export default function Header() {
                                 className="relative py-2"
                             >
                                 <Link
-                                    href="/community"
+                                    href="/program"
                                     className={`text-[14px] font-medium transition-all duration-300 ${activeDropdown === "community"
                                         ? "text-gray-500 transform scale-105"
                                         : "hover:text-gray-500 hover:transform hover:scale-105"
                                         }`}
                                 >
-                                    Community
+                                    Programs
                                 </Link>
                             </div>
                             <div className="relative py-2 px-2 -mx-2">
@@ -925,7 +925,7 @@ export default function Header() {
 
                                 <div className="mr-16">
                                     <Link
-                                        href="/community"
+                                        href="/program"
                                         className="inline-block bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-full px-6 py-3 text-sm font-folio-bold mb-6 hover:from-gray-500 hover:to-gray-600 hover:transform hover:scale-105 hover:shadow-lg transition-all duration-300"
                                     >
                                         Join Now
@@ -938,7 +938,7 @@ export default function Header() {
                                     >
                                         <Link
                                             href={{
-                                                pathname: "/community",
+                                                pathname: "/program",
                                                 query: { view: "upcoming" },
                                             }}
                                             className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
@@ -953,7 +953,7 @@ export default function Header() {
                                     >
                                         <Link
                                             href={{
-                                                pathname: "/community",
+                                                pathname: "/program",
                                                 query: { view: "past" },
                                             }}
                                             className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
@@ -968,7 +968,7 @@ export default function Header() {
                                     >
                                         <Link
                                             href={{
-                                                pathname: "/community",
+                                                pathname: "/program",
                                                 query: { view: "calendar" },
                                             }}
                                             className="text-sm hover:text-gray-500 hover:transform hover:translate-x-2 hover:scale-105 transition-all duration-300 relative group block py-2 px-2 rounded"
