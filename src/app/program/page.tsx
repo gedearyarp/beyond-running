@@ -183,7 +183,7 @@ function CommunityPageContent() {
     if (isInitialLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <Loading text="Loading community events..." />
+                <Loading text="Loading program & events..." />
             </div>
         );
     }
@@ -216,7 +216,7 @@ function CommunityPageContent() {
                             </div>
                             <div className="absolute w-full flex justify-center bottom-14 text-center items-center">
                                 <h1 className="flex flex-col gap-2 text-3xl font-bold font-avant-garde tracking-wide text-white">
-                                    COMMUNITY
+                                    PROGRAMS
                                 </h1>
                             </div>
                         </>
@@ -231,7 +231,7 @@ function CommunityPageContent() {
                                 unoptimized // Important for GIFs
                             />
                             <h1 className="text-4xl font-itc-demi tracking-wide text-white uppercase whitespace-nowrap">
-                                COMMUNITY
+                                PROGRAMS
                             </h1>
                         </div>
                     )}
