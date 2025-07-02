@@ -44,9 +44,10 @@ export default function PromoCards() {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
             {promoCards.map((card) => (
-                <div
+                <Link
                     key={card.id}
-                    className="relative h-[477px] md:h-[638px] group overflow-hidden cursor-pointer"
+                    href={card.link}
+                    className="relative h-[477px] md:h-[638px] group overflow-hidden cursor-pointer block"
                     onMouseEnter={() => setHoveredCard(card.id)}
                     onMouseLeave={() => setHoveredCard(null)}
                 >
@@ -69,11 +70,10 @@ export default function PromoCards() {
                         <div className="w-[110px] h-[110px] flex items-center justify-center mb-8 relative">
                             {/* Static Icon */}
                             <div
-                                className={`absolute inset-0 transition-all duration-500 ease-out ${
-                                    hoveredCard === card.id
+                                className={`absolute inset-0 transition-all duration-500 ease-out ${hoveredCard === card.id
                                         ? "opacity-0 scale-90 rotate-12"
                                         : "opacity-100 scale-100 rotate-0"
-                                }`}
+                                    }`}
                             >
                                 {card.icon ? (
                                     <Image
@@ -92,11 +92,10 @@ export default function PromoCards() {
 
                             {/* Animated GIF Icon */}
                             <div
-                                className={`absolute inset-0 transition-all duration-500 ease-out ${
-                                    hoveredCard === card.id
+                                className={`absolute inset-0 transition-all duration-500 ease-out ${hoveredCard === card.id
                                         ? "opacity-100 scale-210 rotate-0"
                                         : "opacity-0 scale-75 -rotate-12"
-                                }`}
+                                    }`}
                             >
                                 <Image
                                     src={card.gifIcon || "/placeholder.svg"}
@@ -110,11 +109,10 @@ export default function PromoCards() {
 
                             {/* Glow Effect Behind Icon */}
                             <div
-                                className={`absolute inset-0 rounded-full transition-all duration-700 ease-out ${
-                                    hoveredCard === card.id
+                                className={`absolute inset-0 rounded-full transition-all duration-700 ease-out ${hoveredCard === card.id
                                         ? "bg-white/20 blur-xl scale-150 opacity-100"
                                         : "bg-white/5 blur-lg scale-100 opacity-0"
-                                }`}
+                                    }`}
                             />
                         </div>
 
@@ -122,34 +120,30 @@ export default function PromoCards() {
                         <div className="flex flex-col gap-8 items-center text-center">
                             {/* Title with Scale Effect */}
                             <h3
-                                className={`text-[27px] font-itc-demi tracking-wide transition-all duration-500 ease-out ${
-                                    hoveredCard === card.id
+                                className={`text-[27px] font-itc-demi tracking-wide transition-all duration-500 ease-out ${hoveredCard === card.id
                                         ? "scale-105 text-white drop-shadow-lg"
                                         : "scale-100 text-white/90"
-                                }`}
+                                    }`}
                             >
                                 {card.title}
                             </h3>
 
-                            {/* Button with Premium Hover */}
-                            <Link
-                                href={card.link}
-                                className={`bg-white text-black text-sm py-2.5 px-5 rounded-full font-folio-bold transition-all duration-500 ease-out transform ${
-                                    hoveredCard === card.id
-                                        ? "bg-white text-black scale-110 shadow-2xl shadow-white/25 hover:bg-gray-100"
-                                        : "bg-white/90 text-black/90 scale-100 shadow-lg hover:bg-white"
-                                }`}
+                            {/* Button with Premium Hover - Now just visual, not clickable */}
+                            <div
+                                className={`bg-white text-black text-sm py-2.5 px-5 rounded-full font-folio-bold transition-all duration-500 ease-out transform ${hoveredCard === card.id
+                                        ? "bg-white text-black scale-110 shadow-2xl shadow-white/25"
+                                        : "bg-white/90 text-black/90 scale-100 shadow-lg"
+                                    }`}
                             >
                                 {card.buttonText}
-                            </Link>
+                            </div>
 
                             {/* Footer Text with Fade */}
                             <p
-                                className={`text-xs font-itc-xl absolute bottom-8 transition-all duration-500 ease-out ${
-                                    hoveredCard === card.id
+                                className={`text-xs font-itc-xl absolute bottom-8 transition-all duration-500 ease-out ${hoveredCard === card.id
                                         ? "opacity-100 transform translate-y-0"
                                         : "opacity-70 transform translate-y-2"
-                                }`}
+                                    }`}
                             >
                                 {card.footerText}
                             </p>
@@ -158,13 +152,12 @@ export default function PromoCards() {
 
                     {/* Premium Border Glow on Hover */}
                     <div
-                        className={`absolute inset-0 rounded-lg transition-all duration-700 ease-out pointer-events-none ${
-                            hoveredCard === card.id
+                        className={`absolute inset-0 rounded-lg transition-all duration-700 ease-out pointer-events-none ${hoveredCard === card.id
                                 ? "ring-2 ring-white/30 ring-inset shadow-2xl shadow-white/10"
                                 : "ring-0 ring-transparent"
-                        }`}
+                            }`}
                     />
-                </div>
+                </Link>
             ))}
         </div>
     );
