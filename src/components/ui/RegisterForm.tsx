@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, AlertCircle, CheckCircle } from "lucide-react";
+import { ArrowRight, AlertCircle, CheckCircle, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { authApi } from "@/lib/api";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,7 @@ interface ValidationErrors {
     lastName?: string;
     email?: string;
     password?: string;
+    confirmPassword?: string;
 }
 
 export default function SignupForm() {
@@ -21,6 +22,7 @@ export default function SignupForm() {
         lastName: "",
         email: "",
         password: "",
+        confirmPassword: "",
         newsletter: false,
     });
     const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
@@ -30,7 +32,10 @@ export default function SignupForm() {
         lastName: false,
         email: false,
         password: false,
+        confirmPassword: false,
     });
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const validateField = (name: string, value: string): string => {
         switch (name) {
@@ -57,6 +62,10 @@ export default function SignupForm() {
                 if (!value.trim()) return "Password is required";
                 if (value.length < 6) return "Password must be at least 6 characters";
                 if (value.length > 128) return "Password must be less than 128 characters";
+                return "";
+            case "confirmPassword":
+                if (!value.trim()) return "Please confirm your password";
+                if (value !== formData.password) return "Passwords do not match";
                 return "";
             default:
                 return "";
@@ -111,6 +120,7 @@ export default function SignupForm() {
             lastName: true,
             email: true,
             password: true,
+            confirmPassword: true,
         });
 
         return Object.keys(errors).length === 0;
@@ -290,7 +300,7 @@ export default function SignupForm() {
                     <div className="relative">
                         <input
                             id="password"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             value={formData.password}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -304,13 +314,62 @@ export default function SignupForm() {
                             placeholder="Create a password"
                             minLength={6}
                         />
-                        <ArrowRight className="absolute right-0 bottom-2 h-3 w-3" />
+                        <button
+                            type="button"
+                            tabIndex={-1}
+                            className="absolute right-0 bottom-2 h-5 w-5 text-gray-400 hover:text-black focus:outline-none"
+                            onClick={() => setShowPassword((v) => !v)}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                        >
+                            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        </button>
                     </div>
                     {validationErrors.password && touched.password && (
                         <div className="flex items-center space-x-2 mt-1">
                             <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
                             <p className="text-red-500 text-sm font-folio-medium">
                                 {validationErrors.password}
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                <div className="space-y-2">
+                    <label htmlFor="confirmPassword" className="block font-folio-bold text-sm md:text-lg">
+                        Confirm Password
+                    </label>
+                    <div className="relative">
+                        <input
+                            id="confirmPassword"
+                            type={showConfirmPassword ? "text" : "password"}
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={`w-full border-b pb-2 focus:outline-none font-folio-light transition-colors duration-200 ${
+                                validationErrors.confirmPassword && touched.confirmPassword
+                                    ? "border-red-500 focus:border-red-500"
+                                    : "border-gray-300 focus:border-black"
+                            }`}
+                            required
+                            disabled={isLoading}
+                            placeholder="Confirm your password"
+                            minLength={6}
+                        />
+                        <button
+                            type="button"
+                            tabIndex={-1}
+                            className="absolute right-0 bottom-2 h-5 w-5 text-gray-400 hover:text-black focus:outline-none"
+                            onClick={() => setShowConfirmPassword((v) => !v)}
+                            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                        >
+                            {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        </button>
+                    </div>
+                    {validationErrors.confirmPassword && touched.confirmPassword && (
+                        <div className="flex items-center space-x-2 mt-1">
+                            <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                            <p className="text-red-500 text-sm font-folio-medium">
+                                {validationErrors.confirmPassword}
                             </p>
                         </div>
                     )}

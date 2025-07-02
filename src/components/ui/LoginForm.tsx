@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, AlertCircle, CheckCircle } from "lucide-react";
+import { ArrowRight, AlertCircle, CheckCircle, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
 
@@ -23,6 +23,7 @@ export default function LoginForm() {
         email: false,
         password: false,
     });
+    const [showPassword, setShowPassword] = useState(false);
 
     const validateField = (name: string, value: string): string => {
         switch (name) {
@@ -159,7 +160,7 @@ export default function LoginForm() {
                     <div className="relative">
                         <input
                             id="password"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             value={formData.password}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -173,7 +174,15 @@ export default function LoginForm() {
                             placeholder="Enter your password"
                             minLength={6}
                         />
-                        <ArrowRight className="absolute right-0 bottom-2 h-3 w-3" />
+                        <button
+                            type="button"
+                            tabIndex={-1}
+                            className="absolute right-0 bottom-2 h-5 w-5 text-gray-400 hover:text-black focus:outline-none"
+                            onClick={() => setShowPassword((v) => !v)}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                        >
+                            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        </button>
                     </div>
                     {validationErrors.password && touched.password && (
                         <div className="flex items-center space-x-2 mt-1">
