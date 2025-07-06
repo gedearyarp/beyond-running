@@ -62,9 +62,7 @@ export default function ProductCard({ product, isShop, collectionHandle }: Produ
     }
 
     // Use consistent URL structure
-    const productUrl = collectionHandle
-        ? `/shop/${collectionHandle}/${product.handle}`
-        : `/shop/all/${product.handle}`;
+    const productUrl = `/product/${product.handle}`;
 
     return (
         <Link href={productUrl} className="group block w-full">

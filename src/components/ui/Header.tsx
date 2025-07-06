@@ -465,7 +465,7 @@ export default function Header() {
                                 {recentSearches.map((item) => (
                                     <Link
                                         key={item.id}
-                                        href={`/shop/all/${item.handle}`}
+                                        href={`/product/${item.handle}`}
                                         className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-100 transition-colors font-avant-garde border border-gray-200"
                                         onClick={() => setIsSearchOpen(false)}
                                     >
@@ -493,7 +493,7 @@ export default function Header() {
                                 {filteredProducts.map((product, index) => (
                                     <Link
                                         key={product.id}
-                                        href={`/shop/all/${product.handle}`}
+                                        href={`/product/${product.handle}`}
                                         className={`group block animate-fade-in hover:transform hover:scale-105 transition-all duration-300`}
                                         style={{ animationDelay: `${index * 100}ms` }}
                                         onClick={() => handleSearchResultClick(product)}
@@ -545,7 +545,7 @@ export default function Header() {
                                 {getRandomProducts(allProducts, 4).map((product, index) => (
                                     <Link
                                         key={product.id}
-                                        href={`/shop/all/${product.handle}`}
+                                        href={`/product/${product.handle}`}
                                         className={`group block animate-fade-in hover:transform hover:scale-105 transition-all duration-300`}
                                         style={{ animationDelay: `${index * 100}ms` }}
                                         onClick={() => handleSearchResultClick(product)}

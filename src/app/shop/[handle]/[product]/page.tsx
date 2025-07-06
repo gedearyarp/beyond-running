@@ -1,3 +1,4 @@
+// DEPRECATED: This file will be removed after all product links are migrated to /product/:productName
 "use client";
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
