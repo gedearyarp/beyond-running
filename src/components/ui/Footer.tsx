@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Instagram, Twitter } from "lucide-react";
+import { ArrowRight, Instagram } from "lucide-react";
 import Image from "next/image";
 import useMobile from "@/hooks/use-mobile";
 import { useState, useEffect } from "react";
@@ -171,20 +171,12 @@ export default function Footer() {
                             className="object-cover"
                             unoptimized={true} // Important for GIFs to animate properly
                         />
-                        <>
-                            {isMobile ? (
-                                <div className="flex md:flex-row flex-col justify-center font-folio-light">
-                                    <p>BEYOND RUNNING</p>
-                                    <p>© 2025.</p>
-                                    <p className="mt-6">All Rights Reserved</p>
-                                </div>
-                            ) : (
-                                <div className="flex md:flex-row flex-col font-folio-light">
-                                    <p>BEYOND RUNNING © 2025.</p>
-                                    <p>All Rights Reserved</p>
-                                </div>
-                            )}
-                        </>
+                        <div className="w-full flex flex-col items-center justify-center mt-8 mb-2">
+                            <span className="text-[14px] text-black text-center">
+                                <span className="font-itc-bold">BEYOND RUNNING</span>
+                                <span className="font-itc-md"> © 2025, All Rights Reserved</span>
+                            </span>
+                        </div>
                     </div>
 
                     <div className="h-full md:w-xs w-full md:ml-24 flex flex-col justify-between">
