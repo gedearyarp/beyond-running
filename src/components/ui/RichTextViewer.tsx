@@ -52,6 +52,20 @@ export default function RichTextViewer({ content, className = "" }: RichTextView
                 .rich-text-viewer u {
                     text-decoration: underline;
                 }
+                .rich-text-viewer h1,
+                .rich-text-viewer h2,
+                .rich-text-viewer h3,
+                .rich-text-viewer h4,
+                .rich-text-viewer h5,
+                .rich-text-viewer h6 {
+                    font-weight: bold;
+                    margin: 1em 0 0.5em 0;
+                    line-height: 1.2;
+                }
+                .rich-text-viewer h1 { font-size: 2rem; }
+                .rich-text-viewer h2 { font-size: 1.5rem; }
+                .rich-text-viewer h3 { font-size: 1.25rem; }
+                .rich-text-viewer h4 { font-size: 1.1rem; }
             `}</style>
         </div>
     );

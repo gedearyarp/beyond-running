@@ -4,13 +4,14 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, ChevronDown, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Header from "@/components/ui/Header";
 import Footer from "@/components/ui/Footer";
 import ProductCard from "@/components/ui/ProductCard";
 import SizeChartModal from "@/components/ui/size-chart";
 import AddToCartButton from "@/components/ui/add-to-cart-button";
 import type { ProductDetailType, ProductCardType } from "@/lib/shopify/types";
+import RichTextViewer from "@/components/ui/RichTextViewer";
 
 // Constants
 const GALLERY_AUTO_SCROLL_INTERVAL = 10000;
@@ -25,12 +26,6 @@ interface ProductDetailPageProps {
 type GalleryImage = { url: string; altText: string };
 
 // Utility functions
-const extractPureDescription = (htmlString: string): string => {
-    if (!htmlString) return "";
-    const firstParagraphMatch = htmlString.match(/<p>[\s\S]*?<\/p>/);
-    return firstParagraphMatch ? firstParagraphMatch[0] : htmlString;
-};
-
 const getColorHex = (colorName: string): string => {
     const colorMap: Record<string, string> = {
         black: "#000000",
@@ -78,27 +73,6 @@ const findRelatedImagesByColor = (allImages: { url: string; altText: string }[],
         return partialMatches;
     }
     return relatedImages;
-};
-
-// Helper functions to check if sections have content
-const hasTechnicalDetails = (descriptionHtml: string): boolean => {
-    if (!descriptionHtml) return false;
-    if (!descriptionHtml.includes("Technical Details")) return false;
-    const splitByTech = descriptionHtml.split("<h4><span>Technical Details</span></h4>");
-    if (splitByTech.length < 2) return false;
-    const afterTech = splitByTech[1];
-    const beforeNextSection = afterTech.split("<h4>")[0];
-    return beforeNextSection.match(/<li[^>]*>.*?<\/li>/g)?.length > 0;
-};
-
-const hasComposition = (descriptionHtml: string): boolean => {
-    if (!descriptionHtml) return false;
-    if (!descriptionHtml.includes("Composition")) return false;
-    const splitByComp = descriptionHtml.split("<h4><span>Composition</span></h4>");
-    if (splitByComp.length < 2) return false;
-    const afterComp = splitByComp[1];
-    const beforeNextSection = afterComp.split("<h4>")[0];
-    return beforeNextSection.match(/<li[^>]*>.*?<\/li>/g)?.length > 0;
 };
 
 // Main component
@@ -216,12 +190,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
         url: product?.images?.edges?.[0]?.node?.url || "/placeholder.svg",
         altText: product?.images?.edges?.[0]?.node?.altText || product?.title || "Product image",
     });
-    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-        technical: true,
-        composition: false,
-    });
     const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
-    const [addingToCart, setAddingToCart] = useState(false);
     const [activeGalleryImage, setActiveGalleryImage] = useState(0);
     const [hoveredImageIndex, setHoveredImageIndex] = useState<number | null>(null);
 
@@ -244,24 +213,11 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
     }, [allGalleryImages, selectedColor]);
 
     // Refs
-    const technicalRef = useRef<HTMLDivElement>(null);
-    const compositionRef = useRef<HTMLDivElement>(null);
     const mainImageRef = useRef<HTMLDivElement>(null);
 
     // Callbacks
-    const toggleSection = useCallback((section: string) => {
-        setExpandedSections((prev) => ({
-            ...prev,
-            [section]: !prev[section],
-        }));
-    }, []);
-
     const handleCartClick = useCallback(() => {
-        setAddingToCart(true);
-        setTimeout(() => {
-            setAddingToCart(false);
-            // Cart will be opened by the Header component when items are added
-        }, 800);
+        // Cart will be opened by the Header component when items are added
     }, []);
 
     const handleColorSelect = (color: string) => {
@@ -505,222 +461,10 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                     {formattedPrice}
                                 </p>
 
-                                {product?.descriptionHtml ? (
-                                    <div
-                                        className="text-sm md:text-[14px] font-folio-light mb-10 animate-fade-in animation-delay-300"
-                                        dangerouslySetInnerHTML={{
-                                            __html: extractPureDescription(product.descriptionHtml),
-                                        }}
-                                    />
-                                ) : (
-                                    <p className="text-sm md:text-[14px] font-folio-light mb-10 animate-fade-in animation-delay-300">
-                                        This product is your go-to for all your running needs. Made
-                                        with high-quality materials for maximum comfort and
-                                        performance.
-                                    </p>
-                                )}
-
-                                {/* Technical Details Section */}
-                                {hasTechnicalDetails(product?.descriptionHtml || "") && (
-                                    <div className="border-t border-gray-200 py-4">
-                                        <button
-                                            className="flex items-center justify-between w-full text-left font-folio-bold group cursor-pointer"
-                                            onClick={() => toggleSection("technical")}
-                                        >
-                                            <span className="group-hover:text-gray-500 transition-colors duration-300">
-                                                Technical Details
-                                            </span>
-                                            <div className="transition-transform duration-300 ease-in-out">
-                                                {expandedSections.technical ? (
-                                                    <ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-300 transform rotate-0" />
-                                                ) : (
-                                                    <ChevronRight className="h-5 w-5 group-hover:text-gray-500 transition-transform duration-300 transform group-hover:rotate-90" />
-                                                )}
-                                            </div>
-                                        </button>
-                                        <div
-                                            className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedSections.technical
-                                                ? "max-h-[500px] opacity-100"
-                                                : "max-h-0 opacity-0"
-                                                }`}
-                                        >
-                                            {expandedSections.technical && (
-                                                <div className="mt-4" ref={technicalRef}>
-                                                    {hasTechnicalDetails(
-                                                        product?.descriptionHtml || ""
-                                                    ) ? (
-                                                        <ul className="pl-5 text-sm md:text-[14px] font-folio-light space-y-3">
-                                                            {product?.descriptionHtml
-                                                                ?.split(
-                                                                    "<h4><span>Technical Details</span></h4>"
-                                                                )[1]
-                                                                ?.split("<h4>")[0]
-                                                                ?.match(/<li[^>]*>.*?<\/li>/g)
-                                                                ?.map((item, index) => {
-                                                                    const text = item
-                                                                        .replace(/<[^>]*>/g, "")
-                                                                        .trim();
-                                                                    return (
-                                                                        <li
-                                                                            key={index}
-                                                                            className="flex items-start"
-                                                                        >
-                                                                            <span className="mr-2">
-                                                                                •
-                                                                            </span>
-                                                                            <span>{text}</span>
-                                                                        </li>
-                                                                    );
-                                                                }) || []}
-                                                        </ul>
-                                                    ) : (
-                                                        <ul className="pl-5 text-sm md:text-[14px] font-folio-light space-y-3">
-                                                            <li className="flex items-start">
-                                                                <span className="mr-2">•</span>
-                                                                <span>
-                                                                    Water-proof (Grade 3) fabric
-                                                                    with 1000mm water repellent
-                                                                    treatment
-                                                                </span>
-                                                            </li>
-                                                            <li className="flex items-start">
-                                                                <span className="mr-2">•</span>
-                                                                <span>
-                                                                    Wind-proof and down-proof for
-                                                                    maximum protection
-                                                                </span>
-                                                            </li>
-                                                            <li className="flex items-start">
-                                                                <span className="mr-2">•</span>
-                                                                <span>
-                                                                    RDS-certified white down (90%
-                                                                    down, 10% feathers), 750 fill
-                                                                    power
-                                                                </span>
-                                                            </li>
-                                                            <li className="flex items-start">
-                                                                <span className="mr-2">•</span>
-                                                                <span>
-                                                                    Adjustable hood for a customized
-                                                                    fit
-                                                                </span>
-                                                            </li>
-                                                            <li className="flex items-start">
-                                                                <span className="mr-2">•</span>
-                                                                <span>
-                                                                    Invisible zip side chest pockets
-                                                                    and YKK two-way front zip
-                                                                </span>
-                                                            </li>
-                                                            <li className="flex items-start">
-                                                                <span className="mr-2">•</span>
-                                                                <span>
-                                                                    Elastic band cuffs and
-                                                                    adjustable side hem
-                                                                </span>
-                                                            </li>
-                                                            <li className="flex items-start">
-                                                                <span className="mr-2">•</span>
-                                                                <span>
-                                                                    Inner chest pocket with zip
-                                                                    closure
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Composition Section */}
-                                {hasComposition(product?.descriptionHtml || "") && (
-                                    <div className="border-t border-gray-200 py-4">
-                                        <button
-                                            className="flex items-center justify-between w-full text-left font-folio-bold group cursor-pointer"
-                                            onClick={() => toggleSection("composition")}
-                                        >
-                                            <span className="group-hover:text-gray-500 transition-colors duration-300">
-                                                Composition
-                                            </span>
-                                            <div className="transition-transform duration-300 ease-in-out">
-                                                {expandedSections.composition ? (
-                                                    <ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-300 transform rotate-0" />
-                                                ) : (
-                                                    <ChevronRight className="h-5 w-5 group-hover:text-gray-500 transition-transform duration-300 transform group-hover:rotate-90" />
-                                                )}
-                                            </div>
-                                        </button>
-                                        <div
-                                            className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedSections.composition
-                                                ? "max-h-[500px] opacity-100"
-                                                : "max-h-0 opacity-0"
-                                                }`}
-                                        >
-                                            {expandedSections.composition && (
-                                                <div className="mt-4" ref={compositionRef}>
-                                                    {hasComposition(
-                                                        product?.descriptionHtml || ""
-                                                    ) ? (
-                                                        <div
-                                                            className="pl-5 text-sm md:text-[14px] font-folio-light space-y-3"
-                                                            dangerouslySetInnerHTML={{
-                                                                __html:
-                                                                    product?.descriptionHtml
-                                                                        ?.split(
-                                                                            "<h4><span>Composition</span></h4>"
-                                                                        )[1]
-                                                                        ?.replace(/<ul[^>]*>/g, "")
-                                                                        ?.replace(/<\/ul>/g, "")
-                                                                        ?.replace(
-                                                                            /<li[^>]*>/g,
-                                                                            '<div class="flex items-start"><span class="mr-2">•</span><span>'
-                                                                        )
-                                                                        ?.replace(
-                                                                            /<\/li>/g,
-                                                                            "</span></div>"
-                                                                        )
-                                                                        ?.replace(
-                                                                            /<span><\/span>/g,
-                                                                            ""
-                                                                        ) || "",
-                                                            }}
-                                                        />
-                                                    ) : (
-                                                        <ul className="pl-5 text-sm font-avant-garde space-y-3">
-                                                            <li className="flex items-start">
-                                                                <span className="mr-2">•</span>
-                                                                <span>
-                                                                    Main Fabric: 100% Polyester
-                                                                </span>
-                                                            </li>
-                                                            <li className="flex items-start">
-                                                                <span className="mr-2">•</span>
-                                                                <span>Lining: 100% Polyester</span>
-                                                            </li>
-                                                            <li className="flex items-start">
-                                                                <span className="mr-2">•</span>
-                                                                <span>
-                                                                    Pocket Bag: 100% Polyester
-                                                                </span>
-                                                            </li>
-                                                            <li className="flex items-start">
-                                                                <span className="mr-2">•</span>
-                                                                <span>
-                                                                    Filling: 90% Duck Down, 10% Duck
-                                                                    Feathers
-                                                                </span>
-                                                            </li>
-                                                            <li className="flex items-start">
-                                                                <span className="mr-2">•</span>
-                                                                <span>Made in China</span>
-                                                            </li>
-                                                        </ul>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
+                                {/* Product Description as Rich Text */}
+                                {product?.descriptionHtml && (
+                                    <div className="mb-10 animate-fade-in animation-delay-300">
+                                        <RichTextViewer content={product.descriptionHtml} className="text-sm md:text-[14px] font-folio-light" />
                                     </div>
                                 )}
 
