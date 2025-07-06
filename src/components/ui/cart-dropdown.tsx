@@ -161,7 +161,7 @@ export default function CartDropdown() {
 
             {/* Cart Dropdown - Responsive */}
             <div
-                className={`fixed top-[100px] md:top-[100px] right-0 w-full md:max-w-md bg-white shadow-2xl z-50 h-[calc(100vh-100px)] md:h-[calc(100vh-100px)] flex flex-col transition-all duration-300 ${
+                className={`fixed top-0 md:top-0 right-0 w-full md:max-w-md bg-white shadow-2xl z-50 h-screen md:h-screen flex flex-col transition-all duration-300 ${
                     isClosing
                         ? "translate-y-full opacity-0"
                         : isVisible
