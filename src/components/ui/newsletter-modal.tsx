@@ -137,16 +137,16 @@ export default function NewsletterModal({ isOpen, onClose }: NewsletterModalProp
                     <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
                         <div className="animate-fade-in">
                             <h2 className="text-2xl md:text-3xl font-itc-demi text-white mb-2">
-                                SIGN UP FOR 15% OFF
+                                SIGN UP TO OUR
                             </h2>
                             <h3 className="text-2xl md:text-3xl font-itc-demi text-white mb-4">
-                                YOUR FIRST ORDER
+                                NEWSLETTER
                             </h3>
 
                             <p className="text-xs font-folio-bold text-white text-center mb-6">
                                 Subscribe to the Beyond Running Community, hear about our latest
                                 releases, access exclusive offers and receive updates from behind
-                                the scenes. Plus receive 15% off your first order.
+                                the scenes.
                             </p>
 
                             {!isSuccess ? (
