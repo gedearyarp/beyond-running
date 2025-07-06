@@ -11,6 +11,7 @@ interface Slide {
     image: string;
     title: string;
     description: string;
+    url_link?: string;
 }
 
 export default function HeroSlider() {
@@ -23,7 +24,7 @@ export default function HeroSlider() {
         const fetchSlides = async () => {
             const { data, error } = await supabase
                 .from("carousels")
-                .select("id, pictures, title, subtitle")
+                .select("id, pictures, title, subtitle, url_link")
                 .eq("is_active", true)
                 .order("created_at", { ascending: true });
             if (error) {
@@ -35,6 +36,7 @@ export default function HeroSlider() {
                 image: item.pictures,
                 title: item.title,
                 description: item.subtitle || "",
+                url_link: item.url_link || undefined,
             }));
             setSlides(mappedSlides);
         };
@@ -117,6 +119,16 @@ export default function HeroSlider() {
                             <p className="text-sm md:text-base max-w-3xl mx-auto px-8 font-avant-garde">
                                 {slide.description}
                             </p>
+                            {slide.url_link && (
+                                <a
+                                    href={slide.url_link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-block mt-4 px-6 py-2 bg-white text-black rounded-full font-folio-bold text-sm hover:bg-gray-200 transition"
+                                >
+                                    more
+                                </a>
+                            )}
                         </div>
                     </div>
                 </div>
