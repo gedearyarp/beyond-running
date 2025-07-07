@@ -14,6 +14,12 @@ export default function FeaturedProducts() {
     const [loading, setLoading] = useState(true);
     const [currentProductIndex, setCurrentProductIndex] = useState(0);
 
+    // Track selected color per product (keyed by product.handle)
+    const [selectedColors, setSelectedColors] = useState<Record<string, string>>({});
+    const handleColorSelect = (productHandle: string, color: string) => {
+        setSelectedColors((prev) => ({ ...prev, [productHandle]: color }));
+    };
+
     // Fetch collections and initial products
     useEffect(() => {
         const fetchData = async () => {
@@ -137,11 +143,10 @@ export default function FeaturedProducts() {
                             {collections.map((collection, index) => (
                                 <button
                                     key={collection.id}
-                                    className={`text-xs sm:text-sm md:text-base font-medium whitespace-nowrap font-folio-medium transition-colors px-1 py-1 ${
-                                        activeTabIndex === index
-                                            ? "font-bold text-black"
-                                            : "text-gray-500 hover:text-black"
-                                    } cursor-pointer opacity-50 flex items-center gap-2`}
+                                    className={`text-xs sm:text-sm md:text-base font-medium whitespace-nowrap font-folio-medium transition-colors px-1 py-1 ${activeTabIndex === index
+                                        ? "font-bold text-black"
+                                        : "text-gray-500 hover:text-black"
+                                        } cursor-pointer opacity-50 flex items-center gap-2`}
                                     onClick={() => handleTabClick(index)}
                                     disabled
                                 >
@@ -220,11 +225,10 @@ export default function FeaturedProducts() {
                             {collections.map((collection, index) => (
                                 <button
                                     key={collection.id}
-                                    className={`text-xs sm:text-sm md:text-base font-medium whitespace-nowrap font-folio-medium transition-colors px-1 py-1 ${
-                                        activeTabIndex === index
-                                            ? "font-bold text-black"
-                                            : "text-gray-500 hover:text-black"
-                                    } cursor-pointer`}
+                                    className={`text-xs sm:text-sm md:text-base font-medium whitespace-nowrap font-folio-medium transition-colors px-1 py-1 ${activeTabIndex === index
+                                        ? "font-bold text-black"
+                                        : "text-gray-500 hover:text-black"
+                                        } cursor-pointer`}
                                     onClick={() => handleTabClick(index)}
                                     disabled={loading}
                                 >
@@ -269,11 +273,10 @@ export default function FeaturedProducts() {
                         {collections.map((collection, index) => (
                             <button
                                 key={collection.id}
-                                className={`text-xs sm:text-sm md:text-base font-medium whitespace-nowrap font-folio-medium transition-colors px-1 py-1 ${
-                                    activeTabIndex === index
-                                        ? "font-bold text-black"
-                                        : "text-gray-500 hover:text-black"
-                                } cursor-pointer`}
+                                className={`text-xs sm:text-sm md:text-base font-medium whitespace-nowrap font-folio-medium transition-colors px-1 py-1 ${activeTabIndex === index
+                                    ? "font-bold text-black"
+                                    : "text-gray-500 hover:text-black"
+                                    } cursor-pointer`}
                                 onClick={() => handleTabClick(index)}
                                 disabled={loading}
                             >
@@ -332,6 +335,8 @@ export default function FeaturedProducts() {
                                     <ProductCard
                                         product={product}
                                         collectionHandle={activeCollection?.handle}
+                                        selectedColor={selectedColors[product.handle]}
+                                        onColorSelect={(color) => handleColorSelect(product.handle, color)}
                                     />
                                 </div>
                             </div>
@@ -367,11 +372,10 @@ export default function FeaturedProducts() {
                                             setCurrentProductIndex(index * productsPerView);
                                         }
                                     }}
-                                    className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-colors touch-manipulation ${
-                                        getActivePage() === index
-                                            ? "bg-black"
-                                            : "bg-gray-300 hover:bg-gray-400"
-                                    } cursor-pointer`}
+                                    className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-colors touch-manipulation ${getActivePage() === index
+                                        ? "bg-black"
+                                        : "bg-gray-300 hover:bg-gray-400"
+                                        } cursor-pointer`}
                                 />
                             ))}
                         </div>

@@ -46,7 +46,7 @@ export const GET_COLLECTION_PRODUCTS = gql`
                         description
                         productType
                         tags
-                        images(first: 1) {
+                        images(first: 20) {
                             edges {
                                 node {
                                     url
