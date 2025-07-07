@@ -411,7 +411,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
         hasSizeOptions,
     ]);
 
-    // Size chart data
+    // Size chart data (legacy, will be replaced by images)
     const sizeChartData = [
         { size: "X-Small", chest: "43", front: "59", back: "61" },
         { size: "Small", chest: "46", front: "61", back: "63" },
@@ -419,6 +419,9 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
         { size: "Large", chest: "50", front: "65", back: "67" },
         { size: "X-Large", chest: "53", front: "68", back: "70" },
     ];
+
+    // Filter images with altText 'size_guide'
+    const sizeGuideImages = allGalleryImages.filter(img => img.altText && img.altText.toLowerCase() === 'size_guide');
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -514,13 +517,22 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                         <div className="flex justify-between items-center mb-4">
                                             <h3 className="text-sm font-folio-bold">SIZE</h3>
                                             <button
-                                                onClick={() => setIsSizeChartOpen(true)}
-                                                className="text-xs underline font-avant-garde hover:text-orange-500 transition-colors relative group cursor-pointer"
+                                                onClick={() => {
+                                                    if (sizeGuideImages.length > 0) setIsSizeChartOpen(true);
+                                                }}
+                                                className={`text-xs underline font-avant-garde relative group cursor-pointer transition-colors
+                                                    ${sizeGuideImages.length === 0 ? 'opacity-50 cursor-not-allowed pointer-events-auto' : 'hover:text-orange-500'}`}
+                                                disabled={sizeGuideImages.length === 0}
+                                                tabIndex={sizeGuideImages.length === 0 ? -1 : 0}
+                                                title={sizeGuideImages.length === 0 ? 'Size guide not available' : ''}
                                             >
                                                 <span className="text-sm font-folio-medium">
                                                     SIZE GUIDE
                                                 </span>
                                                 <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
+                                                {sizeGuideImages.length === 0 && (
+                                                    <span className="ml-2 text-xs text-red-500 font-folio-light"></span>
+                                                )}
                                             </button>
                                         </div>
                                         <div className="flex space-x-8">
@@ -792,6 +804,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                 onClose={() => setIsSizeChartOpen(false)}
                 sizeData={sizeChartData}
                 productName={`${product?.title || "Product"}`}
+                sizeGuideImages={sizeGuideImages}
             />
         </div>
     );
