@@ -9,6 +9,7 @@ import RichTextViewer from "@/components/ui/RichTextViewer";
 interface Slide {
     id: string;
     image: string;
+    mobile_image?: string;
     title: string;
     description: string;
     url_link?: string;
@@ -19,12 +20,13 @@ export default function HeroSlider() {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [touchStartX, setTouchStartX] = useState<number | null>(null);
     const [touchEndX, setTouchEndX] = useState<number | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         const fetchSlides = async () => {
             const { data, error } = await supabase
                 .from("carousels")
-                .select("id, pictures, title, subtitle, url_link")
+                .select("id, pictures, mobile_image, title, subtitle, url_link")
                 .eq("is_active", true)
                 .order("created_at", { ascending: true });
             if (error) {
@@ -34,6 +36,7 @@ export default function HeroSlider() {
             const mappedSlides = (data || []).map((item) => ({
                 id: item.id,
                 image: item.pictures,
+                mobile_image: item.mobile_image || null,
                 title: item.title,
                 description: item.subtitle || "",
                 url_link: item.url_link || undefined,
@@ -41,6 +44,13 @@ export default function HeroSlider() {
             setSlides(mappedSlides);
         };
         fetchSlides();
+    }, []);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
     const nextSlide = () => {
@@ -101,7 +111,7 @@ export default function HeroSlider() {
                 >
                     <div className="relative w-full h-full">
                         <Image
-                            src={slide.image || "/placeholder.svg"}
+                            src={isMobile ? (slide.mobile_image || slide.image || "/placeholder.svg") : (slide.image || "/placeholder.svg")}
                             alt={slide.title}
                             fill
                             className="object-cover"
