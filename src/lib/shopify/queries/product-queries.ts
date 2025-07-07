@@ -14,7 +14,7 @@ export const PRODUCT_CARD_FRAGMENT = gql`
                 currencyCode
             }
         }
-        images(first: 1) {
+        images(first: 20) {
             edges {
                 node {
                     url

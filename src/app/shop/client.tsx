@@ -465,6 +465,14 @@ export default function ShopPageClient({
         return found ? [found.label] : [];
     }
 
+    // Track selected color per product (keyed by product.handle)
+    const [selectedColors, setSelectedColors] = useState<Record<string, string>>({});
+
+    // Handler to update selected color for a product
+    const handleColorSelect = (productHandle: string, color: string) => {
+        setSelectedColors((prev) => ({ ...prev, [productHandle]: color }));
+    };
+
     if (isInitialLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -945,6 +953,8 @@ export default function ShopPageClient({
                                     product={product}
                                     isShop={true}
                                     collectionHandle={collection?.handle}
+                                    selectedColor={selectedColors[product.handle]}
+                                    onColorSelect={(color) => handleColorSelect(product.handle, color)}
                                 />
                             ))}
                     </div>
