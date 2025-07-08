@@ -22,5 +22,5 @@ export const images = {
     contactImage:
         "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//contact.png",
     shopImage: "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//shop.png",
-    introGif: "https://lujxxelwmdfouxiqhrha.supabase.co/storage/v1/object/public/images//intro.gif",
+    introGif: "/images/intro.gif",
 };
