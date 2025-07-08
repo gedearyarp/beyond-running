@@ -176,7 +176,7 @@ export default function PeripheralsDetailPage() {
                         </div>
                     )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-24">
+                    <div className="grid grid-cols-1 md:grid-cols-2 md:gap-16 gap-7 mb-24">
                         {peripheral.paragraph_1 && (
                             <div className="text-[12px] md:text-sm font-folio-light leading-relaxed">
                                 <RichTextViewer content={peripheral.paragraph_1} />
