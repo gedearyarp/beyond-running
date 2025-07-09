@@ -45,6 +45,7 @@ export default function RichTextViewer({ content, className = "" }: RichTextView
                 }
                 .rich-text-viewer strong {
                     font-weight: bold;
+                    font-family: 'itc-bold', sans-serif;
                 }
                 .rich-text-viewer em {
                     font-style: italic;
