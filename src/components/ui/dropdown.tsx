@@ -69,7 +69,7 @@ export default function CustomDropdown({
             </button>
 
             {isOpen && (
-                <div className="absolute z-10 mt-2 w-48 bg-white shadow-md rounded-none border border-gray-100">
+                <div className="absolute z-30 mt-2 w-48 bg-white shadow-md rounded-none border border-gray-100">
                     {options.map((option) => (
                         <button
                             key={option.value}

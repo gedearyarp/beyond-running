@@ -318,7 +318,7 @@ function PeripheralsPageContent() {
 
                                         <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-8">
                                             <button
-                                                className={`text-sm transition-all duration-200 ${viewMode === "grid"
+                                                className={`text-sm transition-all duration-200 cursor-pointer ${viewMode === "grid"
                                                     ? "font-folio-bold text-black border-b-2 border-black pb-1"
                                                     : "font-folio-medium text-gray-500 hover:text-gray-700"
                                                     }`}
@@ -327,7 +327,7 @@ function PeripheralsPageContent() {
                                                 Grid View
                                             </button>
                                             <button
-                                                className={`text-sm font-avant-garde transition-all duration-200 ${viewMode === "list"
+                                                className={`text-sm font-avant-garde transition-all duration-200 cursor-pointer ${viewMode === "list"
                                                     ? "font-folio-bold text-black border-b-2 border-black pb-1"
                                                     : "font-folio-medium text-gray-500 hover:text-gray-700"
                                                     }`}

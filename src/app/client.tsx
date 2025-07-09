@@ -21,6 +21,7 @@ export default function HomePageClient({ collections }: HomePageClientProps) {
     const [showNewsletterModal, setShowNewsletterModal] = useState(false);
     const [hasModalBeenShown, setHasModalBeenShown] = useState(false);
     const [introRemoved, setIntroRemoved] = useState(false);
+    const [showIntro, setShowIntro] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const { collections: storeCollections } = useCollectionsStore();
 
@@ -33,6 +34,16 @@ export default function HomePageClient({ collections }: HomePageClientProps) {
         // Set loading to false after initialization
         setIsLoading(false);
     }, [collections, storeCollections.length]);
+
+    // Show IntroSection only once per session
+    useEffect(() => {
+        const introShown = sessionStorage.getItem("introSectionShown");
+        if (!introShown) {
+            setShowIntro(true);
+        } else {
+            setIntroRemoved(true);
+        }
+    }, []);
 
     // Handle scroll untuk newsletter modal
     useEffect(() => {
@@ -70,6 +81,7 @@ export default function HomePageClient({ collections }: HomePageClientProps) {
 
     const handleIntroRemoved = () => {
         setIntroRemoved(true);
+        sessionStorage.setItem("introSectionShown", "true");
     };
 
     if (isLoading) {
@@ -82,8 +94,8 @@ export default function HomePageClient({ collections }: HomePageClientProps) {
 
     return (
         <div className="flex flex-col w-full min-h-screen">
-            {/* Intro Section - full screen tanpa header */}
-            <IntroSection onRemoved={handleIntroRemoved} />
+            {/* Intro Section - full screen tanpa header, only once per session */}
+            {showIntro && !introRemoved && <IntroSection onRemoved={handleIntroRemoved} />}
 
             {/* Header Component - hanya muncul setelah intro hilang */}
             {introRemoved && <Header />}

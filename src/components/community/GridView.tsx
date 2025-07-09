@@ -59,7 +59,11 @@ export default function GridView({ events }: GridViewProps) {
         }
 
         return (
-            <div key={event.id} className={`relative ${heights[size]} overflow-hidden group`}>
+            <Link
+                key={event.id}
+                href={`/program/${event.id}`}
+                className={`relative ${heights[size]} overflow-hidden group cursor-pointer block`}
+            >
                 <Image
                     src={imageUrl}
                     alt={event.title}
@@ -79,13 +83,6 @@ export default function GridView({ events }: GridViewProps) {
                     <h3 className={`text-[24px] md:text-[28px] font-itc-demi mb-8`}>
                         {event.title}
                     </h3>
-
-                    <Link
-                        href={`/program/${event.id}`}
-                        className="bg-[#ADADAD] text-black text-xs px-4 py-1 rounded-full hover:bg-gray-200 transition-colors font-folio-bold mb-8"
-                    >
-                        More
-                    </Link>
                 </div>
 
                 {/* Date and organizer at bottom */}
@@ -93,7 +90,7 @@ export default function GridView({ events }: GridViewProps) {
                     <p className="text-[21px] font-folio-extra-bold">{formattedDate}</p>
                     <p className="text-[21px] font-folio-extra-bold">{event.category}</p>
                 </div>
-            </div>
+            </Link>
         );
     };
 
