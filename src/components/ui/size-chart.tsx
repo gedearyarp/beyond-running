@@ -178,11 +178,7 @@ export default function SizeChartModal({
                                     chest
                                 </li>
                                 <li>
-                                    <strong>Front:</strong> Measure from shoulder to hem at the
-                                    front
-                                </li>
-                                <li>
-                                    <strong>Back:</strong> Measure from shoulder to hem at the back
+                                    <strong>Length:</strong> Measure from the highest point of the shoulder down to the bottom hem of the garment
                                 </li>
                             </ul>
                         </div>
