@@ -13,6 +13,7 @@ interface Slide {
     title: string;
     description: string;
     url_link?: string;
+    url_button_wording?: string;
 }
 
 export default function HeroSlider() {
@@ -26,7 +27,7 @@ export default function HeroSlider() {
         const fetchSlides = async () => {
             const { data, error } = await supabase
                 .from("carousels")
-                .select("id, pictures, mobile_image, title, subtitle, url_link")
+                .select("id, pictures, mobile_image, title, subtitle, url_link, url_button_wording")
                 .eq("is_active", true)
                 .order("created_at", { ascending: true });
             if (error) {
@@ -40,6 +41,7 @@ export default function HeroSlider() {
                 title: item.title,
                 description: item.subtitle || "",
                 url_link: item.url_link || undefined,
+                url_button_wording: item.url_button_wording || undefined,
             }));
             setSlides(mappedSlides);
         };
@@ -136,7 +138,7 @@ export default function HeroSlider() {
                                     rel="noopener noreferrer"
                                     className="inline-block mt-4 px-6 py-2 bg-white text-black rounded-full font-folio-bold text-sm hover:bg-gray-200 transition"
                                 >
-                                    more
+                                    {slide.url_button_wording?.trim() ? slide.url_button_wording : "more"}
                                 </a>
                             )}
                         </div>
