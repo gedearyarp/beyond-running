@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import RichTextViewer from "@/components/ui/RichTextViewer";
@@ -112,12 +111,12 @@ export default function HeroSlider() {
                         }`}
                 >
                     <div className="relative w-full h-full">
-                        <Image
+                        <img
                             src={isMobile ? (slide.mobile_image || slide.image || "/placeholder.svg") : (slide.image || "/placeholder.svg")}
                             alt={slide.title}
-                            fill
-                            className="object-cover"
-                            priority={index === 0}
+                            className="object-cover w-full h-full absolute inset-0"
+                            style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                            loading={index === 0 ? "eager" : undefined}
                         />
                         <div className="absolute inset-0 bg-black/30" />
                         {/* Title in center */}

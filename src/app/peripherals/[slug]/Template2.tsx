@@ -2,7 +2,6 @@ import Header from "@/components/ui/Header"
 import Footer from "@/components/ui/Footer"
 import Loading from "@/components/ui/loading"
 import RichTextViewer from "@/components/ui/RichTextViewer"
-import Image from "next/image"
 import { images } from "@/assets/images"
 import type { PeripheralWithImages } from "./page"
 
@@ -71,13 +70,12 @@ export default function Template2({ peripheral, loading, isInitialLoading, getVa
       <main className={`flex-1 pt-[56px] md:pt-[73px] ${bgColor} pb-16 md:pb-42`}>
         {/* Hero Banner */}
         <section className="relative w-full h-[60vh] md:h-[705px]">
-          <Image
+          <img
             src={bannerImageUrl || "/placeholder.svg"}
             alt={peripheral.title || "Story banner"}
-            fill
-            className="object-cover"
-            priority
-            unoptimized={bannerImageUrl.includes("supabase.co")}
+            className="object-cover w-full h-full absolute inset-0"
+            style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+            loading="eager"
           />
         </section>
 
@@ -115,19 +113,19 @@ export default function Template2({ peripheral, loading, isInitialLoading, getVa
             <div className="container mx-auto px-4">
               <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 max-w-6xl mx-auto">
                 <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg aspect-[3/4] flex-shrink-0">
-                  <Image
+                  <img
                     src={images.featured1Image || "/placeholder.svg"}
                     alt="Featured story image 1"
-                    fill
-                    className="object-cover  shadow-lg"
+                    className="object-cover shadow-lg w-full h-full absolute inset-0"
+                    style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                   />
                 </div>
                 <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg aspect-[3/4] flex-shrink-0">
-                  <Image
+                  <img
                     src={images.featured2Image || "/placeholder.svg"}
                     alt="Featured story image 2"
-                    fill
-                    className="object-cover  shadow-lg"
+                    className="object-cover shadow-lg w-full h-full absolute inset-0"
+                    style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                   />
                 </div>
               </div>
@@ -137,12 +135,12 @@ export default function Template2({ peripheral, loading, isInitialLoading, getVa
 
         {/* Full Width Banner */}
         <section className="relative w-full my-8 md:my-16 h-[50vh] md:h-[70vh] lg:h-[880px]">
-          <Image
+          <img
             src={images.featured3Image || "/placeholder.svg"}
             alt="Full width banner"
-            fill
-            className="object-cover"
-            priority
+            className="object-cover w-full h-full absolute inset-0"
+            style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+            loading="eager"
           />
         </section>
 
@@ -163,11 +161,11 @@ export default function Template2({ peripheral, loading, isInitialLoading, getVa
               </div>
               <div className="flex justify-center lg:justify-end">
                 <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg aspect-[4/5] md:aspect-[3/4]">
-                  <Image
+                  <img
                     src={images.featured2Image || "/placeholder.svg"}
                     alt="Join the motion - training session"
-                    fill
-                    className="object-cover  shadow-md"
+                    className="object-cover shadow-md w-full h-full absolute inset-0"
+                    style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                   />
                 </div>
               </div>
@@ -177,11 +175,11 @@ export default function Template2({ peripheral, loading, isInitialLoading, getVa
           {/* Section 2: Full width image */}
           <section className="container mx-auto px-4">
             <div className="relative w-full h-[40vh] md:h-[50vh] lg:h-[620px] max-w-7xl mx-auto">
-              <Image
+              <img
                 src={images.featured1Image || "/placeholder.svg"}
                 alt="Training in action"
-                fill
-                className="object-cover  shadow-md"
+                className="object-cover shadow-md w-full h-full absolute inset-0"
+                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
               />
             </div>
           </section>
@@ -205,11 +203,11 @@ export default function Template2({ peripheral, loading, isInitialLoading, getVa
               </div>
               <div className="flex justify-center lg:justify-end">
                 <div className="relative w-full max-w-md md:max-w-lg lg:max-w-xl aspect-[4/3] md:aspect-[3/2]">
-                  <Image
+                  <img
                     src={images.featured3Image || "/placeholder.svg"}
                     alt="Training community"
-                    fill
-                    className="object-cover  shadow-md"
+                    className="object-cover shadow-md w-full h-full absolute inset-0"
+                    style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                   />
                 </div>
               </div>

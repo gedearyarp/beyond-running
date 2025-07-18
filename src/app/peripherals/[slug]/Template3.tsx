@@ -2,7 +2,6 @@ import Header from "@/components/ui/Header";
 import Footer from "@/components/ui/Footer";
 import Loading from "@/components/ui/loading";
 import RichTextViewer from "@/components/ui/RichTextViewer";
-import Image from "next/image";
 import { images } from "@/assets/images";
 import type { PeripheralWithImages } from "./page";
 
@@ -71,13 +70,12 @@ export default function Template3({ peripheral, loading, isInitialLoading, getVa
             <Header />
             <main className={`flex-1 pt-[56px] md:pt-[73px] ${bgColor} pb-16 md:pb-24`}>
                 <div className="relative w-full h-[477px] md:h-[705px]">
-                    <Image
+                    <img
                         src={bannerImageUrl}
                         alt={peripheral.title || "Story banner"}
-                        fill
-                        className="object-cover"
-                        priority
-                        unoptimized={bannerImageUrl.includes("supabase.co")}
+                        className="object-cover w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                        loading="eager"
                     />
                 </div>
 
@@ -115,76 +113,76 @@ export default function Template3({ peripheral, loading, isInitialLoading, getVa
                     {/* Row 1: 2 images */}
                     <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-6 mb-2">
                         <div className="relative w-full h-[180px] md:h-[858px]">
-                            <Image
+                            <img
                                 src={images.featured1Image}
                                 alt="Gallery 1"
-                                fill
-                                className="object-cover shadow"
+                                className="object-cover shadow w-full h-full absolute inset-0"
+                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                             />
                         </div>
                         <div className="relative w-full h-[180px] md:h-[724px]">
-                            <Image
+                            <img
                                 src={images.featured2Image}
                                 alt="Gallery 2"
-                                fill
-                                className="object-cover shadow"
+                                className="object-cover shadow w-full h-full absolute inset-0"
+                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                             />
                         </div>
                     </div>
                     {/* Row 2: 1 landscape image */}
                     <div className="w-full flex flex-col items-center mb-2">
                         <div className="relative w-full h-[180px] md:h-[690px]">
-                            <Image
+                            <img
                                 src={images.featured3Image}
                                 alt="Gallery 3"
-                                fill
-                                className="object-cover shadow"
+                                className="object-cover shadow w-full h-full absolute inset-0"
+                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                             />
                         </div>
                     </div>
                     {/* Row 3: 2 images (landscape + portrait) */}
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-2">
                         <div className="relative w-full h-[180px] md:col-span-2 md:h-[512px]">
-                            <Image
+                            <img
                                 src={images.bottomBanner}
                                 alt="Gallery 4"
-                                fill
-                                className="object-cover shadow"
+                                className="object-cover shadow w-full h-full absolute inset-0"
+                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                             />
                         </div>
                         <div className="relative w-full h-[180px] md:h-[399px]">
-                            <Image
+                            <img
                                 src={images.bottomBanner}
                                 alt="Gallery 5"
-                                fill
-                                className="object-cover shadow"
+                                className="object-cover shadow w-full h-full absolute inset-0"
+                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                             />
                         </div>
                     </div>
                     {/* Row 4: 3 small images (2 per row in mobile) */}
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                         <div className="relative w-full h-[180px] md:h-[480px] mb-4 md:mb-0">
-                            <Image
+                            <img
                                 src={images.aboutBanner}
                                 alt="Gallery 6"
-                                fill
-                                className="object-cover shadow"
+                                className="object-cover shadow w-full h-full absolute inset-0"
+                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                             />
                         </div>
                         <div className="relative w-full h-[180px] md:h-[480px] mb-4 md:mb-0">
-                            <Image
+                            <img
                                 src={images.aboutImage}
                                 alt="Gallery 7"
-                                fill
-                                className="object-cover shadow"
+                                className="object-cover shadow w-full h-full absolute inset-0"
+                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                             />
                         </div>
                         <div className="relative w-full h-[180px] md:h-[480px] col-span-2 md:col-span-1">
-                            <Image
+                            <img
                                 src={images.shopImage}
                                 alt="Gallery 8"
-                                fill
-                                className="object-cover shadow"
+                                className="object-cover shadow w-full h-full absolute inset-0"
+                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                             />
                         </div>
                     </div>

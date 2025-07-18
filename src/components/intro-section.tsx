@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Image from "next/image";
 import { images } from "@/assets/images";
 
 interface IntroSectionProps {
@@ -48,15 +47,13 @@ export default function IntroSection({ onRemoved }: IntroSectionProps) {
     return (
         <div ref={sectionRef} className="relative h-screen w-full">
             {/* GIF Background */}
-            <div className="absolute inset-0">
-                <Image
-                    src={images.introGif}
-                    alt="Nature trail"
-                    fill
-                    className="object-cover"
-                    priority
-                />
-            </div>
+            <img
+                src={images.introGif}
+                alt="Nature trail"
+                className="object-cover w-full h-full absolute inset-0"
+                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                loading="eager"
+            />
 
             {/* Gradient overlay for better text readability */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />

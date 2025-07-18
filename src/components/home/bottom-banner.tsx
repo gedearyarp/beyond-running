@@ -1,15 +1,14 @@
 import { images } from "@/assets/images";
-import Image from "next/image";
 
 export default function BottomBanner() {
     return (
         <div className="relative w-full h-[488px] md:h-[719px] mt-12 overflow-hidden">
-            <Image
+            <img
                 src={images.bottomBanner}
                 alt="Beyond Running"
-                fill
-                className="object-cover h-[488px]"
-                priority
+                className="object-cover h-[488px] w-full absolute inset-0"
+                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                loading="eager"
             />
             <div className="absolute inset-0 bg-black/10" />
             <div className="absolute inset-0 flex items-center justify-center">

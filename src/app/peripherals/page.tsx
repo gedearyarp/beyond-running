@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import Header from "@/components/ui/Header";
 import Footer from "@/components/ui/Footer";
 import Loading from "@/components/ui/loading";
@@ -190,24 +189,24 @@ function PeripheralsPageContent() {
             <main className="flex-1 pt-[56px] md:pt-[73px]">
                 {/* Hero Banner */}
                 <div className="relative w-full h-[477px] md:h-[608px]">
-                    <Image
+                    <img
                         src={images.peripheralsBanner}
                         alt="Runner with medal"
-                        fill
-                        className="object-cover"
-                        priority
+                        className="object-cover w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                        loading="eager"
                     />
                     <div className="absolute inset-0 bg-black/10" />
                     {isMobile ? (
                         <>
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                                <Image
+                                <img
                                     src={GifIcon}
                                     alt="Animated Icon"
                                     width={200}
                                     height={200}
                                     className="drop-shadow-2xl mb-6"
-                                    unoptimized // Important for GIFs
+                                    style={{width: 200, height: 200}}
                                 />
                             </div>
                             <div className="absolute w-full flex justify-center bottom-14 text-center items-center">
@@ -218,13 +217,13 @@ function PeripheralsPageContent() {
                         </>
                     ) : (
                         <div className="absolute top-1/2 -translate-y-1/2 z-20 w-full justify-between flex flex-row items-center gap-6 pr-12">
-                            <Image
+                            <img
                                 src={GifIcon}
                                 alt="Animated Icon"
                                 width={200}
                                 height={200}
                                 className="w-[200px] h-[200px] drop-shadow-2xl"
-                                unoptimized // Important for GIFs
+                                style={{width: 200, height: 200}}
                             />
                             <h1 className="text-4xl font-itc-demi tracking-wide text-white uppercase whitespace-nowrap">
                                 PERIPHERALS

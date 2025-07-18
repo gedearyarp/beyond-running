@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Image from "next/image";
 import Header from "@/components/ui/Header";
 import Footer from "@/components/ui/Footer";
 import Loading from "@/components/ui/loading";
@@ -107,13 +106,12 @@ export default function CommunityDetailPage() {
             <main className="flex-1 pt-[56px] md:pt-[73px]">
                 {/* Hero Banner */}
                 <div className="relative w-full h-[477px] md:h-[608px]">
-                    <Image
+                    <img
                         src={bannerImageUrl}
                         alt={event.title}
-                        fill
-                        className="object-cover"
-                        priority
-                        unoptimized={bannerImageUrl.includes("supabase.co")}
+                        className="object-cover w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                        loading="eager"
                     />
                 </div>
 
@@ -125,12 +123,11 @@ export default function CommunityDetailPage() {
                                 {event.title}
                             </h1>
                             <div className="relative h-[481px] md:h-[900px] w-full">
-                                <Image
+                                <img
                                     src={communityImageUrl}
                                     alt={event.title}
-                                    fill
-                                    className="object-cover"
-                                    unoptimized={communityImageUrl.includes("supabase.co")}
+                                    className="object-cover w-full h-full absolute inset-0"
+                                    style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
                                 />
                             </div>
                         </div>

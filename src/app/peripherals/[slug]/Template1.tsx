@@ -2,7 +2,6 @@ import Header from "@/components/ui/Header";
 import Footer from "@/components/ui/Footer";
 import Loading from "@/components/ui/loading";
 import RichTextViewer from "@/components/ui/RichTextViewer";
-import Image from "next/image";
 import { images } from "@/assets/images";
 import type { PeripheralWithImages } from "./page";
 
@@ -71,13 +70,12 @@ export default function Template1({ peripheral, loading, isInitialLoading, getVa
             <Header />
             <main className={`flex-1 pt-[56px] md:pt-[73px] ${bgColor} pb-42`}>
                 <div className="relative w-full h-[477px] md:h-[705px]">
-                    <Image
+                    <img
                         src={bannerImageUrl}
                         alt={peripheral.title || "Story banner"}
-                        fill
-                        className="object-cover"
-                        priority
-                        unoptimized={bannerImageUrl.includes("supabase.co")}
+                        className="object-cover w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                        loading="eager"
                     />
                 </div>
 
@@ -134,18 +132,11 @@ export default function Template1({ peripheral, loading, isInitialLoading, getVa
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-24 px-4 max-w-screen-xl mx-auto">
                             {peripheral.images.map((image, index) => (
                                 <div key={index} className="relative">
-                                    <Image
+                                    <img
                                         src={image.src || "/placeholder.svg"}
                                         alt={image.alt}
-                                        width={0}
-                                        height={0}
-                                        sizes="(max-width: 768px) 100vw, 50vw"
                                         className="w-full h-auto"
-                                        style={{
-                                            maxHeight: "600px",
-                                            objectFit: "contain",
-                                        }}
-                                        unoptimized={image.src.includes("supabase.co")}
+                                        style={{maxHeight: "600px", objectFit: "contain"}}
                                     />
                                 </div>
                             ))}
@@ -155,14 +146,11 @@ export default function Template1({ peripheral, loading, isInitialLoading, getVa
                             <div className="flex space-x-6">
                                 {peripheral.images.map((image, index) => (
                                     <div key={index} className="flex items-center justify-center">
-                                        <Image
+                                        <img
                                             src={image.src || "/placeholder.svg"}
                                             alt={image.alt}
-                                            width={0}
-                                            height={0}
-                                            sizes="500px"
                                             className="min-w-[380px] min-h-[450px] md:min-w-[880px] md:min-h-[900px] object-contain"
-                                            unoptimized={image.src.includes("supabase.co")}
+                                            style={{objectFit: "contain"}}
                                         />
                                     </div>
                                 ))}
