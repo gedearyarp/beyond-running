@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import { images } from "@/assets/images";
 
@@ -56,11 +55,12 @@ export default function PromoCards() {
 
                     {/* Background Image with Parallax Effect */}
                     <div className="absolute inset-0 overflow-hidden">
-                        <Image
+                        <img
                             src={card.bgImage || "/placeholder.svg"}
                             alt={card.title}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-all duration-1000 ease-out"
+                            className="object-cover group-hover:scale-110 transition-all duration-1000 ease-out w-full h-full absolute inset-0"
+                            style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                            loading="eager"
                         />
                     </div>
 
@@ -76,12 +76,13 @@ export default function PromoCards() {
                                     }`}
                             >
                                 {card.icon ? (
-                                    <Image
+                                    <img
                                         src={card.icon || "/placeholder.svg"}
                                         alt="Static Icon"
                                         width={110}
                                         height={110}
                                         className="drop-shadow-lg"
+                                        style={{width: 110, height: 110}}
                                     />
                                 ) : (
                                     <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
@@ -97,13 +98,13 @@ export default function PromoCards() {
                                         : "opacity-0 scale-75 -rotate-12"
                                     }`}
                             >
-                                <Image
+                                <img
                                     src={card.gifIcon || "/placeholder.svg"}
                                     alt="Animated Icon"
                                     width={110}
                                     height={110}
                                     className="drop-shadow-2xl"
-                                    unoptimized // Important for GIFs
+                                    style={{width: 110, height: 110}}
                                 />
                             </div>
 
