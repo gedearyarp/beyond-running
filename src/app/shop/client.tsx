@@ -486,12 +486,12 @@ export default function ShopPageClient({
             <Header />
             <main className="flex-1 pt-[56px] md:pt-[73px]">
                 <div className="relative w-full h-[477px] md:h-[608px]">
-                    <Image
+                    <img
                         src={collection?.image?.url || images.shopImage}
                         alt={collection?.title || "Collections End of Summer"}
-                        fill
-                        className="object-cover"
-                        priority
+                        className="object-cover w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                        loading="eager"
                     />
                     <div className="absolute inset-0 bg-black/20" />
                     {isMobile ? (

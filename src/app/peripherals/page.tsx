@@ -201,7 +201,7 @@ function PeripheralsPageContent() {
                         <>
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
                                 <img
-                                    src={GifIcon}
+                                    src={GifIcon.src}
                                     alt="Animated Icon"
                                     width={200}
                                     height={200}
@@ -218,7 +218,7 @@ function PeripheralsPageContent() {
                     ) : (
                         <div className="absolute top-1/2 -translate-y-1/2 z-20 w-full justify-between flex flex-row items-center gap-6 pr-12">
                             <img
-                                src={GifIcon}
+                                src={GifIcon.src}
                                 alt="Animated Icon"
                                 width={200}
                                 height={200}
