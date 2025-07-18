@@ -14,12 +14,17 @@ import Template1 from "./Template1";
 import Template2 from "./Template2";
 import Template3 from "./Template3";
 
-// Extended type to include images array
+// Extended type to include images array and template_type
 export interface PeripheralWithImages extends Peripherals {
     images: Array<{
         src: string;
         alt: string;
     }>;
+    template_type?: string;
+    featured_images?: any[];
+    sections?: any[];
+    gallery_images?: any[];
+    full_width_image?: string;
 }
 
 export default function PeripheralsDetailPage() {
@@ -43,8 +48,23 @@ export default function PeripheralsDetailPage() {
                     .single();
 
                 if (error) throw error;
+                console.log(data)
 
-                // Create images array from existing image fields
+                // Parse JSONB fields if present
+                let featured_images = [];
+                let sections = [];
+                let gallery_images = [];
+                if (data.featured_images) {
+                    featured_images = Array.isArray(data.featured_images) ? data.featured_images : JSON.parse(data.featured_images);
+                }
+                if (data.sections) {
+                    sections = Array.isArray(data.sections) ? data.sections : JSON.parse(data.sections);
+                }
+                if (data.gallery_images) {
+                    gallery_images = Array.isArray(data.gallery_images) ? data.gallery_images : JSON.parse(data.gallery_images);
+                }
+
+                // Create images array from existing image fields (for Template1)
                 const images = [];
                 if (data.left_img) {
                     images.push({
@@ -62,6 +82,9 @@ export default function PeripheralsDetailPage() {
                 setPeripheral({
                     ...data,
                     images,
+                    featured_images,
+                    sections,
+                    gallery_images,
                 });
             } catch (error) {
                 console.error("Error fetching peripheral:", error);
@@ -131,11 +154,10 @@ export default function PeripheralsDetailPage() {
     const bgColor =
         peripheral.background_color === "black" ? "bg-black text-white" : "bg-white text-black";
 
-    // Determine which template to use (future: from DB field, now always Template1)
+    // Determine which template to use
     let SelectedTemplate = Template1;
-    // Example: if (peripheral.template_type === 'template2') SelectedTemplate = Template2;
-    // Example: if (peripheral.template_type === 'template3') SelectedTemplate = Template3;
-    // For now, always use Template1 as default
+    if (peripheral.template_type === '2') SelectedTemplate = Template2;
+    if (peripheral.template_type === '3') SelectedTemplate = Template3;
 
     return (
         <SelectedTemplate

@@ -65,6 +65,9 @@ export default function Template3({ peripheral, loading, isInitialLoading, getVa
     const bgColor =
         peripheral.background_color === "black" ? "bg-black text-white" : "bg-white text-black";
 
+    // Get gallery images
+    const galleryImages = peripheral.gallery_images || [];
+
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
@@ -108,84 +111,84 @@ export default function Template3({ peripheral, loading, isInitialLoading, getVa
                     </div>
                 </div>
 
-                {/* Gallery Section mirip gambar referensi */}
+                {/* Gallery Section (dynamic, but with previous layout) */}
                 <section className="container mx-auto px-2 sm:px-4 py-8 md:py-16 flex flex-col gap-8 md:gap-12">
-                    {/* Row 1: 2 images */}
-                    <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-6 mb-2">
-                        <div className="relative w-full h-[180px] md:h-[858px]">
-                            <img
-                                src={images.featured1Image}
-                                alt="Gallery 1"
-                                className="object-cover shadow w-full h-full absolute inset-0"
-                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-                            />
-                        </div>
-                        <div className="relative w-full h-[180px] md:h-[724px]">
-                            <img
-                                src={images.featured2Image}
-                                alt="Gallery 2"
-                                className="object-cover shadow w-full h-full absolute inset-0"
-                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-                            />
-                        </div>
+                  {/* Row 1: 2 images (tall) */}
+                  <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-6 mb-2">
+                    <div className="relative w-full h-[180px] md:h-[858px]">
+                      <img
+                        src={getValidImageUrl(galleryImages[0], "/placeholder.svg")}
+                        alt="Gallery 1"
+                        className="object-cover shadow w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                      />
                     </div>
-                    {/* Row 2: 1 landscape image */}
-                    <div className="w-full flex flex-col items-center mb-2">
-                        <div className="relative w-full h-[180px] md:h-[690px]">
-                            <img
-                                src={images.featured3Image}
-                                alt="Gallery 3"
-                                className="object-cover shadow w-full h-full absolute inset-0"
-                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-                            />
-                        </div>
+                    <div className="relative w-full h-[180px] md:h-[724px]">
+                      <img
+                        src={getValidImageUrl(galleryImages[1], "/placeholder.svg")}
+                        alt="Gallery 2"
+                        className="object-cover shadow w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                      />
                     </div>
-                    {/* Row 3: 2 images (landscape + portrait) */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-2">
-                        <div className="relative w-full h-[180px] md:col-span-2 md:h-[512px]">
-                            <img
-                                src={images.bottomBanner}
-                                alt="Gallery 4"
-                                className="object-cover shadow w-full h-full absolute inset-0"
-                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-                            />
-                        </div>
-                        <div className="relative w-full h-[180px] md:h-[399px]">
-                            <img
-                                src={images.bottomBanner}
-                                alt="Gallery 5"
-                                className="object-cover shadow w-full h-full absolute inset-0"
-                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-                            />
-                        </div>
+                  </div>
+                  {/* Row 2: 1 landscape image (wide) */}
+                  <div className="w-full flex flex-col items-center mb-2">
+                    <div className="relative w-full h-[180px] md:h-[690px]">
+                      <img
+                        src={getValidImageUrl(galleryImages[2], "/placeholder.svg")}
+                        alt="Gallery 3"
+                        className="object-cover shadow w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                      />
                     </div>
-                    {/* Row 4: 3 small images (2 per row in mobile) */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                        <div className="relative w-full h-[180px] md:h-[480px] mb-4 md:mb-0">
-                            <img
-                                src={images.aboutBanner}
-                                alt="Gallery 6"
-                                className="object-cover shadow w-full h-full absolute inset-0"
-                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-                            />
-                        </div>
-                        <div className="relative w-full h-[180px] md:h-[480px] mb-4 md:mb-0">
-                            <img
-                                src={images.aboutImage}
-                                alt="Gallery 7"
-                                className="object-cover shadow w-full h-full absolute inset-0"
-                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-                            />
-                        </div>
-                        <div className="relative w-full h-[180px] md:h-[480px] col-span-2 md:col-span-1">
-                            <img
-                                src={images.shopImage}
-                                alt="Gallery 8"
-                                className="object-cover shadow w-full h-full absolute inset-0"
-                                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-                            />
-                        </div>
+                  </div>
+                  {/* Row 3: 2 images (one wide, one tall) */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-2">
+                    <div className="relative w-full h-[180px] md:col-span-2 md:h-[512px]">
+                      <img
+                        src={getValidImageUrl(galleryImages[3], "/placeholder.svg")}
+                        alt="Gallery 4"
+                        className="object-cover shadow w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                      />
                     </div>
+                    <div className="relative w-full h-[180px] md:h-[399px]">
+                      <img
+                        src={getValidImageUrl(galleryImages[4], "/placeholder.svg")}
+                        alt="Gallery 5"
+                        className="object-cover shadow w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                      />
+                    </div>
+                  </div>
+                  {/* Row 4: 3 small images (2 per row in mobile) */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                    <div className="relative w-full h-[180px] md:h-[480px] mb-4 md:mb-0">
+                      <img
+                        src={getValidImageUrl(galleryImages[5], "/placeholder.svg")}
+                        alt="Gallery 6"
+                        className="object-cover shadow w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                      />
+                    </div>
+                    <div className="relative w-full h-[180px] md:h-[480px] mb-4 md:mb-0">
+                      <img
+                        src={getValidImageUrl(galleryImages[6], "/placeholder.svg")}
+                        alt="Gallery 7"
+                        className="object-cover shadow w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                      />
+                    </div>
+                    <div className="relative w-full h-[180px] md:h-[480px] col-span-2 md:col-span-1">
+                      <img
+                        src={getValidImageUrl(galleryImages[7], "/placeholder.svg")}
+                        alt="Gallery 8"
+                        className="object-cover shadow w-full h-full absolute inset-0"
+                        style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                      />
+                    </div>
+                  </div>
                 </section>
             </main>
             <Footer />

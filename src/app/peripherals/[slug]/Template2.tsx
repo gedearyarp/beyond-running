@@ -64,6 +64,15 @@ export default function Template2({ peripheral, loading, isInitialLoading, getVa
   // Determine background color
   const bgColor = peripheral.background_color === "black" ? "bg-black text-white" : "bg-white text-black"
 
+  // Get featured images (first two)
+  const featuredImages = peripheral.featured_images || []
+
+  // Get full width image
+  const fullWidthImage = peripheral.full_width_image
+
+  // Get dynamic sections
+  const dynamicSections = peripheral.sections || []
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -108,112 +117,64 @@ export default function Template2({ peripheral, loading, isInitialLoading, getVa
         </section>
 
         {/* Featured Images Section */}
-        {peripheral.highlight_quote && (
+        {featuredImages.length > 0 && (
           <section className="py-12 md:py-20">
             <div className="container mx-auto px-4">
               <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 max-w-6xl mx-auto">
-                <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg aspect-[3/4] flex-shrink-0">
-                  <img
-                    src={images.featured1Image || "/placeholder.svg"}
-                    alt="Featured story image 1"
-                    className="object-cover shadow-lg w-full h-full absolute inset-0"
-                    style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-                  />
-                </div>
-                <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg aspect-[3/4] flex-shrink-0">
-                  <img
-                    src={images.featured2Image || "/placeholder.svg"}
-                    alt="Featured story image 2"
-                    className="object-cover shadow-lg w-full h-full absolute inset-0"
-                    style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-                  />
-                </div>
+                {featuredImages.slice(0, 2).map((img, idx) => (
+                  <div key={img} className="relative w-full max-w-sm md:max-w-md lg:max-w-lg aspect-[3/4] flex-shrink-0">
+                    <img
+                      src={getValidImageUrl(img, "/placeholder.svg")}
+                      alt={`Featured story image ${idx + 1}`}
+                      className="object-cover shadow-lg w-full h-full absolute inset-0"
+                      style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </section>
         )}
 
         {/* Full Width Banner */}
-        <section className="relative w-full my-8 md:my-16 h-[50vh] md:h-[70vh] lg:h-[880px]">
-          <img
-            src={images.featured3Image || "/placeholder.svg"}
-            alt="Full width banner"
-            className="object-cover w-full h-full absolute inset-0"
-            style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-            loading="eager"
-          />
-        </section>
-
-        {/* Content Sections */}
-        <div className="space-y-16 md:space-y-36 py-16 md:pt-36">
-          {/* Section 1: Text left, image right */}
-          <section className="container mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-end max-w-7xl mx-auto">
-              <div className="flex flex-col space-y-4 lg:pr-8">
-                <h3 className="text-sm md:text-[16px] font-folio-bold">Join The Motion</h3>
-                <p className="text-[12px] md:text-[16px] font-folio-light leading-relaxed">
-                  And hey, if you don't snag one of the exclusive 5 spots, no worries at all! Coach Johnny will still be
-                  dishing out valuable training insights all spring every week through our newsletter. We're totally
-                  committed to boosting your running journey by offering ongoing education through Q&As, ally
-                  newsletter, upcoming spotlights, and a special content series. So, stay tuned for more awesome ways to
-                  train with Coach Johnny and hit those running dreams!
-                </p>
-              </div>
-              <div className="flex justify-center lg:justify-end">
-                <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg aspect-[4/5] md:aspect-[3/4]">
-                  <img
-                    src={images.featured2Image || "/placeholder.svg"}
-                    alt="Join the motion - training session"
-                    className="object-cover shadow-md w-full h-full absolute inset-0"
-                    style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-                  />
-                </div>
-              </div>
-            </div>
+        {fullWidthImage && (
+          <section className="relative w-full my-8 md:my-16 h-[50vh] md:h-[70vh] lg:h-[880px]">
+            <img
+              src={getValidImageUrl(fullWidthImage, "/placeholder.svg")}
+              alt="Full width banner"
+              className="object-cover w-full h-full absolute inset-0"
+              style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+              loading="eager"
+            />
           </section>
+        )}
 
-          {/* Section 2: Full width image */}
-          <section className="container mx-auto px-4">
-            <div className="relative w-full h-[40vh] md:h-[50vh] lg:h-[620px] max-w-7xl mx-auto">
-              <img
-                src={images.featured1Image || "/placeholder.svg"}
-                alt="Training in action"
-                className="object-cover shadow-md w-full h-full absolute inset-0"
-                style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-              />
-            </div>
-          </section>
-
-          {/* Section 3: Text left, image right */}
-          <section className="container mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center max-w-7xl mx-auto">
-              <div className="space-y-4 lg:pr-8">
-                <h3 className="text-sm md:text-lg font-folio-bold">Join The Motion</h3>
-                <div className="space-y-4">
-                  <p className="text-[12px] md:text-[16px] font-folio-light leading-relaxed text-opacity-90">
-                    And hey, if you don't snag one of the exclusive 5 spots, no worries at all! Coach Johnny will still
-                    be dishing out valuable training insights and tips every week through our newsletter.
-                  </p>
-                  <p className="text-[12px] md:text-[16px] font-folio-light leading-relaxed text-opacity-90">
-                    We're totally committed to boosting your running journey by sharing ongoing education through our
-                    newsletter, upcoming podcasts, and a special content series. So, stay tuned for more awesome ways to
-                    train with Coach Johnny and hit those running dreams!
-                  </p>
+        {/* Content Sections (dynamic) */}
+        {dynamicSections.length > 0 && (
+          <div className="space-y-16 md:space-y-36 py-16 md:pt-36">
+            {dynamicSections.map((section, idx) => (
+              <section key={idx} className="container mx-auto px-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center max-w-7xl mx-auto">
+                  <div className="space-y-4 lg:pr-8">
+                    <RichTextViewer content={section.text} className="text-sm md:text-[16px] font-folio-light" />
+                  </div>
+                  {section.image && (
+                    <div className="flex justify-center lg:justify-end">
+                      <div className="relative w-full max-w-md md:max-w-lg lg:max-w-xl aspect-[4/3] md:aspect-[3/2]">
+                        <img
+                          src={getValidImageUrl(section.image, "/placeholder.svg")}
+                          alt="Section image"
+                          className="object-cover shadow-md w-full h-full absolute inset-0"
+                          style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <div className="flex justify-center lg:justify-end">
-                <div className="relative w-full max-w-md md:max-w-lg lg:max-w-xl aspect-[4/3] md:aspect-[3/2]">
-                  <img
-                    src={images.featured3Image || "/placeholder.svg"}
-                    alt="Training community"
-                    className="object-cover shadow-md w-full h-full absolute inset-0"
-                    style={{objectFit: 'cover', width: '100%', height: '100%', position: 'absolute'}}
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
+              </section>
+            ))}
+          </div>
+        )}
       </main>
       <Footer />
     </div>
