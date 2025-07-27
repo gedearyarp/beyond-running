@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Community } from "@/app/community/page";
+import type { Community } from "@/app/program/page";
 
 interface CalendarViewProps {
     events: Community[];
@@ -80,7 +80,7 @@ export default function CalendarView({ events }: CalendarViewProps) {
                             const sortedEvents = [...groupedEvents[year][month]].sort((a, b) => {
                                 const dayA = a.day || 0;
                                 const dayB = b.day || 0;
-                                return dayB - dayA;
+                                return dayA - dayB; // Sort in ascending order (1, 2, 3... like a typical calendar)
                             });
 
                             return (
