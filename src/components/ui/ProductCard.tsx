@@ -152,7 +152,7 @@ export default function ProductCard({ product, isShop, collectionHandle, selecte
                                             type="button"
                                             className={`
                                                 inline-block
-                                                w-6 h-6 md:w-5 md:h-5
+                                                w-4 h-4
                                                 rounded-full
                                                 shadow-md
                                                 focus:outline-none

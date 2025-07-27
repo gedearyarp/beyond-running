@@ -59,7 +59,7 @@ export default function MobileHeader({
                     {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </button>
 
-                <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-4 text-lg font-folio-bold">
+                <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 flex items-center space-x-4 text-lg font-folio-bold">
                     <Link href="/">BEYOND:RUNNING</Link>
                 </div>
 

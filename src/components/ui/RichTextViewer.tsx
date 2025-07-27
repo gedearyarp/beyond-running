@@ -50,6 +50,9 @@ export default function RichTextViewer({ content, className = "" }: RichTextView
                 .rich-text-viewer em {
                     font-style: italic;
                 }
+                .rich-text-viewer i {
+                    font-style: italic;
+                }
                 .rich-text-viewer u {
                     text-decoration: underline;
                 }
@@ -67,6 +70,42 @@ export default function RichTextViewer({ content, className = "" }: RichTextView
                 .rich-text-viewer h2 { font-size: 1.5rem; }
                 .rich-text-viewer h3 { font-size: 1.25rem; }
                 .rich-text-viewer h4 { font-size: 1.1rem; }
+                
+                /* Styling for <i> tags based on parent context */
+                .rich-text-viewer h1 i,
+                .rich-text-viewer h2 i,
+                .rich-text-viewer h3 i,
+                .rich-text-viewer h4 i,
+                .rich-text-viewer h5 i,
+                .rich-text-viewer h6 i {
+                    font-family: 'itc-bold-obl', sans-serif;
+                }
+                
+                .rich-text-viewer p i {
+                    font-family: 'itc-md-obl', sans-serif;
+                }
+                
+                .rich-text-viewer div i {
+                    font-family: 'itc-md-obl', sans-serif;
+                }
+                
+                .rich-text-viewer span i {
+                    font-family: 'itc-md-obl', sans-serif;
+                }
+                
+                /* For smaller text contexts, use lighter oblique */
+                .rich-text-viewer small i,
+                .rich-text-viewer .text-xs i,
+                .rich-text-viewer .text-sm i {
+                    font-family: 'itc-xl-obl', sans-serif;
+                }
+                
+                /* For larger text contexts, use bolder oblique */
+                .rich-text-viewer .text-lg i,
+                .rich-text-viewer .text-xl i,
+                .rich-text-viewer .text-2xl i {
+                    font-family: 'itc-demi-obl', sans-serif;
+                }
             `}</style>
         </div>
     );

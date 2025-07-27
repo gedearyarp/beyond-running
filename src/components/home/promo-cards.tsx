@@ -41,7 +41,7 @@ export default function PromoCards() {
     const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-24">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-16 md:my-32">
             {promoCards.map((card) => (
                 <Link
                     key={card.id}

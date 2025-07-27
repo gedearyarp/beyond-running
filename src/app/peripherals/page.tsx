@@ -234,8 +234,8 @@ function PeripheralsPageContent() {
 
                 <div className="container mx-auto px-4 py-12">
                     {/* Description */}
-                    <div className="max-w-3xl mb-12">
-                        <p className="text-xs md:text-sm font-folio-bold">
+                    <div className="max-w-3xl mb-24 mt-12">
+                        <p className="text-xs md:text-sm font-itc-demi-obl">
                             Dive into our curated stories that highlight the intersection of
                             journey, innovation, culture, and community. Discover how Beyond Running
                             extends beyond the track into everyday movement.

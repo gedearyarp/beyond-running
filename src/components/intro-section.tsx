@@ -66,7 +66,7 @@ export default function IntroSection({ onRemoved }: IntroSectionProps) {
             </div>
 
             {/* Scroll indicator */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white opacity-70">
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white opacity-70 md:block hidden">
                 <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center relative overflow-hidden">
                     <div className="w-1 h-3 bg-white rounded-full mt-2 animate-bounce"></div>
                     <div className="absolute inset-0 border-2 border-white/30 rounded-full animate-ping"></div>

@@ -2,7 +2,7 @@ import { images } from "@/assets/images";
 
 export default function BottomBanner() {
     return (
-        <div className="relative w-full h-[488px] md:h-[719px] mt-12 overflow-hidden">
+        <div className="relative w-full h-[488px] md:h-[719px] mt-16 md:mt-32 overflow-hidden">
             <img
                 src={images.bottomBanner}
                 alt="Beyond Running"

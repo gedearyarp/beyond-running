@@ -426,7 +426,7 @@ export default function Header() {
                                     placeholder="Search"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full text-lg md:text-xl font-folio-light bg-transparent border-none outline-none focus:ring-0 placeholder-gray-500"
+                                    className="w-full text-lg md:text-xl font-itc-demi bg-transparent border-none outline-none focus:ring-0 placeholder-gray-500"
                                 />
                             </div>
 
@@ -451,12 +451,12 @@ export default function Header() {
                     {recentSearches.length > 0 && (
                         <div className="mb-8 px-4 md:px-8">
                             <div className="flex items-center justify-between mb-2">
-                                <div className="text-sm text-gray-500 font-folio-medium">
+                                <div className="text-sm text-gray-500 font-itc-md">
                                     Recent Search
                                 </div>
                                 <button
                                     onClick={clearAllRecentSearch}
-                                    className="text-sm text-gray-500 hover:underline font-folio-medium cursor-pointer"
+                                    className="text-sm text-gray-500 hover:underline font-itc-md cursor-pointer"
                                 >
                                     Clear All
                                 </button>
@@ -474,7 +474,7 @@ export default function Header() {
                                             alt={item.title}
                                             className="w-10 h-10 object-cover rounded"
                                         />
-                                        <span className="text-xs font-folio-medium  max-w-[100px]">
+                                        <span className="text-xs font-itc-md max-w-[100px]">
                                             {item.title}
                                         </span>
                                     </Link>
@@ -514,13 +514,13 @@ export default function Header() {
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <h3 className="font-medium text-sm md:text-base text-black group-hover:text-gray-500 transition-colors duration-300">
+                                            <h3 className="font-itc-demi text-sm md:text-base text-black group-hover:text-gray-500 transition-colors duration-300">
                                                 {product.title}
                                             </h3>
-                                            <p className="text-xs md:text-sm text-gray-600">
+                                            <p className="text-xs md:text-sm text-gray-600 font-itc-md">
                                                 {product.productType}
                                             </p>
-                                            <p className="text-sm md:text-base font-medium text-black">
+                                            <p className="text-sm md:text-base font-itc-demi text-black">
                                                 {product.priceRange.minVariantPrice.currencyCode}{" "}
                                                 {product.priceRange.minVariantPrice.amount}
                                             </p>
@@ -531,10 +531,10 @@ export default function Header() {
                         ) : (
                             <div className="text-center py-16">
                                 <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                <h3 className="text-lg font-itc-demi text-gray-900 mb-2">
                                     Search Not Found
                                 </h3>
-                                <p className="text-gray-600">
+                                <p className="text-gray-600 font-itc-md">
                                     Try adjusting your search terms or browse all products.
                                 </p>
                             </div>
@@ -566,13 +566,13 @@ export default function Header() {
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <h3 className="font-medium text-sm md:text-base text-black group-hover:text-gray-500 transition-colors duration-300">
+                                            <h3 className="font-itc-demi text-sm md:text-base text-black group-hover:text-gray-500 transition-colors duration-300">
                                                 {product.title}
                                             </h3>
-                                            <p className="text-xs md:text-sm text-gray-600">
+                                            <p className="text-xs md:text-sm text-gray-600 font-itc-md">
                                                 {product.productType}
                                             </p>
-                                            <p className="text-sm md:text-base font-medium text-black">
+                                            <p className="text-sm md:text-base font-itc-demi text-black">
                                                 {product.priceRange.minVariantPrice.currencyCode}{" "}
                                                 {product.priceRange.minVariantPrice.amount}
                                             </p>

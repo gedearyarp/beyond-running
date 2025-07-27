@@ -238,8 +238,8 @@ function CommunityPageContent() {
 
                 <div className="container mx-auto px-4 py-12">
                     {/* Description */}
-                    <div className="max-w-3xl mb-12">
-                        <p className="text-xs md:text-sm font-avant-garde">
+                    <div className="max-w-3xl mb-24 mt-12">
+                        <p className="text-xs md:text-sm font-folio-bold">
                             Explore Beyond Community—where running transcends individual pursuits
                             and becomes a collective journey. From local meetups to global
                             collaborations, we celebrate the connections, stories, and shared

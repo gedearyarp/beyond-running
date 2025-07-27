@@ -133,7 +133,7 @@ export default function FeaturedProducts() {
 
     if (loading && products.length === 0) {
         return (
-            <div className="my-12">
+            <div className="">
                 <div className="mb-4 md:mb-6 px-4 md:px-6 lg:px-8">
                     <h2 className="text-2xl sm:text-3xl md:text-[42px] font-itc-demi mb-3 md:mb-4 lg:mb-10">
                         FEATURED ARTICLES
