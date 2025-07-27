@@ -73,6 +73,14 @@ export default function Template2({ peripheral, loading, isInitialLoading, getVa
   // Get dynamic sections
   const dynamicSections = peripheral.sections || []
 
+  // Helper function to check if content is truly empty (including empty HTML tags)
+  const isContentEmpty = (content: string | null | undefined): boolean => {
+    if (!content) return true;
+    // Remove HTML tags and check if there's actual text content
+    const textContent = content.replace(/<[^>]*>/g, '').trim();
+    return textContent === '';
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -89,32 +97,40 @@ export default function Template2({ peripheral, loading, isInitialLoading, getVa
         </section>
 
         {/* Title and Overview Section */}
-        <section className="container mx-auto px-4 py-16 md:py-16 flex flex-col gap-0 md:gap-36">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-            <div>
-              <h1 className="text-[21px] md:text-5xl font-itc-demi mb-6">
-                {peripheral.title}
-              </h1>
-              <p className="text-xs md:text-sm font-folio-bold mb-6">
-                {formattedDate}
-              </p>
-              {peripheral.credits && (
-                <RichTextViewer 
-                    content={peripheral.credits} 
-                    className="text-sm font-folio-bold" 
-                />
+        {(peripheral.title || formattedDate || peripheral.credits || peripheral.event_overview) && (
+          <section className="container mx-auto px-4 py-16 md:py-16 flex flex-col gap-0 md:gap-36">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+              {(peripheral.title || formattedDate || peripheral.credits) && (
+                <div>
+                  {peripheral.title && (
+                    <h1 className="text-[21px] md:text-5xl font-itc-demi mb-6">
+                      {peripheral.title}
+                    </h1>
+                  )}
+                  {formattedDate && (
+                    <p className="text-xs md:text-sm font-folio-bold mb-6">
+                      {formattedDate}
+                    </p>
+                  )}
+                  {peripheral.credits && !isContentEmpty(peripheral.credits) && (
+                    <RichTextViewer 
+                        content={peripheral.credits} 
+                        className="text-sm font-folio-bold" 
+                    />
+                  )}
+                </div>
+              )}
+              {peripheral.event_overview && !isContentEmpty(peripheral.event_overview) && (
+                <div>
+                  <RichTextViewer
+                      content={peripheral.event_overview}
+                      className="text-[12px] md:text-sm font-folio-light leading-relaxed space-y-6"
+                  />
+                </div>
               )}
             </div>
-            <div>
-              {peripheral.event_overview && (
-                <RichTextViewer
-                    content={peripheral.event_overview}
-                    className="text-[12px] md:text-sm font-folio-light leading-relaxed space-y-6"
-                />
-              )}
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Featured Images Section */}
         {featuredImages.length > 0 && (
@@ -155,9 +171,11 @@ export default function Template2({ peripheral, loading, isInitialLoading, getVa
             {dynamicSections.map((section, idx) => (
               <section key={idx} className="container mx-auto px-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center max-w-7xl mx-auto">
-                  <div className="space-y-4 lg:pr-8">
+                                  <div className="space-y-4 lg:pr-8">
+                  {!isContentEmpty(section.text) && (
                     <RichTextViewer content={section.text} className="text-sm md:text-[16px] font-folio-light" />
-                  </div>
+                  )}
+                </div>
                   {section.image && (
                     <div className="flex justify-center lg:justify-end">
                       <div className="relative w-full max-w-md md:max-w-lg lg:max-w-xl aspect-[4/3] md:aspect-[3/2]">

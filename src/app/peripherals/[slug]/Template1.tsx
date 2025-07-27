@@ -65,6 +65,14 @@ export default function Template1({ peripheral, loading, isInitialLoading, getVa
     const bgColor =
         peripheral.background_color === "black" ? "bg-black text-white" : "bg-white text-black";
 
+    // Helper function to check if content is truly empty (including empty HTML tags)
+    const isContentEmpty = (content: string | null | undefined): boolean => {
+        if (!content) return true;
+        // Remove HTML tags and check if there's actual text content
+        const textContent = content.replace(/<[^>]*>/g, '').trim();
+        return textContent === '';
+    };
+
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
@@ -79,52 +87,64 @@ export default function Template1({ peripheral, loading, isInitialLoading, getVa
                     />
                 </div>
 
-                <div className="container mx-auto px-4 py-16 md:py-16 flex flex-col gap-0 md:gap-36">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                        <div>
-                            <h1 className="text-[21px] md:text-5xl font-itc-demi mb-6">
-                                {peripheral.title}
-                            </h1>
-                            <p className="text-xs md:text-sm font-folio-bold mb-6">
-                                {formattedDate}
-                            </p>
-                            {peripheral.credits && (
-                                <RichTextViewer
-                                    content={peripheral.credits}
-                                    className="text-sm font-folio-bold"
-                                />
-                            )}
-                        </div>
-                        <div>
-                            {peripheral.event_overview && (
+                {(peripheral.title || formattedDate || peripheral.credits || peripheral.event_overview || peripheral.highlight_quote || peripheral.paragraph_1 || peripheral.paragraph_2) && (
+                    <div className="container mx-auto px-4 py-16 md:py-16 flex flex-col gap-0 md:gap-36">
+                        {(peripheral.title || formattedDate || peripheral.credits || peripheral.event_overview) && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                                {(peripheral.title || formattedDate || peripheral.credits) && (
+                                    <div>
+                                        {peripheral.title && (
+                                            <h1 className="text-[21px] md:text-5xl font-itc-demi mb-6">
+                                                {peripheral.title}
+                                            </h1>
+                                        )}
+                                        {formattedDate && (
+                                            <p className="text-xs md:text-sm font-folio-bold mb-6">
+                                                {formattedDate}
+                                            </p>
+                                        )}
+                                        {peripheral.credits && !isContentEmpty(peripheral.credits) && (
+                                            <RichTextViewer
+                                                content={peripheral.credits}
+                                                className="text-sm font-folio-bold"
+                                            />
+                                        )}
+                                    </div>
+                                )}
+                                                        {peripheral.event_overview && !isContentEmpty(peripheral.event_overview) && (
+                            <div>
                                 <div className="text-[12px] md:text-sm font-folio-light leading-relaxed space-y-6">
                                     <RichTextViewer content={peripheral.event_overview} />
                                 </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {peripheral.highlight_quote && (
-                        <div className="my-28 md:my-36 max-w-4xl mx-auto text-center">
-                            <h2 className="text-[20px] md:text-4xl font-itc-demi leading-tight">
-                                <RichTextViewer content={peripheral.highlight_quote} />
-                            </h2>
-                        </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 md:gap-16 gap-7 mb-24">
-                        {peripheral.paragraph_1 && (
-                            <div className="text-[12px] md:text-sm font-folio-light leading-relaxed">
-                                <RichTextViewer content={peripheral.paragraph_1} />
                             </div>
                         )}
-                        {peripheral.paragraph_2 && (
-                            <div className="text-[12px] md:text-sm font-folio-light leading-relaxed">
-                                <RichTextViewer content={peripheral.paragraph_2} />
+                            </div>
+                        )}
+
+                        {peripheral.highlight_quote && !isContentEmpty(peripheral.highlight_quote) && (
+                            <div className="my-28 md:my-36 max-w-4xl mx-auto text-center">
+                                <h2 className="text-[20px] md:text-4xl font-itc-demi leading-tight">
+                                    <RichTextViewer content={peripheral.highlight_quote} />
+                                </h2>
+                            </div>
+                        )}
+
+                        {(peripheral.paragraph_1 || peripheral.paragraph_2) && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-16 gap-7 mb-24">
+                                {peripheral.paragraph_1 && !isContentEmpty(peripheral.paragraph_1) && (
+                                    <div className="text-[12px] md:text-sm font-folio-light leading-relaxed">
+                                        <RichTextViewer content={peripheral.paragraph_1} />
+                                    </div>
+                                )}
+                                {peripheral.paragraph_2 && !isContentEmpty(peripheral.paragraph_2) && (
+                                    <div className="text-[12px] md:text-sm font-folio-light leading-relaxed">
+                                        <RichTextViewer content={peripheral.paragraph_2} />
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
-                </div>
+                )}
 
                 {/* Images Section - Adapted from old code */}
                 {peripheral.images.length > 0 &&
@@ -158,7 +178,7 @@ export default function Template1({ peripheral, loading, isInitialLoading, getVa
                         </div>
                     ))}
 
-                {peripheral.paragraph_bottom && (
+                {peripheral.paragraph_bottom && !isContentEmpty(peripheral.paragraph_bottom) && (
                     <div className="max-w-3xl px-4 md:px-0 md:ml-34 md:mb-24">
                         <div className="text-[12px] md:text-sm font-folio-light leading-relaxed">
                             <RichTextViewer content={peripheral.paragraph_bottom} />
