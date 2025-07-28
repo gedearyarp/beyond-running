@@ -12,7 +12,7 @@ export default async function ShopPage() {
 
     try {
         [initialProducts, collections] = await Promise.all([
-            getAllProductsForShopPage(20),
+            getAllProductsForShopPage(100),
             getAllCollections(),
         ]);
     } catch (error) {
