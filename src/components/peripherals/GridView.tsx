@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Peripherals } from "./ListViewItem";
 import { images } from "@/assets/images";
+import RichTextViewer from "../ui/RichTextViewer";
 
 interface PeripheralGridProps {
     peripherals: Peripherals[];
@@ -49,16 +50,19 @@ export default function StoryGrid({ peripherals }: PeripheralGridProps) {
                                             {formattedDate}
                                         </p>
                                     </div>
-                                    <h3 className="text-2xl md:text-[52px] font-bold font-itc-demi uppercase tracking-wide">
-                                        {peripheral.title}
-                                    </h3>
+                                    <RichTextViewer
+                                        content={peripheral.title || ""}
+                                        className="text-2xl md:text-[52px] font-bold font-itc-demi uppercase tracking-wide"    
+                                    />
                                     <div className="absolute flex flex-col bottom-4 md:bottom-8 gap-8 md:gap-16 px-12 md:px-28">
-                                        <p className="text-[9px] md:text-[14px] font-folio-bold">
-                                            {peripheral.short_overview}
-                                        </p>
-                                        <p className="text-[7px] md:text-[10px] font-itc-md uppercase">
-                                            {peripheral.category}
-                                        </p>
+                                        <RichTextViewer
+                                            content={peripheral.short_overview || ""}
+                                            className="text-[9px] md:text-[14px] font-folio-bold"
+                                        />
+                                        <RichTextViewer
+                                            content={peripheral.category || ""}
+                                            className="text-[7px] md:text-[10px] font-itc-md uppercase"
+                                        />
                                     </div>
                                 </div>
                             </div>

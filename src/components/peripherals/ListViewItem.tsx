@@ -1,5 +1,6 @@
 import useMobile from "@/hooks/use-mobile";
 import Link from "next/link";
+import RichTextViewer from "../ui/RichTextViewer";
 
 export interface Peripherals {
     id: string;
@@ -53,12 +54,14 @@ export default function ListViewItem({ peripherals }: ListViewItemProps) {
                                 </p>
                             </div>
                             <div className="flex-grow">
-                                <h3 className="text-[21px] font-bold font-avant-garde group-hover:underline">
-                                    {peripherals.title}
-                                </h3>
-                                <span className="text-[8px] text-[#ADADAD] uppercase font-avant-garde">
-                                    {peripherals.category}
-                                </span>
+                                <RichTextViewer
+                                    content={peripherals.title || ""}
+                                    className="text-[21px] font-bold font-avant-garde group-hover:underline"
+                                />
+                                <RichTextViewer
+                                    content={peripherals.category || ""}
+                                    className="text-[8px] text-[#ADADAD] uppercase font-avant-garde"
+                                />
                             </div>
                         </div>
                     </div>
@@ -71,14 +74,16 @@ export default function ListViewItem({ peripherals }: ListViewItemProps) {
                                 <p className="text-[18px] font-folio-bold">{formattedDate}</p>
                             </div>
                             <div className="flex-grow">
-                                <h3 className="text-xl md:text-[36px] font-bold font-itc-demi uppercase group-hover:underline">
-                                    {peripherals.title}
-                                </h3>
+                                <RichTextViewer
+                                    content={peripherals.title || ""}
+                                    className="text-xl md:text-[36px] font-bold font-itc-demi uppercase group-hover:underline"
+                                />
                             </div>
                             <div className="flex-shrink-0 text-right">
-                                <span className="text-[10px] uppercase font-itc-md">
-                                    {peripherals.category}
-                                </span>
+                                <RichTextViewer
+                                    content={peripherals.category || ""}
+                                    className="text-[10px] uppercase font-itc-md"
+                                />
                             </div>
                         </div>
                     </div>

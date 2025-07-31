@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Community } from "@/app/community/page";
 import { images } from "@/assets/images";
+import RichTextViewer from "../ui/RichTextViewer";
 
 interface GridViewProps {
     events: Community[];
@@ -74,21 +75,26 @@ export default function GridView({ events }: GridViewProps) {
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
 
                 {/* Location Tag */}
-                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-white text-[12px] px-3 py-1 font-itc-bold uppercase">
-                    {event.event_location}
-                </div>
+                <RichTextViewer
+                    content={event.event_location}
+                    className="absolute top-4 left-1/2 transform -translate-x-1/2 text-white text-[12px] px-3 py-1 font-itc-bold uppercase"
+                />
 
                 {/* Content */}
                 <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-6 text-white">
-                    <h3 className={`text-[24px] md:text-[28px] font-itc-demi mb-8`}>
-                        {event.title}
-                    </h3>
+                    <RichTextViewer
+                        content={event.title}
+                        className={`text-[24px] md:text-[28px] font-itc-demi mb-8`}
+                    />
                 </div>
 
                 {/* Date and organizer at bottom */}
                 <div className="absolute bottom-4 left-0 right-0 text-center text-white">
                     <p className="text-[21px] font-folio-extra-bold">{formattedDate}</p>
-                    <p className="text-[21px] font-folio-extra-bold">{event.category}</p>
+                    <RichTextViewer
+                        content={event.category}
+                        className="text-[21px] font-folio-extra-bold"
+                    />
                 </div>
             </Link>
         );

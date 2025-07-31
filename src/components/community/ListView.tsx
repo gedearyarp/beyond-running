@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Community } from "@/app/community/page";
 import useMobile from "@/hooks/use-mobile";
+import RichTextViewer from "../ui/RichTextViewer";
 
 interface ListViewProps {
     events: Community[];
@@ -41,25 +42,29 @@ export default function ListView({ events }: ListViewProps) {
                                 {isMobile ? (
                                     <>
                                         <div className="flex-grow">
-                                            <h3 className="text-xl md:text-2xl font-bold font-avant-garde group-hover:underline">
-                                                {event.title}
-                                            </h3>
-                                            <span className="text-xs text-[#ADADAD] uppercase font-avant-garde">
-                                                {event.category}
-                                            </span>
+                                            <RichTextViewer
+                                                content={event.title}
+                                                className="text-xl md:text-2xl font-bold font-avant-garde group-hover:underline"
+                                            />
+                                            <RichTextViewer
+                                                content={event.category}
+                                                className="text-xs text-[#ADADAD] uppercase font-avant-garde"
+                                            />
                                         </div>
                                     </>
                                 ) : (
                                     <>
                                         <div className="flex-grow">
-                                            <h3 className="text-xl md:text-[36px] font-itc-demi uppercase group-hover:underline">
-                                                {event.title}
-                                            </h3>
+                                            <RichTextViewer
+                                                content={event.title}
+                                                className="text-xl md:text-[36px] font-itc-demi uppercase group-hover:underline"
+                                            />
                                         </div>
                                         <div className="flex-shrink-0 text-right">
-                                            <span className="text-[10px] uppercase font-itc-md">
-                                                {event.category}
-                                            </span>
+                                            <RichTextViewer
+                                                content={event.category}
+                                                className="text-[10px] uppercase font-itc-md"
+                                            />
                                         </div>
                                     </>
                                 )}

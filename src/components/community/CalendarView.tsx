@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Community } from "@/app/program/page";
+import RichTextViewer from "../ui/RichTextViewer";
 
 interface CalendarViewProps {
     events: Community[];
@@ -100,14 +101,16 @@ export default function CalendarView({ events }: CalendarViewProps) {
                                                         href={`/program/${event.id}`}
                                                         className="block"
                                                     >
-                                                        <h4 className="text-[14px] font-folio-bold mb-8 hover:underline">
-                                                            {event.title}
-                                                        </h4>
+                                                        <RichTextViewer
+                                                            content={event.title}
+                                                            className="text-[14px] font-folio-bold mb-8 hover:underline"
+                                                        />
                                                     </Link>
 
-                                                    <p className="text-sm uppercase font-folio-medium">
-                                                        {event.event_location}
-                                                    </p>
+                                                    <RichTextViewer
+                                                        content={event.event_location}
+                                                        className="text-sm uppercase font-folio-medium"
+                                                    />
                                                 </div>
                                             </div>
                                         ))}

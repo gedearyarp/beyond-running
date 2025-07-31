@@ -94,9 +94,10 @@ export default function Template1({ peripheral, loading, isInitialLoading, getVa
                                 {(peripheral.title || formattedDate || peripheral.credits) && (
                                     <div>
                                         {peripheral.title && (
-                                            <h1 className="text-[21px] md:text-5xl font-itc-demi mb-6">
-                                                {peripheral.title}
-                                            </h1>
+                                            <RichTextViewer
+                                                content={peripheral.title}
+                                                className="text-[21px] md:text-5xl font-itc-demi mb-6"
+                                            />
                                         )}
                                         {formattedDate && (
                                             <p className="text-xs md:text-sm font-folio-bold mb-6">

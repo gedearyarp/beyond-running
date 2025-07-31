@@ -119,9 +119,10 @@ export default function CommunityDetailPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-40">
                         {/* Left Column - Event Image */}
                         <div>
-                            <h1 className="text-2xl md:text-4xl font-itc-demi mb-8 md:hidden">
-                                {event.title}
-                            </h1>
+                            <RichTextViewer
+                                content={event.title}
+                                className="text-2xl md:text-4xl font-itc-demi mb-8 md:hidden"
+                            />
                             <div className="relative h-[481px] md:h-[900px] w-full">
                                 <img
                                     src={communityImageUrl}
@@ -133,9 +134,10 @@ export default function CommunityDetailPage() {
                         </div>
 
                         <div>
-                            <h1 className="text-3xl md:text-[42px] font-itc-demi mb-8 hidden md:block">
-                                {event.title}
-                            </h1>
+                            <RichTextViewer
+                                content={event.title}
+                                className="text-3xl md:text-[42px] font-itc-demi mb-8 hidden md:block"
+                            />
 
                             <div className="mb-8 text-center md:text-left">
                                 <RichTextViewer
