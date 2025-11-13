@@ -62,40 +62,46 @@ function getLocale(request: NextRequest): string {
 export function middleware(request: NextRequest) {
     const vercelRequest = request as VercelRequest;
 
-    // Priority: 1. Cookie (user preference), 2. Query param (for dev/testing), 3. Vercel geo, 4. Default
+    // Priority: 1. Vercel geo (always adapt to current location), 2. Query param (dev/testing), 3. Cookie (fallback), 4. Default
     const url = new URL(request.url);
     const mockCountry = url.searchParams.get("mock_country");
     
-    // Check for currency preference in cookie
+    // Check for currency preference in cookie (for fallback only)
     const currencyPreference = request.cookies.get("currency-preference")?.value;
     const countryPreference = request.cookies.get("country-preference")?.value;
+    
+    // Get Vercel geo country (primary source - always adapt to current location)
+    const geoCountry = vercelRequest.geo?.country;
 
     let countryCode: string;
     let currencyCode: string;
 
-    // Priority 1: Check cookie preference (with validation)
-    if (countryPreference && currencyPreference) {
+    // Priority 1: Vercel geo detection (always adapt to current location)
+    if (geoCountry) {
+        // Always use geo country if available - this ensures currency adapts to user's current location
+        // ID → IDR, GB → GBP, lainnya → USD
+        countryCode = geoCountry;
+        currencyCode = getCurrencyFromCountry(countryCode);
+    } else if (process.env.NODE_ENV === "development" && mockCountry) {
+        // Priority 2: Query parameter in development mode for testing
+        countryCode = mockCountry.toUpperCase();
+        currencyCode = getCurrencyFromCountry(countryCode);
+    } else if (countryPreference && currencyPreference) {
+        // Priority 3: Cookie preference (fallback when geo is not available)
         // Validate cookie values
         if (isValidCountry(countryPreference) && isValidCurrency(currencyPreference)) {
             countryCode = countryPreference;
             currencyCode = currencyPreference;
         } else {
-            // Invalid cookie values, ignore and fall through to other priorities
-            console.warn("Invalid cookie values, ignoring:", { countryPreference, currencyPreference });
-        }
-    }
-    
-    // If cookie validation failed or no cookies, continue with other priorities
-    if (!countryCode || !currencyCode) {
-        if (process.env.NODE_ENV === "development" && mockCountry) {
-            // Priority 2: Query parameter in development mode for testing
-            countryCode = mockCountry.toUpperCase();
-            currencyCode = getCurrencyFromCountry(countryCode);
-        } else {
-            // Priority 3: Use Vercel geo in production
-            countryCode = vercelRequest.geo?.country || "ID";
+            // Invalid cookie values, use default
+            console.warn("Invalid cookie values, using default:", { countryPreference, currencyPreference });
+            countryCode = "ID";
             currencyCode = getCurrencyFromCountry(countryCode);
         }
+    } else {
+        // Priority 4: Default fallback
+        countryCode = "ID";
+        currencyCode = getCurrencyFromCountry(countryCode);
     }
 
     // Get locale - try browser preference first, then country-based, then default
@@ -110,7 +116,7 @@ export function middleware(request: NextRequest) {
     response.headers.set("x-currency-code", currencyCode);
     response.headers.set("x-locale", locale);
 
-    // Set cookies for persistence (30 days expiry)
+    // Always update cookies with current country/currency (so it persists for next visit if geo unavailable)
     const cookieExpiry = new Date();
     cookieExpiry.setDate(cookieExpiry.getDate() + 30);
     
