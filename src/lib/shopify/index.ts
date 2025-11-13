@@ -41,13 +41,38 @@ export async function shopifyFetch<T = any>({
         // Check if query requires countryCode (contains @inContext directive)
         const requiresCountryCode = query.includes("@inContext");
         
-        // Only add countryCode if query requires it
-        const variablesWithCountry = requiresCountryCode
-            ? {
-                  ...variables,
-                  countryCode,
-              }
-            : variables;
+        // IMPORTANT: For Indonesia (base market), don't use @inContext to get base prices without markup
+        // For international markets (GB, US, etc), use @inContext to get prices with 85% markup
+        let finalQuery = query;
+        let variablesWithCountry = variables;
+        
+        if (requiresCountryCode) {
+            if (countryCode === "ID") {
+                // For Indonesia: Remove @inContext directive to get base prices (without markup)
+                // This ensures we get the original prices, not the marked-up prices
+                // Remove @inContext directive
+                finalQuery = query.replace(/@inContext\(country:\s*\$countryCode\)/g, "");
+                
+                // Remove $countryCode from query parameters
+                // Handle different patterns:
+                // 1. ($first: Int = 20, $countryCode: CountryCode!) -> ($first: Int = 20)
+                // 2. ($handle: String!, $countryCode: CountryCode!) -> ($handle: String!)
+                // 3. ($countryCode: CountryCode!) -> ()
+                finalQuery = finalQuery.replace(/,\s*\$countryCode:\s*CountryCode!/g, "");
+                finalQuery = finalQuery.replace(/\(\$countryCode:\s*CountryCode!\s*\)/g, "()");
+                finalQuery = finalQuery.replace(/\(\$countryCode:\s*CountryCode!\s*,/g, "(");
+                
+                // Don't pass countryCode to variables
+                variablesWithCountry = { ...variables };
+            } else {
+                // For international markets: Use @inContext with country code
+                // This ensures we get prices with 85% markup from Shopify Markets
+                variablesWithCountry = {
+                    ...variables,
+                    countryCode,
+                };
+            }
+        }
 
         const response = await fetch(`https://${domain}/api/${apiVersion}/graphql.json`, {
             method: "POST",
@@ -56,7 +81,7 @@ export async function shopifyFetch<T = any>({
                 "X-Shopify-Storefront-Access-Token": storefrontAccessToken!,
             },
             body: JSON.stringify({
-                query,
+                query: finalQuery,
                 variables: variablesWithCountry,
             }),
             cache: isDevelopment ? "no-store" : cache, // No cache di development
