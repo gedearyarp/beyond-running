@@ -3,24 +3,12 @@ import type { NextRequest } from "next/server";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 
-// Extend NextRequest to include Vercel's geo property
-interface VercelRequest extends NextRequest {
-    geo?: {
-        country?: string;
-        city?: string;
-        region?: string;
-    };
-}
-
 // Locale configuration - simplified untuk 3 currency focus
 const locales = ["en-US", "id-ID", "en-GB"];
 const defaultLocale = "id-ID";
 
 // Valid currency codes
 const VALID_CURRENCIES = ["IDR", "USD", "GBP"];
-
-// Valid country codes (for validation)
-const VALID_COUNTRIES = ["ID", "GB", "US"]; // US included for USD
 
 // Simplified currency mapping: ID→IDR, GB→GBP, lainnya→USD
 function getCurrencyFromCountry(countryCode: string): string {
@@ -60,35 +48,25 @@ function getLocale(request: NextRequest): string {
 }
 
 export function middleware(request: NextRequest) {
-    const vercelRequest = request as VercelRequest;
-
-    // Priority: 1. Vercel geo (always adapt to current location), 2. Query param (dev/testing), 3. Cookie (fallback), 4. Default
-    const url = new URL(request.url);
-    const mockCountry = url.searchParams.get("mock_country");
+    // SIMPLE & RELIABLE: Read Vercel geo headers directly
+    // Vercel provides: X-Vercel-IP-Country, X-Vercel-IP-Country-Region, X-Vercel-IP-City
+    // This header is automatically set by Vercel in production based on user's IP
+    const geoCountry = request.headers.get("x-vercel-ip-country");
     
-    // Check for currency preference in cookie (for fallback only)
+    // Check cookie (for fallback only)
     const currencyPreference = request.cookies.get("currency-preference")?.value;
     const countryPreference = request.cookies.get("country-preference")?.value;
-    
-    // Get Vercel geo country (primary source - always adapt to current location)
-    const geoCountry = vercelRequest.geo?.country;
 
     let countryCode: string;
     let currencyCode: string;
 
-    // Priority 1: Vercel geo detection (always adapt to current location)
-    if (geoCountry) {
-        // Always use geo country if available - this ensures currency adapts to user's current location
+    // Priority 1: Vercel geo header (X-Vercel-IP-Country) - always adapt to current location
+    if (geoCountry && isValidCountry(geoCountry)) {
         // ID → IDR, GB → GBP, lainnya → USD
         countryCode = geoCountry;
         currencyCode = getCurrencyFromCountry(countryCode);
-    } else if (process.env.NODE_ENV === "development" && mockCountry) {
-        // Priority 2: Query parameter in development mode for testing
-        countryCode = mockCountry.toUpperCase();
-        currencyCode = getCurrencyFromCountry(countryCode);
     } else if (countryPreference && currencyPreference) {
-        // Priority 3: Cookie preference (fallback when geo is not available)
-        // Validate cookie values
+        // Priority 2: Cookie preference (fallback when geo header is not available)
         if (isValidCountry(countryPreference) && isValidCurrency(currencyPreference)) {
             countryCode = countryPreference;
             currencyCode = currencyPreference;
@@ -99,7 +77,7 @@ export function middleware(request: NextRequest) {
             currencyCode = getCurrencyFromCountry(countryCode);
         }
     } else {
-        // Priority 4: Default fallback
+        // Priority 3: Default fallback
         countryCode = "ID";
         currencyCode = getCurrencyFromCountry(countryCode);
     }
