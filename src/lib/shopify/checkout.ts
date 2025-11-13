@@ -1,10 +1,25 @@
 import { client } from "./index";
 import type { CartItem } from "@/store/cart";
 
-export async function createCheckout(cartItems: CartItem[]) {
+export async function createCheckout(cartItems: CartItem[], countryCode: string = "ID") {
     try {
         // Create a new checkout
         const checkout = await client.checkout.create();
+
+        // Set buyer identity with country code for proper pricing
+        // This ensures checkout uses the correct country context from Shopify Markets
+        let checkoutWithBuyerIdentity = checkout;
+        try {
+            checkoutWithBuyerIdentity = await client.checkout.updateAttributes(checkout.id, {
+                buyerIdentity: {
+                    countryCode: countryCode,
+                },
+            });
+        } catch (updateError) {
+            // If update fails, continue with original checkout
+            // Some Shopify configurations might not support buyerIdentity update
+            console.warn("Failed to update buyer identity, continuing with default:", updateError);
+        }
 
         // Prepare line items
         const lineItems = cartItems.map((item) => ({
@@ -13,10 +28,21 @@ export async function createCheckout(cartItems: CartItem[]) {
         }));
 
         // Add line items to checkout
-        const checkoutWithItems = await client.checkout.addLineItems(checkout.id, lineItems);
+        const checkoutWithItems = await client.checkout.addLineItems(
+            checkoutWithBuyerIdentity.id,
+            lineItems
+        );
+
+        // Append country code to checkout URL to ensure correct pricing
+        // Shopify checkout URL can accept locale/country parameters
+        const checkoutUrl = new URL(checkoutWithItems.webUrl);
+        // Add country parameter if not already present
+        if (!checkoutUrl.searchParams.has("locale")) {
+            checkoutUrl.searchParams.set("locale", countryCode.toLowerCase());
+        }
 
         return {
-            checkoutUrl: checkoutWithItems.webUrl,
+            checkoutUrl: checkoutUrl.toString(),
             checkoutId: checkoutWithItems.id,
         };
     } catch (error) {

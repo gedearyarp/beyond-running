@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { createCheckout } from "@/lib/shopify/checkout";
 
 export interface CartItem {
     id: string;
@@ -146,7 +145,20 @@ export const useCartStore = create<CartState>()(
                         }
                     }
 
-                    const { checkoutUrl } = await createCheckout(state.items);
+                    // Call API route to create checkout with country context
+                    const response = await fetch("/api/checkout", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ items: state.items }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Failed to create checkout");
+                    }
+
+                    const { checkoutUrl } = await response.json();
                     set({ items: [], cartId: null, isOpen: false });
                     return checkoutUrl;
                 } catch (error) {
@@ -162,7 +174,20 @@ export const useCartStore = create<CartState>()(
                 }
 
                 try {
-                    const { checkoutUrl } = await createCheckout(state.items);
+                    // Call API route to create checkout with country context
+                    const response = await fetch("/api/checkout", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ items: state.items }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Failed to create checkout");
+                    }
+
+                    const { checkoutUrl } = await response.json();
                     set({ items: [], cartId: null, isOpen: false });
                     return checkoutUrl;
                 } catch (error) {
