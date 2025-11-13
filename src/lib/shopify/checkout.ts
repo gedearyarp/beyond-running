@@ -6,21 +6,6 @@ export async function createCheckout(cartItems: CartItem[], countryCode: string 
         // Create a new checkout
         const checkout = await client.checkout.create();
 
-        // Set buyer identity with country code for proper pricing
-        // This ensures checkout uses the correct country context from Shopify Markets
-        let checkoutWithBuyerIdentity = checkout;
-        try {
-            checkoutWithBuyerIdentity = await client.checkout.updateAttributes(checkout.id, {
-                buyerIdentity: {
-                    countryCode: countryCode,
-                },
-            });
-        } catch (updateError) {
-            // If update fails, continue with original checkout
-            // Some Shopify configurations might not support buyerIdentity update
-            console.warn("Failed to update buyer identity, continuing with default:", updateError);
-        }
-
         // Prepare line items
         const lineItems = cartItems.map((item) => ({
             variantId: item.id,
@@ -28,17 +13,17 @@ export async function createCheckout(cartItems: CartItem[], countryCode: string 
         }));
 
         // Add line items to checkout
-        const checkoutWithItems = await client.checkout.addLineItems(
-            checkoutWithBuyerIdentity.id,
-            lineItems
-        );
+        const checkoutWithItems = await client.checkout.addLineItems(checkout.id, lineItems);
 
         // Append country code to checkout URL to ensure correct pricing
-        // Shopify checkout URL can accept locale/country parameters
+        // Shopify checkout URL accepts country parameter to set the country context
+        // When user opens checkout, Shopify will automatically set the country based on this parameter
         const checkoutUrl = new URL(checkoutWithItems.webUrl);
-        // Add country parameter if not already present
-        if (!checkoutUrl.searchParams.has("locale")) {
-            checkoutUrl.searchParams.set("locale", countryCode.toLowerCase());
+        
+        // Add country parameter - Shopify checkout will use this to set the country automatically
+        // Format: ?country=GB (Shopify will read this and set country to GB, which triggers currency change)
+        if (!checkoutUrl.searchParams.has("country") && !checkoutUrl.searchParams.has("locale")) {
+            checkoutUrl.searchParams.set("country", countryCode);
         }
 
         return {
