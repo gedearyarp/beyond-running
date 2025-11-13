@@ -1,4 +1,6 @@
 import { getProductsByCollection, getAllCollections } from "@/lib/shopify";
+import { headers } from "next/headers";
+import { getExchangeRates } from "@/lib/currency";
 import ShopPageClient from "@/app/shop/client";
 import { notFound } from "next/navigation";
 import { sortProductsByCategory } from "@/lib/utils/product-sorting";
@@ -14,17 +16,23 @@ interface CollectionPageProps {
 export default async function CollectionPage({ params }: CollectionPageProps) {
     const { handle } = params;
 
+    // Get country code from headers set by middleware
+    const headersList = await headers();
+    const countryCode = headersList.get("x-country-code") || "ID";
+
     try {
-        // Get all collections to find the current one
-        const collections = await getAllCollections();
+        // Get all collections, products, and exchange rates in parallel
+        const [collections, products, exchangeRates] = await Promise.all([
+            getAllCollections(countryCode),
+            getProductsByCollection(handle, countryCode),
+            getExchangeRates(),
+        ]);
+
         const currentCollection = collections.find((c) => c.handle === handle);
 
         if (!currentCollection) {
             notFound();
         }
-
-        // Get products for this collection
-        const products = await getProductsByCollection(handle);
 
         if (!products || products.length === 0) {
             return (
@@ -42,6 +50,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
                 initialProducts={sortedProducts}
                 collections={collections}
                 collection={currentCollection}
+                exchangeRates={exchangeRates}
             />
         );
     } catch (error) {

@@ -12,6 +12,7 @@ import SizeChartModal from "@/components/ui/size-chart";
 import AddToCartButton from "@/components/ui/add-to-cart-button";
 import type { ProductDetailType, ProductCardType } from "@/lib/shopify/types";
 import RichTextViewer from "@/components/ui/RichTextViewer";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
 
 // Constants
 const GALLERY_AUTO_SCROLL_INTERVAL = 10000;
@@ -20,6 +21,7 @@ const GALLERY_AUTO_SCROLL_INTERVAL = 10000;
 interface ProductDetailPageProps {
     product: ProductDetailType;
     relatedProducts: ProductCardType[];
+    exchangeRates?: { [key: string]: number };
 }
 
 // Gallery image type
@@ -76,7 +78,11 @@ const findRelatedImagesByColor = (allImages: { url: string; altText: string }[],
 };
 
 // Main component
-export default function ProductDetailPage({ product, relatedProducts }: ProductDetailPageProps) {
+export default function ProductDetailPage({
+    product,
+    relatedProducts,
+    exchangeRates = {},
+}: ProductDetailPageProps) {
     // --- MEMOS ---
     const hasSizeOptions = useMemo(() => {
         return product.variants.edges.some((edge) =>
@@ -135,9 +141,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
         () => product?.images?.edges?.map((edge) => ({ url: edge.node.url, altText: edge.node.altText || "" })) || [],
         [product?.images?.edges]
     );
-    const formattedPrice = product?.priceRange?.minVariantPrice
-        ? `${product.priceRange.minVariantPrice.currencyCode} ${Number(product.priceRange.minVariantPrice.amount).toLocaleString("id-ID", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
-        : "Price not available";
+    // Price will be displayed using PriceDisplay component
 
     // Extract available options
     const availableColors = product?.variants?.edges
@@ -460,9 +464,17 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                 <h1 className="text-3xl md:text-[36px] font-itc-demi mb-1 animate-fade-in">
                                     {product?.title || "Product Name"}
                                 </h1>
-                                <p className="text-xl md:text-[24px] font-folio-bold mb-8 animate-fade-in animation-delay-200">
-                                    {formattedPrice}
-                                </p>
+                                <div className="text-xl md:text-[24px] font-folio-bold mb-8 animate-fade-in animation-delay-200">
+                                    {product?.priceRange?.minVariantPrice ? (
+                                        <PriceDisplay
+                                            price={product.priceRange.minVariantPrice}
+                                            rates={exchangeRates}
+                                            className=""
+                                        />
+                                    ) : (
+                                        "Price not available"
+                                    )}
+                                </div>
 
                                 {/* Product Description as Rich Text */}
                                 {product?.descriptionHtml && (
@@ -775,7 +787,7 @@ export default function ProductDetailPage({ product, relatedProducts }: ProductD
                                         key={product.id}
                                         className="transform transition-transform duration-300 hover:scale-105"
                                     >
-                                        <ProductCard product={product} />
+                                        <ProductCard product={product} exchangeRates={exchangeRates} />
                                         <button
                                             className="mt-2 text-xs underline font-avant-garde relative group overflow-hidden"
                                             onClick={handleCartClick}

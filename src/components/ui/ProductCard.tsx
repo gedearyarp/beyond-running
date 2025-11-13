@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ProductCardType } from "@/lib/shopify/types";
+import { PriceDisplay } from "./PriceDisplay";
 
 interface ProductCardProps {
     product: ProductCardType;
@@ -9,6 +10,7 @@ interface ProductCardProps {
     collectionHandle?: string;
     selectedColor?: string;
     onColorSelect?: (color: string) => void;
+    exchangeRates?: { [key: string]: number };
 }
 
 // Utility: extract color from alt text (copied from product detail page)
@@ -44,13 +46,16 @@ function findRelatedImagesByColor(
     return relatedImages;
 }
 
-export default function ProductCard({ product, isShop, collectionHandle, selectedColor, onColorSelect }: ProductCardProps) {
+export default function ProductCard({ 
+    product, 
+    isShop, 
+    collectionHandle, 
+    selectedColor, 
+    onColorSelect,
+    exchangeRates = {}
+}: ProductCardProps) {
     const imageUrl = product.images?.edges?.[0]?.node?.url || "/placeholder.svg";
     const imageAlt = product.images?.edges?.[0]?.node?.altText || product.title;
-
-    const formattedPrice = product.priceRange
-        ? `${product.priceRange.minVariantPrice.currencyCode} ${Number(product.priceRange.minVariantPrice.amount).toLocaleString("id-ID", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
-        : "1";
 
     // Calculate colors count from metafields
     const colorsCount = (() => {
@@ -197,7 +202,17 @@ export default function ProductCard({ product, isShop, collectionHandle, selecte
                     </div>
                 )}
                 <p className="text-xs text-gray-600 mb-1 font-folio-light">{colorsCount} Colors</p>
-                <p className="text-xs sm:text-sm font-folio-bold">{formattedPrice}</p>
+                <p className="text-xs sm:text-sm font-folio-bold">
+                    {product.priceRange ? (
+                        <PriceDisplay
+                            price={product.priceRange.minVariantPrice}
+                            rates={exchangeRates}
+                            className=""
+                        />
+                    ) : (
+                        "Price not available"
+                    )}
+                </p>
             </div>
         </Link>
     );

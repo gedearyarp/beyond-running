@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, Search, ShoppingBag, X } from "lucide-react";
 import { useCartStore } from "@/store/cart";
+import { useLocalization } from "@/contexts/LocalizationContext";
+import { fetchExchangeRatesClient } from "@/lib/currency";
 
 interface MobileHeaderProps {
     onMenuClick: () => void;
@@ -20,8 +22,15 @@ export default function MobileHeader({
 }: MobileHeaderProps) {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
     const { getTotalItems } = useCartStore();
+    const { currencyCode, locale } = useLocalization();
     const cartItemCount = getTotalItems();
+
+    // Fetch exchange rates
+    useEffect(() => {
+        fetchExchangeRatesClient().then(setExchangeRates).catch(console.error);
+    }, []);
 
     // Mendeteksi scroll untuk memberikan efek visual pada header
     useEffect(() => {
@@ -47,7 +56,17 @@ export default function MobileHeader({
         <>
             {/* Announcement Bar */}
             {/* <div className="w-full bg-black text-white text-center py-2 text-xs fixed top-0 left-0 right-0 z-50 animate-slide-down">
-                Free Shipping On All Orders Above Rp 999,999
+                Free Shipping On All Orders Above{" "}
+                {new Intl.NumberFormat(locale, {
+                    style: "currency",
+                    currency: currencyCode,
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                }).format(
+                    exchangeRates[currencyCode]
+                        ? 999999 * exchangeRates[currencyCode]
+                        : 999999
+                )}
             </div> */}
 
             <header
