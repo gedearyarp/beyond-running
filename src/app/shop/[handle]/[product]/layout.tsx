@@ -1,6 +1,8 @@
 import { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getProductDetailByHandle, getAllProductsForShopPage } from "@/lib/shopify";
+import { getExchangeRates } from "@/lib/currency";
 import type { ProductDetailType, ProductCardType } from "@/lib/shopify/types";
 import Loading from "@/components/ui/loading";
 import ProductDetailPage from "./page";
@@ -14,8 +16,12 @@ export async function generateMetadata({
 }: {
     params: { handle: string; product: string };
 }): Promise<Metadata> {
+    // Get country code from headers set by middleware
+    const headersList = await headers();
+    const countryCode = headersList.get("x-country-code") || "ID";
+
     try {
-        const product = await getProductDetailByHandle(params.product);
+        const product = await getProductDetailByHandle(params.product, countryCode);
 
         if (!product) {
             return {
@@ -52,11 +58,16 @@ export default async function ProductLayout({
 }: {
     params: { handle: string; product: string };
 }) {
+    // Get country code from headers set by middleware
+    const headersList = await headers();
+    const countryCode = headersList.get("x-country-code") || "ID";
+
     try {
-        // Fetch product data and related products in parallel
-        const [product, allProducts] = await Promise.all([
-            getProductDetailByHandle(params.product),
-            getAllProductsForShopPage(),
+        // Fetch product data, related products, and exchange rates in parallel
+        const [product, allProducts, exchangeRates] = await Promise.all([
+            getProductDetailByHandle(params.product, countryCode),
+            getAllProductsForShopPage(20, countryCode),
+            getExchangeRates(),
         ]);
 
         if (!product) {
@@ -74,7 +85,11 @@ export default async function ProductLayout({
                     </div>
                 }
             >
-                <ProductDetailPage product={product} relatedProducts={relatedProducts} />
+                <ProductDetailPage
+                    product={product}
+                    relatedProducts={relatedProducts}
+                    exchangeRates={exchangeRates}
+                />
             </Suspense>
         );
     } catch (error) {
@@ -85,8 +100,10 @@ export default async function ProductLayout({
 
 // Generate static params for all products
 export async function generateStaticParams() {
+    // For static generation, use default country code (ID)
+    // In production, this will be regenerated per country
     try {
-        const products = await getAllProductsForShopPage();
+        const products = await getAllProductsForShopPage(250, "ID");
 
         return products.map((product) => ({
             handle: product.handle,

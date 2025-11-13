@@ -10,6 +10,9 @@ import { Collection } from "@/lib/shopify/types";
 import { User } from "@/types/api";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLocalization } from "@/contexts/LocalizationContext";
+import { fetchExchangeRatesClient } from "@/lib/currency";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
 
 interface LineItem {
     id: number;
@@ -71,6 +74,12 @@ export default function ProfilePage() {
     const [collections, setCollections] = useState<Collection[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [ordersLoading, setOrdersLoading] = useState(true);
+    const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
+
+    // Fetch exchange rates
+    useEffect(() => {
+        fetchExchangeRatesClient().then(setExchangeRates).catch(console.error);
+    }, []);
 
     useEffect(() => {
         setMounted(true);
@@ -86,11 +95,13 @@ export default function ProfilePage() {
         }
     }, [mounted, authLoading, isAuthenticated, user, router]);
 
+    const { countryCode } = useLocalization();
+
     // Fetch collections
     useEffect(() => {
         const fetchCollections = async () => {
             try {
-                const collectionsData = await getAllCollections();
+                const collectionsData = await getAllCollections(countryCode);
                 setCollections(collectionsData);
             } catch (error) {
                 console.error("Failed to fetch collections:", error);
@@ -98,7 +109,7 @@ export default function ProfilePage() {
         };
 
         fetchCollections();
-    }, []);
+    }, [countryCode]);
 
     // Fetch order history from Supabase
     useEffect(() => {
@@ -138,10 +149,14 @@ export default function ProfilePage() {
         );
     }
 
-    // Helper to format price
-    const formatPrice = (price: string | number) => {
+    // Helper to format price for PriceDisplay component
+    const formatPriceForDisplay = (price: string | number) => {
         const num = typeof price === "string" ? parseFloat(price) : price;
-        return `IDR. ${num.toLocaleString("id-ID", { minimumFractionDigits: 0, maximumFractionDigits: 0 })},-`;
+        if (isNaN(num)) return null;
+        return {
+            amount: num.toString(),
+            currencyCode: "IDR", // Base currency dari order history
+        };
     };
 
     console.log(user);
@@ -237,18 +252,34 @@ export default function ProfilePage() {
                                                             Qty: {item.quantity}
                                                         </p>
                                                     </div>
-                                                    <p className="font-medium text-black">
-                                                        {formatPrice(item.price)}
-                                                    </p>
+                                                    <div className="font-medium text-black">
+                                                        {formatPriceForDisplay(item.price) ? (
+                                                            <PriceDisplay
+                                                                price={formatPriceForDisplay(item.price)!}
+                                                                rates={exchangeRates}
+                                                                className=""
+                                                            />
+                                                        ) : (
+                                                            "Price not available"
+                                                        )}
+                                                    </div>
                                                 </div>
                                             ))}
                                             <div className="border-t border-gray-200 pt-2 flex justify-between items-center">
                                                 <p className="text-sm font-medium text-gray-700">
                                                     Total:
                                                 </p>
-                                                <p className="font-medium text-black">
-                                                    {formatPrice(orderData.total_price)}
-                                                </p>
+                                                <div className="font-medium text-black">
+                                                    {formatPriceForDisplay(orderData.total_price) ? (
+                                                        <PriceDisplay
+                                                            price={formatPriceForDisplay(orderData.total_price)!}
+                                                            rates={exchangeRates}
+                                                            className=""
+                                                        />
+                                                    ) : (
+                                                        "Price not available"
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -343,7 +374,15 @@ export default function ProfilePage() {
                                                     </div>
                                                 </td>
                                                 <td className="py-6 px-4 text-black font-medium">
-                                                    {formatPrice(orderData.total_price)}
+                                                    {formatPriceForDisplay(orderData.total_price) ? (
+                                                        <PriceDisplay
+                                                            price={formatPriceForDisplay(orderData.total_price)!}
+                                                            rates={exchangeRates}
+                                                            className=""
+                                                        />
+                                                    ) : (
+                                                        "Price not available"
+                                                    )}
                                                 </td>
                                                 <td className="py-6 px-0 text-right">
                                                     <a

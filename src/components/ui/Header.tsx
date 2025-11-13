@@ -9,9 +9,12 @@ import MobileHeader from "@/components/mobile-header";
 import MobileMenu from "@/components/mobile-menu";
 import UserDropdown from "./UserDropdown";
 import { getAllProductsForShopPage } from "@/lib/shopify";
+import { fetchExchangeRatesClient } from "@/lib/currency";
 import { useCollectionsStore } from "@/store/collections";
 import { useCartStore } from "@/store/cart";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLocalization } from "@/contexts/LocalizationContext";
+import { PriceDisplay } from "./PriceDisplay";
 import type { ProductCardType } from "@/lib/shopify/types";
 import { useRouter } from "next/navigation";
 
@@ -24,6 +27,7 @@ type RecentProduct = {
 };
 
 export default function Header() {
+    const { countryCode, currencyCode, locale } = useLocalization();
     const { collections, refreshCollections } = useCollectionsStore();
     const { toggleCart, getTotalItems, isOpen: isCartOpen } = useCartStore();
     const { isAuthenticated } = useAuth();
@@ -42,6 +46,7 @@ export default function Header() {
     const [allProducts, setAllProducts] = useState<ProductCardType[]>([]);
     const [productsLoading, setProductsLoading] = useState(false);
     const [productsError, setProductsError] = useState<string | null>(null);
+    const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
     const [mounted, setMounted] = useState(false);
     const [activeShopTab, setActiveShopTab] = useState<string>("men");
     const router = useRouter();
@@ -112,17 +117,18 @@ export default function Header() {
     // Refresh collections when dropdown is opened
     useEffect(() => {
         if (activeDropdown === "shop") {
-            refreshCollections();
+            refreshCollections(countryCode);
         }
-    }, [activeDropdown, refreshCollections]);
+    }, [activeDropdown, refreshCollections, countryCode]);
 
-    // Fetch all products for dropdown on mount
+    // Fetch all products and exchange rates for dropdown on mount
     useEffect(() => {
         if (allProducts.length === 0) {
             setProductsLoading(true);
-            getAllProductsForShopPage(100)
-                .then((data) => {
+            Promise.all([getAllProductsForShopPage(100, countryCode), fetchExchangeRatesClient()])
+                .then(([data, rates]) => {
                     setAllProducts(data);
+                    setExchangeRates(rates);
                     setProductsLoading(false);
                 })
                 .catch(() => {
@@ -130,7 +136,7 @@ export default function Header() {
                     setProductsLoading(false);
                 });
         }
-    }, []);
+    }, [countryCode]);
 
     // Filter products based on search query
     const filteredProducts = searchQuery
@@ -520,10 +526,17 @@ export default function Header() {
                                             <p className="text-xs md:text-sm text-gray-600 font-itc-md">
                                                 {product.productType}
                                             </p>
-                                            <p className="text-sm md:text-base font-itc-demi text-black">
-                                                {product.priceRange.minVariantPrice.currencyCode}{" "}
-                                                {product.priceRange.minVariantPrice.amount}
-                                            </p>
+                                            <div className="text-sm md:text-base font-itc-demi text-black">
+                                                {product.priceRange?.minVariantPrice ? (
+                                                    <PriceDisplay
+                                                        price={product.priceRange.minVariantPrice}
+                                                        rates={exchangeRates}
+                                                        className=""
+                                                    />
+                                                ) : (
+                                                    "Price not available"
+                                                )}
+                                            </div>
                                         </div>
                                     </Link>
                                 ))}
@@ -572,10 +585,17 @@ export default function Header() {
                                             <p className="text-xs md:text-sm text-gray-600 font-itc-md">
                                                 {product.productType}
                                             </p>
-                                            <p className="text-sm md:text-base font-itc-demi text-black">
-                                                {product.priceRange.minVariantPrice.currencyCode}{" "}
-                                                {product.priceRange.minVariantPrice.amount}
-                                            </p>
+                                            <div className="text-sm md:text-base font-itc-demi text-black">
+                                                {product.priceRange?.minVariantPrice ? (
+                                                    <PriceDisplay
+                                                        price={product.priceRange.minVariantPrice}
+                                                        rates={exchangeRates}
+                                                        className=""
+                                                    />
+                                                ) : (
+                                                    "Price not available"
+                                                )}
+                                            </div>
                                         </div>
                                     </Link>
                                 ))}
@@ -593,7 +613,17 @@ export default function Header() {
             >
                 {/* Announcement Bar */}
                 {/* <div className="w-full bg-black text-white text-center py-2 text-xs animate-slide-down">
-                    Free Shipping On All Orders Above Rp 999,999
+                    Free Shipping On All Orders Above{" "}
+                    {new Intl.NumberFormat(locale, {
+                        style: "currency",
+                        currency: currencyCode,
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                    }).format(
+                        exchangeRates[currencyCode]
+                            ? 999999 * exchangeRates[currencyCode]
+                            : 999999
+                    )}
                 </div> */}
 
                 {/* Main Navigation Container */}

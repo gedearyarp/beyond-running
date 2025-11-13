@@ -11,6 +11,7 @@ export default function CollectionLayout({ children }: { children: React.ReactNo
 }
 
 export async function generateStaticParams() {
-    const collections = await getAllCollections();
+    // For static generation, use default country code (ID)
+    const collections = await getAllCollections("ID");
     return collections.map((collection) => ({ handle: collection.handle }));
 }

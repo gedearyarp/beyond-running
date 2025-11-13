@@ -1,15 +1,22 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { getProductDetailByHandle, getAllProductsForShopPage } from "@/lib/shopify";
+import { getExchangeRates } from "@/lib/currency";
 import ProductDetailPage from "../../shop/[handle]/[product]/page";
 import Loading from "@/components/ui/loading";
 import { Suspense } from "react";
 
 export default async function ProductPage({ params }: { params: { productName: string } }) {
+    // Get country code from headers set by middleware
+    const headersList = await headers();
+    const countryCode = headersList.get("x-country-code") || "ID";
+
     try {
-        // Fetch product data and related products in parallel
-        const [product, allProducts] = await Promise.all([
-            getProductDetailByHandle(params.productName),
-            getAllProductsForShopPage(),
+        // Fetch product data, related products, and exchange rates in parallel
+        const [product, allProducts, exchangeRates] = await Promise.all([
+            getProductDetailByHandle(params.productName, countryCode),
+            getAllProductsForShopPage(20, countryCode),
+            getExchangeRates(),
         ]);
 
         if (!product) {
@@ -27,7 +34,11 @@ export default async function ProductPage({ params }: { params: { productName: s
                     </div>
                 }
             >
-                <ProductDetailPage product={product} relatedProducts={relatedProducts} />
+                <ProductDetailPage
+                    product={product}
+                    relatedProducts={relatedProducts}
+                    exchangeRates={exchangeRates}
+                />
             </Suspense>
         );
     } catch (error) {

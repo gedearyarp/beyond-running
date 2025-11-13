@@ -27,7 +27,7 @@ export const GET_ALL_COLLECTIONS = gql`
 `;
 
 export const GET_COLLECTION_PRODUCTS = gql`
-    query getCollectionProducts($handle: String!) {
+    query getCollectionProducts($handle: String!, $countryCode: CountryCode!) @inContext(country: $countryCode) {
         collectionByHandle(handle: $handle) {
             id
             title

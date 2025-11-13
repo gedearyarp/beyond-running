@@ -107,7 +107,7 @@ export const PRODUCT_DETAIL_FRAGMENT = gql`
 
 export const GET_ALL_PRODUCTS_FOR_SHOP_PAGE = gql`
     ${PRODUCT_CARD_FRAGMENT}
-    query getAllProductsForShopPage($first: Int = 20) {
+    query getAllProductsForShopPage($first: Int = 20, $countryCode: CountryCode!) @inContext(country: $countryCode) {
         products(first: $first) {
             edges {
                 node {
@@ -120,7 +120,7 @@ export const GET_ALL_PRODUCTS_FOR_SHOP_PAGE = gql`
 
 export const GET_PRODUCT_DETAIL_BY_HANDLE_QUERY = gql`
     ${PRODUCT_DETAIL_FRAGMENT}
-    query getProductDetailByHandle($handle: String!) {
+    query getProductDetailByHandle($handle: String!, $countryCode: CountryCode!) @inContext(country: $countryCode) {
         productByHandle(handle: $handle) {
             ...ProductDetailFragment
         }
@@ -128,7 +128,7 @@ export const GET_PRODUCT_DETAIL_BY_HANDLE_QUERY = gql`
 `;
 
 export const GET_ALL_PRODUCT_HANDLES_QUERY = gql`
-    query getAllProductHandles {
+    query getAllProductHandles($countryCode: CountryCode!) @inContext(country: $countryCode) {
         products(first: 250) {
             edges {
                 node {

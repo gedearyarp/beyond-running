@@ -5,12 +5,16 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import { getAllCollections, getProductsByCollection, type Collection } from "@/lib/shopify";
+import { fetchExchangeRatesClient } from "@/lib/currency";
+import { useLocalization } from "@/contexts/LocalizationContext";
 import type { ProductCardType } from "@/lib/shopify/types";
 
 export default function FeaturedProducts() {
+    const { countryCode } = useLocalization();
     const [activeTabIndex, setActiveTabIndex] = useState(0);
     const [collections, setCollections] = useState<Collection[]>([]);
     const [products, setProducts] = useState<ProductCardType[]>([]);
+    const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
     const [loading, setLoading] = useState(true);
     const [currentProductIndex, setCurrentProductIndex] = useState(0);
 
@@ -20,12 +24,17 @@ export default function FeaturedProducts() {
         setSelectedColors((prev) => ({ ...prev, [productHandle]: color }));
     };
 
-    // Fetch collections and initial products
+    // Fetch collections, initial products, and exchange rates
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const allCollections = await getAllCollections();
+                const [allCollections, rates] = await Promise.all([
+                    getAllCollections(countryCode),
+                    fetchExchangeRatesClient(),
+                ]);
+                setExchangeRates(rates);
+
                 // We are interested in the first 3 collections for the tabs
                 const featuredCollections = allCollections.slice(0, 3);
                 setCollections(featuredCollections);
@@ -33,7 +42,8 @@ export default function FeaturedProducts() {
                 // Fetch products for the default tab (the first collection)
                 if (featuredCollections.length > 0) {
                     const collectionProducts = await getProductsByCollection(
-                        featuredCollections[0].handle
+                        featuredCollections[0].handle,
+                        countryCode
                     );
                     setProducts(collectionProducts);
                 }
@@ -45,7 +55,7 @@ export default function FeaturedProducts() {
         };
 
         fetchData();
-    }, []);
+    }, [countryCode]);
 
     // Handle tab change to load products from the corresponding collection
     const handleTabClick = async (index: number) => {
@@ -56,7 +66,7 @@ export default function FeaturedProducts() {
         try {
             setLoading(true);
             const collectionHandle = collections[index].handle;
-            const collectionProducts = await getProductsByCollection(collectionHandle);
+            const collectionProducts = await getProductsByCollection(collectionHandle, countryCode);
             setProducts(collectionProducts);
         } catch (error) {
             console.error(`Error fetching products for ${collections[index].title}:`, error);
@@ -337,6 +347,7 @@ export default function FeaturedProducts() {
                                         collectionHandle={activeCollection?.handle}
                                         selectedColor={selectedColors[product.handle]}
                                         onColorSelect={(color) => handleColorSelect(product.handle, color)}
+                                        exchangeRates={exchangeRates}
                                     />
                                 </div>
                             </div>

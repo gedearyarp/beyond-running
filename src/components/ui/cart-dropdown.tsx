@@ -5,6 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { X, Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/store/cart";
+import { useLocalization } from "@/contexts/LocalizationContext";
+import { fetchExchangeRatesClient } from "@/lib/currency";
+import { PriceDisplay } from "./PriceDisplay";
 import Button from "./button";
 import { useRouter } from "next/navigation";
 import OutOfStockModal from "./OutOfStockModal";
@@ -15,6 +18,7 @@ export default function CartDropdown() {
     const [outOfStockItems, setOutOfStockItems] = useState<any[]>([]);
     const [isClosing, setIsClosing] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
+    const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
     const {
         items,
         updateQuantity,
@@ -28,6 +32,11 @@ export default function CartDropdown() {
     } = useCartStore();
     const [isCheckingOut, setIsCheckingOut] = useState(false);
     const router = useRouter();
+
+    // Fetch exchange rates on mount
+    useEffect(() => {
+        fetchExchangeRatesClient().then(setExchangeRates).catch(console.error);
+    }, []);
 
     // Handle close animation
     const handleClose = () => {
@@ -79,10 +88,14 @@ export default function CartDropdown() {
 
     if (!isOpen) return null;
 
-    function formatPrice(price: number) {
-        if (typeof price !== "number" || isNaN(price)) return "Rp0";
-        return `Rp${price.toLocaleString("id-ID", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-    }
+    // Helper function untuk format price dengan currency conversion
+    const formatCartPrice = (price: number) => {
+        if (typeof price !== "number" || isNaN(price)) return null;
+        return {
+            amount: price.toString(),
+            currencyCode: "IDR", // Base currency dari cart
+        };
+    };
 
     const handleCheckout = async () => {
         try {
@@ -250,7 +263,17 @@ export default function CartDropdown() {
                                         <div className="text-xs md:text-sm font-itc-md space-y-1 mb-2 md:mb-3">
                                             <p>Size: {item.size}</p>
                                             <p>Color: {item.color}</p>
-                                            <p className="font-medium text-black">Rp{item.price}</p>
+                                            <div className="font-medium text-black">
+                                                {formatCartPrice(item.price) ? (
+                                                    <PriceDisplay
+                                                        price={formatCartPrice(item.price)!}
+                                                        rates={exchangeRates}
+                                                        className=""
+                                                    />
+                                                ) : (
+                                                    "Price not available"
+                                                )}
+                                            </div>
                                         </div>
 
                                         {/* Quantity Controls */}
@@ -316,7 +339,15 @@ export default function CartDropdown() {
                             disabled={isCheckingOut}
                         >
                             <span>{isCheckingOut ? "Processing..." : "CHECK OUT"}</span>
-                            <span>{formatPrice(getTotalPrice())}.-</span>
+                            {formatCartPrice(getTotalPrice()) ? (
+                                <PriceDisplay
+                                    price={formatCartPrice(getTotalPrice())!}
+                                    rates={exchangeRates}
+                                    className=""
+                                />
+                            ) : (
+                                <span>0</span>
+                            )}
                         </Button>
 
                         {/* Tax Notice */}

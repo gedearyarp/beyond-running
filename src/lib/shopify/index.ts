@@ -1,4 +1,3 @@
-import { GraphQLClient } from "graphql-request";
 import { ProductCardType, ProductDetailType, Shop, Connection } from "./types";
 import * as ShopQueries from "./queries/shop-queries";
 import * as ProductQueries from "./queries/product-queries";
@@ -17,21 +16,11 @@ if (!domain || !storefrontAccessToken) {
     );
 }
 
-// Initialize GraphQL client
-const graphqlEndpoint = `https://${domain}/api/${apiVersion}/graphql.json`;
-const graphqlClient = new GraphQLClient(graphqlEndpoint, {
-    headers: {
-        "Shopify-Storefront-Access-Token": storefrontAccessToken,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Shopify-Storefront-Access-Token": storefrontAccessToken,
-    },
-});
-
 // Types
 type ShopifyFetchParams = {
     query: string;
     variables?: Record<string, any>;
+    countryCode?: string;
     cache?: RequestCache;
     tags?: string[];
 };
@@ -43,11 +32,23 @@ const isDevelopment = process.env.NODE_ENV === "development";
  */
 export async function shopifyFetch<T = any>({
     query,
-    variables,
+    variables = {},
+    countryCode = "ID",
     cache = "force-cache",
     tags = ["shopify-products", "shopify-collections"],
 }: ShopifyFetchParams): Promise<T> {
     try {
+        // Check if query requires countryCode (contains @inContext directive)
+        const requiresCountryCode = query.includes("@inContext");
+        
+        // Only add countryCode if query requires it
+        const variablesWithCountry = requiresCountryCode
+            ? {
+                  ...variables,
+                  countryCode,
+              }
+            : variables;
+
         const response = await fetch(`https://${domain}/api/${apiVersion}/graphql.json`, {
             method: "POST",
             headers: {
@@ -56,7 +57,7 @@ export async function shopifyFetch<T = any>({
             },
             body: JSON.stringify({
                 query,
-                variables,
+                variables: variablesWithCountry,
             }),
             cache: isDevelopment ? "no-store" : cache, // No cache di development
             next: isDevelopment
@@ -86,9 +87,10 @@ export async function shopifyFetch<T = any>({
 /**
  * Get shop information
  */
-export const getShopInfo = async (): Promise<Shop> => {
+export const getShopInfo = async (countryCode: string = "ID"): Promise<Shop> => {
     const { shop } = await shopifyFetch<{ shop: Shop }>({
         query: ShopQueries.GET_SHOP_INFO_QUERY,
+        countryCode,
     });
     return shop;
 };
@@ -96,10 +98,14 @@ export const getShopInfo = async (): Promise<Shop> => {
 /**
  * Get all products for shop page
  */
-export const getAllProductsForShopPage = async (first: number = 20): Promise<ProductCardType[]> => {
+export const getAllProductsForShopPage = async (
+    first: number = 20,
+    countryCode: string = "ID"
+): Promise<ProductCardType[]> => {
     const { products } = await shopifyFetch<{ products: Connection<ProductCardType> }>({
         query: ProductQueries.GET_ALL_PRODUCTS_FOR_SHOP_PAGE,
         variables: { first },
+        countryCode,
         tags: ["shopify-products"],
     });
     return products.edges.map((edge) => edge.node);
@@ -109,11 +115,13 @@ export const getAllProductsForShopPage = async (first: number = 20): Promise<Pro
  * Get product detail by handle
  */
 export const getProductDetailByHandle = async (
-    handle: string
+    handle: string,
+    countryCode: string = "ID"
 ): Promise<ProductDetailType | null> => {
     const { productByHandle } = await shopifyFetch<{ productByHandle: ProductDetailType }>({
         query: ProductQueries.GET_PRODUCT_DETAIL_BY_HANDLE_QUERY,
         variables: { handle },
+        countryCode,
         tags: ["shopify-products"],
     });
     return productByHandle;
@@ -122,9 +130,10 @@ export const getProductDetailByHandle = async (
 /**
  * Get all product handles
  */
-export const getAllProductHandles = async (): Promise<string[]> => {
+export const getAllProductHandles = async (countryCode: string = "ID"): Promise<string[]> => {
     const { products } = await shopifyFetch<{ products: Connection<{ handle: string }> }>({
         query: ProductQueries.GET_ALL_PRODUCT_HANDLES_QUERY,
+        countryCode,
         tags: ["shopify-products"],
     });
     return products.edges.map((edge) => edge.node.handle);
@@ -144,9 +153,10 @@ export type Collection = {
 /**
  * Get all collections
  */
-export const getAllCollections = async (): Promise<Collection[]> => {
+export const getAllCollections = async (countryCode: string = "ID"): Promise<Collection[]> => {
     const { collections } = await shopifyFetch<{ collections: Connection<Collection> }>({
         query: CollectionQueries.GET_ALL_COLLECTIONS,
+        countryCode,
         tags: ["shopify-collections"],
     });
     return collections.edges.map((edge) => edge.node);
@@ -155,12 +165,16 @@ export const getAllCollections = async (): Promise<Collection[]> => {
 /**
  * Get products by collection handle
  */
-export const getProductsByCollection = async (handle: string): Promise<ProductCardType[]> => {
+export const getProductsByCollection = async (
+    handle: string,
+    countryCode: string = "ID"
+): Promise<ProductCardType[]> => {
     const { collectionByHandle } = await shopifyFetch<{
         collectionByHandle: { products: Connection<ProductCardType> };
     }>({
         query: CollectionQueries.GET_COLLECTION_PRODUCTS,
         variables: { handle },
+        countryCode,
         tags: ["shopify-products", "shopify-collections"],
     });
 

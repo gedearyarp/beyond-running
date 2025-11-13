@@ -6,18 +6,18 @@ interface CollectionsState {
     collections: Collection[];
     isLoading: boolean;
     error: string | null;
-    fetchCollections: () => Promise<Collection[]>;
-    refreshCollections: () => Promise<void>;
+    fetchCollections: (countryCode?: string) => Promise<Collection[]>;
+    refreshCollections: (countryCode?: string) => Promise<void>;
 }
 
 export const useCollectionsStore = create<CollectionsState>((set) => ({
     collections: [],
     isLoading: false,
     error: null,
-    fetchCollections: async () => {
+    fetchCollections: async (countryCode: string = "ID") => {
         try {
             set({ isLoading: true, error: null });
-            const collections = await getAllCollections();
+            const collections = await getAllCollections(countryCode);
             set({ collections, isLoading: false });
             return collections;
         } catch (error) {
@@ -31,10 +31,10 @@ export const useCollectionsStore = create<CollectionsState>((set) => ({
             return [];
         }
     },
-    refreshCollections: async () => {
+    refreshCollections: async (countryCode: string = "ID") => {
         try {
             set({ isLoading: true, error: null });
-            const collections = await getAllCollections();
+            const collections = await getAllCollections(countryCode);
             set({ collections, isLoading: false });
         } catch (error) {
             const errorMessage =

@@ -1,15 +1,19 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import { shopifyFetch } from "@/lib/shopify";
 import { GET_ALL_PRODUCTS_FOR_SHOP_PAGE } from "@/lib/shopify/queries/product-queries";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(request: NextRequest) {
     try {
         const data = await shopifyFetch({
             query: GET_ALL_PRODUCTS_FOR_SHOP_PAGE,
             variables: { first: 1 },
+            countryCode: "ID", // Default, bisa diambil dari headers jika perlu
         });
-        res.status(200).json(data);
+        return NextResponse.json(data);
     } catch (err) {
-        res.status(500).json({ error: (err as Error).message });
+        return NextResponse.json(
+            { error: (err as Error).message },
+            { status: 500 }
+        );
     }
 }

@@ -33,11 +33,13 @@ interface ShopPageClientProps {
     initialProducts: ProductCardType[];
     collections: Collection[];
     collection?: Collection;
+    exchangeRates?: { [key: string]: number };
 }
 
 export default function ShopPageClient({
     initialProducts,
     collection,
+    exchangeRates = {},
 }: ShopPageClientProps) {
     const [products, setProducts] = useState<ProductCardType[]>(initialProducts);
     const [loading, setLoading] = useState(false);
@@ -955,6 +957,7 @@ export default function ShopPageClient({
                                     collectionHandle={collection?.handle}
                                     selectedColor={selectedColors[product.handle]}
                                     onColorSelect={(color) => handleColorSelect(product.handle, color)}
+                                    exchangeRates={exchangeRates}
                                 />
                             ))}
                     </div>
